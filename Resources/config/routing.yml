@@ -32,3 +32,10 @@ youwe_media_mkdir:
     defaults: { _controller: YouweMediaBundle:Media:mkdir, dir_path: null }
     options:
         expose: true
+
+youwe_uploads:
+    pattern: /uploads/{name}
+    requirements:
+        name: .+
+    defaults:
+        _controller: YouweMediaBundle:Uploads:uploads

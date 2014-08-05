@@ -188,10 +188,9 @@ class MediaDriver
      * @param ContainerInterface $container
      * @param SecurityContext $context
      */
-    public function __construct(ContainerInterface $container, SecurityContext $context)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->user = $context->getToken()->getUser();
 
         $parameters = $this->container->getParameter('youwe_media');
         $this->upload_path = $parameters['upload_path'];
