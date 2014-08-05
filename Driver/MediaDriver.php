@@ -186,7 +186,6 @@ class MediaDriver
 
     /**
      * @param ContainerInterface $container
-     * @param SecurityContext $context
      */
     public function __construct(ContainerInterface $container)
     {
