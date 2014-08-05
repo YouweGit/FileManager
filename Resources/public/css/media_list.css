@@ -1,0 +1,291 @@
+/**
+ * Media Main
+ */
+#MediaContainer.popup {
+    font-size: 13px;
+    overflow: hidden;
+    height: 490px;
+}
+
+#MediaContainer .MediaList {
+    position: relative;
+    min-height: 500px;
+    width: 100%;
+}
+
+#MediaContainer .MediaList .panel-actions,
+#MediaContainer .MediaList .panel-actions .panel-body{
+    padding:2px;
+    margin-bottom:2px;
+}
+
+#MediaContainer .MediaList .panel-actions .panel-body .btn{
+    padding:1px 5px;
+    margin-bottom:2px;
+}
+#MediaContainer .MediaList .panel-items{
+    height:100%;
+}
+
+#MediaContainer .MediaList .panel-items .panel-heading{
+    height:35px;
+}
+
+#MediaContainer .MediaList .panel-items .panel-heading .btn{
+    padding:1px 5px;
+    margin-bottom:2px;
+    margin-top:-5px;
+}
+
+#MediaContainer .MediaList span.yw_media_item_dir,
+#MediaContainer .MediaList span.yw_media_dir {
+    cursor: pointer;
+}
+
+#MediaContainer .MediaList .droppable-highlight {
+    background-color: rgba(185, 229, 255, 0.52);
+}
+
+.btn[disabled], fieldset[disabled] .btn {
+    pointer-events: none;
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .35;
+}
+
+/**
+ * Media Dirs
+ */
+#MediaContainer .MediaListDirs {
+    width: 320px;
+    float: left;
+    margin-right: 10px;
+}
+
+#MediaContainer.popup .MediaListDirs {
+    margin-right: 3px;
+    width: 250px;
+}
+
+#MediaContainer .MediaListDirs > div.panel {
+    background-image: url(/bundles/youwemedia/images/resize.png);
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+#MediaContainer .MediaList table td span.yw_media_page,
+#MediaContainer .MediaList table td span.yw_media_item_dir,
+#MediaContainer .MediaList ul span.yw_media_dir{
+    background-repeat: no-repeat;
+    padding-left: 25px;
+}
+
+#MediaContainer .MediaListDirs li.dir_active > span > span.yw_media_dir {
+    border-radius: 3px;
+    padding: 3px 3px 3px 25px;
+    background-color: #b9e5ff;
+}
+
+#MediaContainer .MediaListDirs ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 15px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#MediaContainer .MediaListDirs .panel-body > ul {
+    margin: 0;
+    padding: 0;
+}
+
+#MediaContainer .MediaListDirs span.toggleDir i.fa-caret-right {
+    padding-right: 2px;
+}
+
+#MediaContainer .MediaListDirs span.toggleDir i.fa-caret-down {
+    margin-right: -1px;
+}
+
+#MediaContainer .MediaListDirs span.toggleDir:hover,
+#MediaContainer .MediaListDirs span.yw_media_dir:hover {
+    border-radius: 5px;
+    background-color: #eee;
+}
+
+#MediaContainer .MediaListDirs span.noToggle {
+    padding-left: 13px;
+}
+
+#MediaContainer .MediaListDirs ul span.yw_media_dir {
+    background-position: 5px;
+    padding: 3px 5px 3px 25px;
+}
+
+#MediaContainer .MediaListDirs a {
+    padding: 1px;
+    color: #000000;
+    text-decoration: none;
+}
+
+/**
+ * Media Files
+ */
+#MediaContainer .MediaListItems {
+    margin-left: 10px;
+    overflow: auto;
+}
+
+#MediaContainer .MediaListItems #media-table-wrapper {
+    min-height: 360px;
+    overflow:hidden;
+}
+#MediaContainer.popup .MediaListItems #media-table-wrapper {
+    overflow: auto;
+    height: 360px;
+    border-top: 1px solid #ddd;
+}
+
+#MediaContainer .MediaListItems > #Items {
+    width: 100%;
+}
+
+#MediaContainer .MediaListItems div.block_row {
+    float:left;
+    width:120px;
+    height:95px;
+    font-size:13px;
+    margin:2px;
+    cursor: pointer;
+}
+
+#MediaContainer .MediaListItems div.block_row:hover {
+    border-radius: 5px;
+    background-color: rgb(238, 238, 238);
+}
+#MediaContainer .MediaListItems .item_selected:hover,
+#MediaContainer .MediaListItems div.block_row.item_selected:hover {
+    background-color: rgb(222, 238, 238);
+}
+
+#MediaContainer .MediaListItems .item_selected {
+    border-radius: 5px;
+    background-color: rgb(227, 245, 255);
+}
+
+#MediaContainer .MediaListItems div.block_row>div.block_holder {
+    text-align:center;
+    overflow: hidden;
+    width:120px;
+    padding:0 7px;
+    text-overflow: ellipsis;
+    padding-top: 6px;
+}
+.preview_img,
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div {
+    margin:0 auto;
+    width:48px;
+    height:48px;
+}
+
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div>img{
+    background-size: 48px;
+    border-radius: 5px;
+}
+
+
+#MediaContainer .MediaListItems > #Items table.table tr td {
+    padding: 2px;
+}
+
+#MediaContainer .MediaListItems > #Items table.table tr td span > input {
+    width: calc(100% - 30px);
+}
+
+#MediaContainer .MediaListItems > #Items div.block_holder span > input {
+    width: 100%;
+}
+
+#MediaContainer .MediaListItems > #Items > #LoadingScreen {
+    position: absolute;
+    display: none;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.51) url(/bundles/youwemedia/images/ajax-loader.gif) no-repeat center;
+    width: calc(95% - 300px);
+    height: 100%;
+}
+
+/**
+ * Dialog and modal
+ */
+.ui-dialog .ui-dialog-content {
+    overflow: visible;
+    font-size: 10pt;
+}
+
+.ui-dialog-titlebar-close {
+    visibility: hidden;
+}
+
+#dialog div.error {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border-color: #ff7879;
+    background: #ffe4e9;
+}
+
+#dialog #dragandrophandler {
+    border: 2px dashed #92AAB0;
+    background: #f5f5f5;
+    width: 100%;
+    color: #92AAB0;
+    padding-top: 75px;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 200%;
+    height: 200px;
+}
+
+#previewContent > img {
+    max-width: 568px;
+}
+
+#previewContent > video {
+    width: 568px;
+}
+
+/**
+ * File type Icons
+ */
+#MediaContainer .MediaList ul span,
+#MediaContainer .MediaList table td span {
+    padding-bottom: 2px;
+}
+
+/*#MediaContainer .MediaListItems div.block_row>div.block_holder>div              {background-image: url(/bundles/youwemedia/images/icons/48x48/unknow_file.png);}*/
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.pdf          {background-image: url(/bundles/youwemedia/images/icons/48x48/pdf.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.zip          {background-image: url(/bundles/youwemedia/images/icons/48x48/zip.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.video        {background-image: url(/bundles/youwemedia/images/icons/48x48/video.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.folder_image {background-image: url(/bundles/youwemedia/images/icons/48x48/folder.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.shellscript  {background-image: url(/bundles/youwemedia/images/icons/48x48/shellscript.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.php          {background-image: url(/bundles/youwemedia/images/icons/48x48/php.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.code         {background-image: url(/bundles/youwemedia/images/icons/48x48/code.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.svg          {background-image: url(/bundles/youwemedia/images/icons/48x48/svg.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.swf          {background-image: url(/bundles/youwemedia/images/icons/48x48/swf.png);}
+#MediaContainer .MediaListItems div.block_row>div.block_holder>div.default      {background-image: url(/bundles/youwemedia/images/icons/48x48/txt.png);}
+
+#MediaContainer .MediaList table td span.yw_media_item_dir,
+#MediaContainer .MediaList ul span.yw_media_dir                     { background-image: url(/bundles/youwemedia/images/icons/16x16/folder.png);}
+#MediaContainer .MediaList table td span.yw_media_page              { background-image: url(/bundles/youwemedia/images/icons/16x16/page.png);}
+#MediaContainer .MediaList table td span.yw_media_page.pdf          { background-image: url(/bundles/youwemedia/images/icons/16x16/doc-pdf.png);}
+#MediaContainer .MediaList table td span.yw_media_page.video        { background-image: url(/bundles/youwemedia/images/icons/16x16/video.png);}
+#MediaContainer .MediaList table td span.yw_media_page.code         { background-image: url(/bundles/youwemedia/images/icons/16x16/page-code.png);}
+#MediaContainer .MediaList table td span.yw_media_page.zip          { background-image: url(/bundles/youwemedia/images/icons/16x16/zip.png);}
+#MediaContainer .MediaList table td span.yw_media_page.image        { background-image: url(/bundles/youwemedia/images/icons/16x16/image.png);}
+#MediaContainer .MediaList table td span.yw_media_page.svg          { background-image: url(/bundles/youwemedia/images/icons/16x16/image.png);}
+#MediaContainer .MediaList table td span.yw_media_page.shellscript  { background-image: url(/bundles/youwemedia/images/icons/16x16/page.png);}
+#MediaContainer .MediaList table td span.yw_media_page.php          { background-image: url(/bundles/youwemedia/images/icons/16x16/page.png);}
+#MediaContainer .MediaList table td span.yw_media_page.audio        { background-image: url(/bundles/youwemedia/images/icons/16x16/doc-music.png);}

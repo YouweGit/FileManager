@@ -1,0 +1,34 @@
+youwe_media_list:
+    pattern: /media/list/{dir_path}
+    defaults: { _controller: YouweMediaBundle:Media:ListMedia, dir_path: null }
+    options:
+        expose: true
+    requirements:
+        dir_path:   .+
+
+youwe_media_extract:
+    methods: post
+    pattern: /media/extract
+    defaults: { _controller: YouweMediaBundle:Media:extractZip }
+    options:
+        expose: true
+
+youwe_media_delete:
+    methods: post
+    pattern: /media/delete
+    defaults: { _controller: YouweMediaBundle:Media:deleteFile }
+    options:
+        expose: true
+
+youwe_media_move:
+    methods: post
+    pattern: /media/move
+    defaults: { _controller: YouweMediaBundle:Media:moveFile }
+    options:
+        expose: true
+
+youwe_media_mkdir:
+    pattern: /media/mkdir
+    defaults: { _controller: YouweMediaBundle:Media:mkdir, dir_path: null }
+    options:
+        expose: true

@@ -1,0 +1,76 @@
+
+<table class="table table-hover">
+    <thead>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Size</th>
+    <th>Modified</th>
+    {% if usages %}
+        <th>Usages</th>
+    {% endif %}
+    </thead>
+    <tbody>
+    {% for file in files %}
+        {% if file.mimetype == 'directory' %}
+            <tr class="yw_media_dir">
+                <td class="yw_media_type default yw_media_drag">
+                    <span class="yw_media_item_dir">{{ file.name }}</span>
+                </td>
+                <td>{{ file.readableType }}</td>
+                <td>{{ file.size }}</td>
+                <td>{{ file.modified }}</td>
+                <td></td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    <tr class="yw_media_empty hidden">
+        <td><span class="yw_media_item_dir disabled"></span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        {% if usages %}
+            <td>&nbsp;</td>
+        {% endif %}
+    </tr>
+    {% for file in files %}
+        {% if file.mimetype != 'directory' %}
+            <tr class="yw_media_type {{ file.fileClass }}">
+                <td class="yw_media_drag">
+                    <span class="yw_media_page {{ file.fileClass }}">{{ file.name }}</span>
+                </td>
+                <td>{{ file.readableType }}</td>
+                <td>{{ file.size }}</td>
+                <td>{{ file.modified }}</td>
+                {% if usages %}
+                    <td>
+                        <div class="badge badge-info popover-dismiss"
+                             data-content="{% if file.usage_locations is not empty %}
+                                        {% for usage_location in file.usage_locations %}
+                                            {{ usage_location.location }} <br>
+                                        {% endfor %}
+                                    {% else %}
+                                        No usages
+                                    {% endif %}"
+                             data-toggle="popover">
+                            {{ file.usages }}
+                        </div>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endif %}
+    {% endfor %}
+    {% if files|length < 13 %}
+        {% for i in files|length..13 %}
+            <tr class="empty_row">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                {% if usages %}
+                    <td>&nbsp;</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    {% endif %}
+    </tbody>
+</table>

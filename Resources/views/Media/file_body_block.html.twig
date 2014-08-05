@@ -1,0 +1,29 @@
+{% for file in files %}
+    {% if file.mimetype == 'directory' %}
+        <div class="block_row yw_media_dir yw_media_drag default yw_media_type">
+            <div class="block_holder">
+                <div class="folder_image">
+                </div>
+                <span class="yw_media_item_dir" title="{{ file.name }}">{{ file.name }}</span>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+<div class="yw_media_empty hidden block_row yw_media_dir">
+    <div class="block_holder">
+        <div class="folder_image">
+        </div>
+        <span class="yw_media_item_dir"></span>
+    </div>
+</div>
+{% for file in files %}
+    {% if file.mimetype != 'directory' %}
+        <div class="block_row yw_media_item yw_media_drag yw_media_type {{ file.fileClass }}">
+            <div class="block_holder">
+                <div class="{{ file.fileClass }}">
+                </div>
+                <span class="yw_media_page {{ file.fileClass }}" title="{{ file.name }}">{{ file.name }}</span>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}

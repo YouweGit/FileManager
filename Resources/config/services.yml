@@ -1,0 +1,10 @@
+parameters:
+#    media.example.class: Youwe\MediaBundle\Example
+
+services:
+  youwe.media.service:
+    class: Youwe\MediaBundle\Services\MediaService
+    arguments: ["@service_container", "@security.context"]
+  youwe.media.driver:
+    class: Youwe\MediaBundle\Driver\MediaDriver
+    arguments: ["@service_container", "@security.context"]

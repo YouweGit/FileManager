@@ -1,0 +1,108 @@
+{% if app.request.isXmlHttpRequest() %}
+    {% set extended_template = 'YouweMediaBundle:Media:empty_layout.html.twig' %}
+{% elseif isPopup %}
+    {% set extended_template = 'YouweMediaBundle:Media:media_layout.html.twig' %}
+{% endif %}
+
+{% extends extended_template %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}"/>
+    {% stylesheets
+    '@YouweMediaBundle/Resources/public/css/jquery-ui.custom.min.css'
+    '@MopaBootstrapBundle/Resources/public/bootstrap/dist/css/bootstrap.css'
+    "@YouweMediaBundle/Resources/public/css/jquery.contextMenu.css"
+    "@YouweMediaBundle/Resources/public/css/media_list.css"
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}">
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {#{{ parent() }}#}
+    {% javascripts
+    '@YouweMediaBundle/Resources/public/js/jquery.js'
+    '@YouweMediaBundle/Resources/public/js/jquery-ui.custom.min.js'
+    '@MopaBootstrapBundle/Resources/public/bootstrap/dist/js/bootstrap.min.js'
+    '@YouweMediaBundle/Resources/public/js/dropzone.js'
+    '@YouweMediaBundle/Resources/public/js/jquery.contextMenu.js'
+    '@YouweMediaBundle/Resources/public/js/media_list.js'
+    %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+    <script type="text/javascript">
+        var current_path="{{ current_path }}";
+        var root_folder = "{{ root_folder }}";
+        var is_popup = {% if isPopup %} true; {% else %} false; {% endif %}
+    </script>
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock %}
+
+{% block media_block %}
+    <div id="MediaContainer" {% if isPopup %}class="popup"{% endif %}>
+        <form action="" id="media_form" method="post" enctype="multipart/form-data">
+            <div class="MediaList">
+                {{ block('media_content') }}
+            </div>
+            {{ form_row(form._token) }}
+            {% include "YouweMediaBundle:Media:modals.html.twig" %}
+        </form>
+    </div>
+{%endblock%}
+
+{% block media_content %}
+<div class="MediaListDirs">
+    <div id="Dirs">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Directory List</h3>
+            </div>
+            <div class="panel-body">
+                <ul>
+                    <li>
+                        <span class="yw_media_directory_line">
+                            <span class="toggleDir"><i class="fa fa-caret-down"></i></span>
+                            <span class="yw_media_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>
+                        </span>
+                        <ul>
+                            {% include "YouweMediaBundle:Media:media_dir.html.twig" with {'dirs': dirs} %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="MediaListItems">
+    <div id="Items">
+        <div id="LoadingScreen">
+        </div>
+        <div class="panel panel-default panel-actions">
+            <div class="panel-heading">
+                <h3 class="panel-title">Actions</h3>
+            </div>
+            <div class="panel-body">
+                <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                    {% include "YouweMediaBundle:Media:media_toolbar.html.twig" %}
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default panel-items">
+            <div class="panel-heading">
+                <h3 class="panel-title pull-left">Files</h3>
+                {% if file_body_display == 'file_body_block' %}
+                    <div id="set_display_list" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-list"></i></div>
+                {% else %}
+                    <div id="set_display_block" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-th"></i></div>
+                {% endif %}
+            </div>
+            <div id="media-table-wrapper">
+                {% include "YouweMediaBundle:Media:" ~file_body_display ~ ".html.twig" with {'files': files} %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
