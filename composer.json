@@ -18,7 +18,8 @@
         "symfony/framework-bundle": "~2.0",
         "symfony/finder": "2.3.*",
         "symfony/filesystem": "2.3.*",
-        "friendsofsymfony/jsrouting-bundle": "@stable"
+        "friendsofsymfony/jsrouting-bundle": "@stable",
+        "bmatzner/fontawesome-bundle": "~4.1"
     },
     "autoload": {
         "psr-0": { "Youwe\\MediaBundle": "" }

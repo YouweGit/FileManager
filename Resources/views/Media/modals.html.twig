@@ -1,8 +1,25 @@
+<div id="media-upload-dialog" class="modal fade">
+    <div class="modal-dialog">
 
-<div id="dialog">
-    {{ form_label(form.file) }}
-    {{ form_widget(form.file, {'attr':{'class':'hidden', 'accept':upload_allow|join(',')} } ) }}
-    <div id="dragandrophandler">Drag & Drop files here or click</div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Upload</h4>
+            </div>
+            <div class="modal-body" id="UploadContent">
+                <div id="UploadLoadingScreen" class="MediaLoadingScreen">
+                </div>
+                {{ form_label(form.file) }}
+                {{ form_widget(form.file, {'attr':{'class':'hidden', 'accept':upload_allow|join(',')} } ) }}
+                <div id="dragandrophandler">Drag & Drop files here or click</div>
+                <div class="modal-footer">
+                    <button class="cancel btn btn-default" type="button" data-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="errorModal" class="modal fade">

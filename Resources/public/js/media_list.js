@@ -1,7 +1,7 @@
 var Media = function () {
     "use strict";
     var dropzone_element,
-        dialogElement,
+        upload_modal,
         mediaItemsElement,
         mediaDirsElement,
         activePath,
@@ -47,42 +47,42 @@ var Media = function () {
 
             mediaItemsElement = $(".MediaListItems");
             mediaDirsElement = $(".MediaListDirs");
-            dialogElement = $("#dialog");
+//            dialogElement = $("#dialog");
 
-            dialogElement.dialog({
-                modal: true,
-                autoOpen: false,
-                draggable: false,
-                resizable: false,
-                position: { my: "center", at: "center", of: $("body") },
-                title: "Upload new file",
-                width: "500px",
-                show: {
-                    effect: "blind",
-                    duration: 300
-                },
-                hide: {
-                    effect: "blind",
-                    duration: 300
-                },
-                buttons: [
-                    {
-                        text: "Cancel",
-                        "class": 'btn btn-default',
-                        click: function () {
-                            $(this).dialog("close");
-                        }
-                    }
-                ]
-            });
+//            dialogElement.dialog({
+//                modal: true,
+//                autoOpen: false,
+//                draggable: false,
+//                resizable: false,
+//                position: { my: "center", at: "center", of: $("body") },
+//                title: "Upload new file",
+//                width: "500px",
+//                show: {
+//                    effect: "blind",
+//                    duration: 300
+//                },
+//                hide: {
+//                    effect: "blind",
+//                    duration: 300
+//                },
+//                buttons: [
+//                    {
+//                        text: "Cancel",
+//                        "class": 'btn btn-default',
+//                        click: function () {
+//                            $(this).dialog("close");
+//                        }
+//                    }
+//                ]
+//            });
             error_modal = $('#errorModal').modal({show: false});
             preview_modal = $('#previewModal').modal({show: false});
-
-            mediaDirsElement.resizable({
-                maxWidth: 350,
-                minWidth: 125,
-                handles: 'e, w'
-            });
+            upload_modal = $('#media-upload-dialog').modal({show: false});
+//            mediaDirsElement.resizable({
+//                maxWidth: 350,
+//                minWidth: 125,
+//                handles: 'e, w'
+//            });
         });
     };
 
@@ -302,7 +302,7 @@ var Media = function () {
         }).on("click", "#new_folder_btn", function () {
             self.addFolder();
         }).on("click", "#upload_file_btn", function () {
-            dialogElement.dialog("open");
+            upload_modal.modal({show: true});
         }).on("click", "#select_btn", function () {
             selected_item.dblclick();
         }).on("click", "#rename_btn", function () {
@@ -320,7 +320,7 @@ var Media = function () {
         /**
          * Disable everything under the loading screen when the loading screen is visible
          */
-        $(document).on("click", "#LoadingScreen", function () {
+        $(document).on("click", ".MediaLoadingScreen", function () {
             return false;
         });
     };
@@ -804,8 +804,9 @@ var Media = function () {
             uploadMultiple: true,
             clickable: "#dragandrophandler",
             success: function () {
-                dialogElement.dialog("close");
+                upload_modal.modal('hide');
                 self.reloadFileList();
+                self.UploadLoadingScreen();
             },
             addedfile: function () {
 
@@ -828,10 +829,12 @@ var Media = function () {
         obj.on("error", function () {
             $('#errorContent').html("File with this extension is not allowed");
             error_modal.modal({show: true});
+            self.UploadLoadingScreen();
         });
 
         // Change the url of the upload to place the file in the right directory
         obj.on("processing", function () {
+            self.UploadLoadingScreen();
             var new_dir_route;
             new_dir_route = Routing.generate('youwe_media_list', {"dir_path": activePath});
             obj.options.url = new_dir_route;
@@ -857,6 +860,13 @@ var Media = function () {
     this.addActiveClass = function (element) {
         $(".dir_active").removeClass("dir_active");
         element.addClass("dir_active");
+    };
+
+    /**
+     * displays the loadingscreen
+     */
+    this.UploadLoadingScreen = function () {
+        $("#UploadLoadingScreen").toggle();
     };
 
     /**

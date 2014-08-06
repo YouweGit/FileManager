@@ -5,6 +5,10 @@ YouweMediaBundle
 
 Installation
 -------------
+You will also need the FOSJsRoutingBundle and the BmatznerFontAwesomeBundle
+
+https://github.com/bmatzner/BmatznerFontAwesomeBundle
+https://github.com/FriendsOfSymfony/FOSJsRoutingBundle
 
 Configuration:
 
