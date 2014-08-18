@@ -34,8 +34,8 @@
     </tr>
     {% for file in files %}
         {% if file.mimetype != 'directory' %}
-            <tr class="yw_media_type {{ file.fileClass }}">
-                <td class="yw_media_drag">
+            <tr class="yw_media_drag yw_media_type {{ file.fileClass }}">
+                <td class="">
                     <span class="yw_media_page {{ file.fileClass }}">{{ file.name }}</span>
                 </td>
                 <td>{{ file.readableType }}</td>

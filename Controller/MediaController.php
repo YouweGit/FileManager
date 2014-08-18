@@ -2,6 +2,7 @@
 
 namespace Youwe\MediaBundle\Controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Youwe\MediaBundle\Driver\MediaDriver;
 use Youwe\MediaBundle\Form\Type\MediaType;
@@ -169,6 +170,46 @@ class MediaController extends Controller {
             $service->checkToken($request->get('token'));
             $driver->extractZip($dir, $zip_name);
         } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+        return $response;
+    }
+
+    /**
+     * @throws \Exception
+     * @return bool
+     */
+    public function FileInfoAction(){
+        $request = $this->getRequest();
+        $dir_path = $request->get('dir_path');
+        $filename = $request->get('filename');
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
+        try{
+            $response = new JsonResponse();
+            $dir = $service->getFilePath($dir_path, $filename);
+
+            $file_size = $this->humanFilesize($filepath);
+            $file_modification = filemtime($filepath);
+
+            $pathinfo = pathinfo ( $filepath );
+            $filename = $pathinfo['filename'];
+            $mimetype = mime_content_type($filepath);
+            $file_info = array();
+            $file_info['filename'] = $filename;
+            $file_info['mimetype'] = $mimetype;
+            $file_info['modified'] = $file_modification;
+            $pathinfo = pathinfo ($dir . DIRECTORY_SEPARATOR . $filename);
+            var_dump($pathinfo);
+            $response->setData($file_info);
+        } catch(\Exception $e){
+            $response = new Response();
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
         }

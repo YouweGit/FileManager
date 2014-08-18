@@ -13,6 +13,12 @@ youwe_media_extract:
     options:
         expose: true
 
+youwe_media_fileinfo:
+    pattern: /media/fileinfo
+    defaults: { _controller: YouweMediaBundle:Media:fileInfo }
+    options:
+        expose: true
+
 youwe_media_delete:
     methods: post
     pattern: /media/delete

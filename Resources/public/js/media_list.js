@@ -2,6 +2,7 @@ var Media = function () {
     "use strict";
     var dropzone_element,
         upload_modal,
+        ItemsContainer,
         mediaItemsElement,
         mediaDirsElement,
         activePath,
@@ -10,6 +11,7 @@ var Media = function () {
         isPopup,
         error_modal,
         preview_modal,
+        info_modal,
         rename_origin_name,
         rename_element,
         rename_origin_ext,
@@ -43,46 +45,21 @@ var Media = function () {
                 activePath = null;
             }
 
-            self.setup();
-
+            ItemsContainer = $("#Items");
             mediaItemsElement = $(".MediaListItems");
             mediaDirsElement = $(".MediaListDirs");
-//            dialogElement = $("#dialog");
 
-//            dialogElement.dialog({
-//                modal: true,
-//                autoOpen: false,
-//                draggable: false,
-//                resizable: false,
-//                position: { my: "center", at: "center", of: $("body") },
-//                title: "Upload new file",
-//                width: "500px",
-//                show: {
-//                    effect: "blind",
-//                    duration: 300
-//                },
-//                hide: {
-//                    effect: "blind",
-//                    duration: 300
-//                },
-//                buttons: [
-//                    {
-//                        text: "Cancel",
-//                        "class": 'btn btn-default',
-//                        click: function () {
-//                            $(this).dialog("close");
-//                        }
-//                    }
-//                ]
-//            });
+            self.setup();
+
             error_modal = $('#errorModal').modal({show: false});
             preview_modal = $('#previewModal').modal({show: false});
             upload_modal = $('#media-upload-dialog').modal({show: false});
-//            mediaDirsElement.resizable({
-//                maxWidth: 350,
-//                minWidth: 125,
-//                handles: 'e, w'
-//            });
+            info_modal = $('#infoModal').modal({show: false});
+            mediaDirsElement.resizable({
+                maxWidth: 350,
+                minWidth: 125,
+                handles: 'e, w'
+            });
         });
     };
 
@@ -392,6 +369,7 @@ var Media = function () {
     this.getContextItems = function (type) {
         var items = {
             "rename": {name: "Rename", icon: "rename"},
+            "info":   {name: "File Information", icon: "fileinfo"},
             "delete": {name: "Delete", icon: "delete"},
             "sep1": "---------"
         };
@@ -426,12 +404,53 @@ var Media = function () {
      * @param type
      */
     this.setContextMenu = function (type) {
-        $('div#Items').contextMenu({
+        ItemsContainer.contextMenu({
             selector: '.yw_media_type.' + type,
             callback: function (key) {
                 self.contextCallback($(this), key);
             },
             items: self.getContextItems(type)
+        });
+
+        ItemsContainer.contextMenu({
+            selector: '.empty_row',
+            callback: function (key) {
+                self.contextCallback($(this), key);
+            },
+            items: {
+                "rename": {name: "New Directory", icon: "newdir"}
+            }
+        });
+    };
+
+    /**
+     * Show the file information
+     * @param element
+     */
+    this.showInfo = function (element) {
+        var filename = element.find("span").html(),
+            info_table,
+            file_info_route = Routing.generate('youwe_media_fileinfo', {"dir_path": activePath, "filename": filename});
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: file_info_route,
+            success: function (data) {
+                var json_data = JSON.parse(data);
+                console.log(json_data);
+                info_table = info_modal.find("table");
+                info_table.find("td.datarow").each(function(){
+
+                });
+                info_modal.modal({show:true});
+                return true;
+            },
+            error: function (xhr) {
+                $('#errorContent').html(xhr.responseText);
+                error_modal.modal({show: true});
+                return false;
+            }
         });
     };
 
@@ -453,6 +472,9 @@ var Media = function () {
         }
         if (key === 'rename') {
             self.renameFile(element);
+        }
+        if (key === 'info') {
+            self.showInfo(element);
         }
         if (key === 'delete') {
             file_name = element.find("span").html();
@@ -679,12 +701,12 @@ var Media = function () {
                 route = Routing.generate('youwe_media_list', {"dir_path": activePath});
             if (!self.ajaxRequest(route, data, "POST")) {
                 $(".yw_media_empty").addClass("hidden");
-                $("div#Items .yw_media_drag").draggable('enable');
+                ItemsContainer.find(".yw_media_drag").draggable('enable');
                 active_input = false;
             }
         } else {
             $(".yw_media_empty").addClass("hidden");
-            $("div#Items .yw_media_drag").draggable('enable');
+            ItemsContainer.find(".yw_media_drag").draggable('enable');
             active_input = false;
         }
     };
@@ -719,7 +741,7 @@ var Media = function () {
      * Setup the drag and drop for moving files
      */
     this.setFileDrag = function () {
-        $("div#Items .yw_media_drag").draggable({
+        ItemsContainer.find(".yw_media_drag").draggable({
             opacity: 0.9,
             cursor: "move",
             cursorAt: {
@@ -728,16 +750,17 @@ var Media = function () {
             },
             revert: true,
             helper: 'clone',
-            start: function () { //hide original when showing clone
-                $(this).children().hide();
+            start: function (e, ui) {
+                $(ui.helper).addClass("ui-draggable-helper");
+                $(this).children().addClass("yw_file_dragging");
             },
-            stop: function () { //show original when hiding clone
-                $(this).children().show();
+            stop: function () {
+                $(this).children().removeClass("yw_file_dragging");
             }
         });
 
         // The move to a dir in the item list
-        $("div#Items .yw_media_dir").droppable({
+        ItemsContainer.find(".yw_media_dir").droppable({
             hoverClass: "droppable-highlight",
             tolerance: "pointer",
             drop: function (event, ui) {

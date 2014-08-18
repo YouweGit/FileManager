@@ -150,6 +150,7 @@
 
 #MediaContainer .MediaListItems > #Items {
     width: 100%;
+    cursor: default;
 }
 
 #MediaContainer .MediaListItems div.block_row {
@@ -268,6 +269,20 @@
 
 #previewContent > video {
     width: 568px;
+}
+
+/**
+ * Misc
+ */
+.yw_file_dragging{
+    opacity: 0.3 !important;
+}
+
+.ui-draggable-helper {
+    border: 1px dotted #000;
+    padding: 6px;
+    background: #fff;
+    font-size: 1.2em;
 }
 
 /**
