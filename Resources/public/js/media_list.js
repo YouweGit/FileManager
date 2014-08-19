@@ -441,7 +441,7 @@ var Media = function () {
                 console.log(json_data);
                 info_table = info_modal.find("table");
                 info_table.find("td.datarow").each(function(){
-
+                    $(this).html(json_data[$(this).attr("data-category")]);
                 });
                 info_modal.modal({show:true});
                 return true;

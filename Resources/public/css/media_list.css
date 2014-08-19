@@ -121,7 +121,7 @@
 
 #MediaContainer .MediaListDirs ul span.yw_media_dir {
     background-position: 5px;
-    padding: 3px 5px 3px 0px;
+    padding: 8px 2px 3px 25px;
 }
 
 #MediaContainer .MediaListDirs a {
@@ -305,7 +305,7 @@
 #MediaContainer .MediaListItems div.block_row>div.block_holder>div.swf          {background-image: url(/bundles/youwemedia/images/icons/48x48/swf.png);}
 #MediaContainer .MediaListItems div.block_row>div.block_holder>div.default      {background-image: url(/bundles/youwemedia/images/icons/48x48/txt.png);}
 
-/*#MediaContainer .MediaList ul span.yw_media_dir,*/
+#MediaContainer .MediaList ul span.yw_media_dir,
 #MediaContainer .MediaList table td span.yw_media_item_dir          { background-image: url(/bundles/youwemedia/images/icons/16x16/folder.png);}
 #MediaContainer .MediaList table td span.yw_media_page              { background-image: url(/bundles/youwemedia/images/icons/16x16/page.png);}
 #MediaContainer .MediaList table td span.yw_media_page.pdf          { background-image: url(/bundles/youwemedia/images/icons/16x16/doc-pdf.png);}

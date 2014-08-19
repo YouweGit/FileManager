@@ -185,8 +185,9 @@ class MediaController extends Controller {
         $dir_path = $request->get('dir_path');
         $filename = $request->get('filename');
 
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $root = explode("/",$parameters['upload_path']);
+        $web_root = end($root);
 
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
@@ -194,20 +195,21 @@ class MediaController extends Controller {
         try{
             $response = new JsonResponse();
             $dir = $service->getFilePath($dir_path, $filename);
+            $filepath = $dir . DIRECTORY_SEPARATOR . $filename;
 
-            $file_size = $this->humanFilesize($filepath);
+            $file_size = $service->humanFilesize($filepath);
             $file_modification = filemtime($filepath);
-
-            $pathinfo = pathinfo ( $filepath );
-            $filename = $pathinfo['filename'];
             $mimetype = mime_content_type($filepath);
+
             $file_info = array();
-            $file_info['filename'] = $filename;
+            $file_info['filename'] = $dir_path . DIRECTORY_SEPARATOR . $filename;
             $file_info['mimetype'] = $mimetype;
             $file_info['modified'] = $file_modification;
-            $pathinfo = pathinfo ($dir . DIRECTORY_SEPARATOR . $filename);
-            var_dump($pathinfo);
-            $response->setData($file_info);
+            $file_info['filesize'] = $file_size;
+            $file_info['usages'] = $service->getUsages($filename, $dir_path);
+            $file_info['filepath'] = $web_root . DIRECTORY_SEPARATOR . $dir_path;
+
+            $response->setData(json_encode($file_info));
         } catch(\Exception $e){
             $response = new Response();
             $response->setContent($e->getMessage());

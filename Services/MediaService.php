@@ -248,7 +248,7 @@ class MediaService
         }
 
         $root = $this->upload_path;
-        var_dump($root);
+
         if(empty($dir_path)){
             $dir = $root;
         } else {
