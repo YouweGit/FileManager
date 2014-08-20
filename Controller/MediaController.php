@@ -186,7 +186,7 @@ class MediaController extends Controller {
         $filename = $request->get('filename');
 
         $parameters = $this->container->getParameter('youwe_media');
-        $root = explode("/",$parameters['upload_path']);
+        $root = explode(DIRECTORY_SEPARATOR,$parameters['upload_path']);
         $web_root = end($root);
 
         /** @var MediaService $service */
@@ -198,7 +198,7 @@ class MediaController extends Controller {
             $filepath = $dir . DIRECTORY_SEPARATOR . $filename;
 
             $file_size = $service->humanFilesize($filepath);
-            $file_modification = filemtime($filepath);
+            $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
             $mimetype = mime_content_type($filepath);
 
             $file_info = array();

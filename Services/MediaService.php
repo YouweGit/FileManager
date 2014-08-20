@@ -258,6 +258,9 @@ class MediaService
 
         try{
             $this->checkPath($dir .DIRECTORY_SEPARATOR. $filename);
+            if(!is_null($target_file)){
+                $this->checkPath($target_file);
+            }
         } catch(\Exception $e){
             throw new \Exception($e->getMessage(), $e->getCode());
         }

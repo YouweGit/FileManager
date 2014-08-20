@@ -145,7 +145,7 @@ var Media = function () {
          */
         $(document).on("click", "span.yw_media_dir", function () {
 
-            var sub_ul = $(this).parent().parent().children("ul"),
+            var sub_ul = $(this).closest("ul").children("ul"),
                 parent_li = $(this).parent("span").parent("li"),
                 dir_path = $(this).attr('id') !== root_dir ? $(this).attr('id') : null;
 
@@ -312,7 +312,7 @@ var Media = function () {
         activePath = history_obj.path;
         setTimeout(function () {
             self.reloadFileList();
-            var parent_li = $("span[id='" + history_obj.path + "']").parent().parent();
+            var parent_li = $("span[id='" + history_obj.path + "']").closest("li");
             self.addActiveClass(parent_li);
         }, 200);
     };
@@ -405,7 +405,7 @@ var Media = function () {
      */
     this.setContextMenu = function (type) {
         ItemsContainer.contextMenu({
-            selector: '.yw_media_type.' + type,
+            selector: '.yw_media_type .' + type,
             callback: function (key) {
                 self.contextCallback($(this), key);
             },
@@ -438,12 +438,11 @@ var Media = function () {
             url: file_info_route,
             success: function (data) {
                 var json_data = JSON.parse(data);
-                console.log(json_data);
                 info_table = info_modal.find("table");
-                info_table.find("td.datarow").each(function(){
+                info_table.find("td.datarow").each(function () {
                     $(this).html(json_data[$(this).attr("data-category")]);
                 });
-                info_modal.modal({show:true});
+                info_modal.modal({show: true});
                 return true;
             },
             error: function (xhr) {
@@ -460,33 +459,34 @@ var Media = function () {
      * @param key
      */
     this.contextCallback = function (element, key) {
-        var zip_name, file_name, path, preview_html;
+
+        var zip_name, file_name, path, preview_html, item_element = element.closest(".yw_media_type");
         if (activePath !== null) {
             path = "/" + root_dir + "/" + activePath + "/";
         } else {
             path = "/" + root_dir + "/";
         }
         if (key === 'extract') {
-            zip_name = element.find("span.yw_media_page.zip").html();
+            zip_name = item_element.find("span.yw_media_page.zip").html();
             self.extractZip(zip_name);
         }
         if (key === 'rename') {
-            self.renameFile(element);
+            self.renameFile(item_element);
         }
         if (key === 'info') {
-            self.showInfo(element);
+            self.showInfo(item_element);
         }
         if (key === 'delete') {
-            file_name = element.find("span").html();
+            file_name = item_element.find("span").html();
             self.deleteConfirm(file_name);
         }
         if (key === 'preview_img') {
-            file_name = element.find("span").html();
+            file_name = item_element.find("span").html();
             $('#previewContent').html("<img src='" + path + file_name + "'/>");
             preview_modal.modal({show: true});
         }
         if (key === 'preview_vid') {
-            file_name = element.find("span").html();
+            file_name = item_element.find("span").html();
             preview_html = "<video id='preview_vid' preload='metadata' controls> " +
                 "<source src='" + path + file_name + "' type='video/mp4'> " +
                 "</video>";
@@ -587,6 +587,7 @@ var Media = function () {
         self.LoadingScreen();
         var new_dir_route = Routing.generate('youwe_media_list', {"dir_path": activePath});
         mediaItemsElement.load(new_dir_route + " #Items", function () {
+            ItemsContainer = $("#Items");
             var popOverElement = $('.popover-dismiss');
             self.setPopover(popOverElement);
             self.createContextMenu();
@@ -615,10 +616,11 @@ var Media = function () {
             new_dir_route = Routing.generate('youwe_media_list', {"dir_path": activePath});
 
         $("#Dirs").find(".fa-caret-down").each(function () {
-            open_dirs_ids.push($(this).parent().parent().parent().find("span.yw_media_dir").attr("id"));
+            open_dirs_ids.push($(this).closest(".yw_media_directory_line").find("span.yw_media_dir").attr("id"));
         });
 
         mediaDirsElement.load(new_dir_route + " #Dirs", function () {
+
             $("#Dirs").find("li").find("ul").hide();
 
             var media_container = $("#MediaContainer"),
@@ -634,7 +636,7 @@ var Media = function () {
             self.directoryListSetup();
             for (array_index = 0; array_index < open_dirs_ids.length; array_index += 1) {
                 element = $("span[id='" + open_dirs_ids[array_index] + "']");
-                sub_ul = element.parent().parent().children();
+                sub_ul = element.closest("ul").children();
                 parent_li = element.parent("span").parent("li");
                 dir_path = element.attr('id') !== root_dir ? element.attr('id') : null;
 
@@ -643,6 +645,7 @@ var Media = function () {
                 element.parent().find("span.toggleDir i").removeClass("fa-caret-right");
                 element.parent().find("span.toggleDir i").addClass("fa-caret-down");
             }
+            self.setFileDrag();
         });
     };
 
@@ -725,8 +728,7 @@ var Media = function () {
                 "path": dir_path,
                 "url": dir_route
             };
-        history_index.splice(current_index, (history_index.length - current_index
-            ));
+        history_index.splice(current_index, (history_index.length - current_index));
         history_index.push(history_data);
         activePath = dir_path;
 
@@ -933,7 +935,7 @@ var Media = function () {
         if (funcNum) {
             window.opener.CKEDITOR.tools.callFunction(funcNum, "/" + file);
         } else {
-            window.opener.processYouweFile(file);
+            window.opener.processFile(file);
         }
         window.close();
     };
