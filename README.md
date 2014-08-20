@@ -37,6 +37,19 @@ Configuration:
             - 'application/xml'
             - 'application/octet-stream'
             - 'application/x-shockwave-flash'
+
+Optional config:
+
+* <b>usage_class</b> <br>
+  This is where the usage class is defined. <br>
+  It requires the function 'returnUsages' that returns a array with strings of the usage locations.
+* <b>template</b><br>
+  The template of the media manager. <br>
+  This template should extend the media template and you have to include the media block: {{ block('media_block') }}
+* <b>extended_template</b><br>
+  The media template will extend with the given template.<br>
+  For example: you can define your layout template in here.
+
 Route:
 
     youwe_media:
