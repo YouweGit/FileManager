@@ -2,6 +2,7 @@
 YouweMediaBundle
 ==================
 
+Dev Docs: https://confluence.youwe.nl/display/ooipdev/Youwe+Media+Bundle
 
 Installation
 -------------
