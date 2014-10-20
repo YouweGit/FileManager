@@ -65,6 +65,7 @@ class MediaDriver
             }
 
             if(in_array($file->getClientMimeType(), $this->mime_allowed)){
+
                 $original_file = $file->getClientOriginalName();
                 $path_parts = pathinfo($original_file);
 
@@ -102,36 +103,53 @@ class MediaDriver
      * @param $dir
      * @param $file_name
      * @param $new_file_name
+     * @throws \Exception
      * @return bool
      */
     public function renameFile($dir, $file_name, $new_file_name){
-        $fm = new Filesystem();
-        $old_file = rtrim($dir,"/") . "/" . $file_name;
-        $new_file = rtrim($dir,"/") . "/" . $new_file_name;
-        $fm->rename($old_file, $new_file);
+        try{
+            $this->validateFile($dir, $file_name, $new_file_name);
+            $fm = new Filesystem();
+            $old_file = rtrim($dir,"/") . "/" . $file_name;
+            $new_file = rtrim($dir,"/") . "/" . $new_file_name;
+            $fm->rename($old_file, $new_file);
+        } catch(\Exception $e){
+            throw new \Exception("Cannot rename file or directory");
+        }
     }
 
     /**
      * @param $dir
      * @param $file_name
      * @param $new_file_name
+     * @throws \Exception
      * @return bool
      */
     public function moveFile($dir, $file_name, $new_file_name){
-        $file = rtrim($dir,"/") . "/" . $file_name;
-        $fm = new File($file, false);
-        $fm->move($new_file_name);
+        try{
+            $this->validateFile($dir, $file_name);
+            $file_path = rtrim($dir,"/") . "/" . $file_name;
+            $file = new File($file_path, false);
+            $file->move($new_file_name);
+        } catch(\Exception $e){
+            throw new \Exception("Cannot move file or directory");
+        }
     }
 
     /**
      * @param $dir
      * @param $file_name
+     * @throws \Exception
      * @return bool
      */
     public function deleteFile($dir, $file_name){
-        $fm = new Filesystem();
-        $file = rtrim($dir,"/") . "/" . $file_name;
-        $fm->remove($file);
+        try{
+            $fm = new Filesystem();
+            $file = rtrim($dir,"/") . "/" . $file_name;
+            $fm->remove($file);
+        } catch(\Exception $e){
+            throw new \Exception("Cannot delete file or directory");
+        }
     }
 
     /**
@@ -142,14 +160,66 @@ class MediaDriver
      */
     public function extractZip($dir, $zip_file){
         $chapterZip = new \ZipArchive ();
-        $tmp_dir = $this->upload_path . "/" . "." . strtotime("now");
+
         $fm = new Filesystem();
-        $fm->mkdir($tmp_dir);
+        $tmp_dir = $this->createTmpDir($fm);
 
         if ($chapterZip->open ( $dir . "/" . $zip_file )) {
             $chapterZip->extractTo($tmp_dir);
             $chapterZip->close();
         }
+
+        $this->checkFileType($fm, $tmp_dir);
+
+        try{
+            if ($chapterZip->open ( $dir . "/" . $zip_file )) {
+
+                $chapterZip->extractTo($dir);
+                $chapterZip->close();
+            }
+        } catch(\Exception $e){
+            throw new \Exception("Cannot extract zip");
+        }
+    }
+
+    /**
+     * Validate the files to check if they have a valid filetype
+     * @param      $dir
+     * @param      $filename
+     * @param null $new_filename
+     * @throws \Exception
+     */
+    public function validateFile($dir, $filename, $new_filename = null){
+        $file_path = $dir . DIRECTORY_SEPARATOR . $filename;
+        if(!is_dir($file_path)){
+            $fm = new Filesystem();
+            $tmp_dir = $this->createTmpDir($fm);
+            $fm->copy($file_path, $tmp_dir . DIRECTORY_SEPARATOR . $filename);
+            if(!is_null($new_filename)){
+                $fm->rename($tmp_dir . DIRECTORY_SEPARATOR . $filename, $tmp_dir . DIRECTORY_SEPARATOR . $new_filename);
+            }
+            $this->checkFileType($fm, $tmp_dir);
+        }
+    }
+
+    /**
+     * @param Filesystem $fm
+     * @return string
+     */
+    public function createTmpDir(Filesystem $fm){
+        $tmp_dir = $this->upload_path . "/" . "." . strtotime("now");
+        $fm->mkdir($tmp_dir);
+        return $tmp_dir;
+    }
+
+    /**
+     * Check if the filetype is an valid filetype
+     *
+     * @param Filesystem $fm
+     * @param            $tmp_dir
+     * @throws \Exception
+     */
+    public function checkFileType(Filesystem $fm, $tmp_dir){
         $di = new \RecursiveDirectoryIterator($tmp_dir);
         foreach (new \RecursiveIteratorIterator($di) as $filename => $file) {
             $mime_valid = $this->checkMimeType($filename);
@@ -159,11 +229,6 @@ class MediaDriver
             }
         }
         $fm->remove($tmp_dir);
-        if ($chapterZip->open ( $dir . "/" . $zip_file )) {
-
-            $chapterZip->extractTo($dir);
-            $chapterZip->close();
-        }
     }
 
     /**

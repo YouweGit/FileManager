@@ -205,30 +205,19 @@ class MediaService
      * @return bool|string
      */
     public function checkPath($path){
+        /* /project/web/uploads/page */
         if(empty($path)){
             throw new \Exception("Directory path is empty", 400);
         }
 
-        //Get directory path minus last folder
-        $dir = dirname($path);
-        $folder = substr($path, strlen($dir));
+        /* /app/uploads/page */
+        $realpath = realpath($path);
 
-        //Check the the base dir is valid
-        $dir = realpath($dir);
-
-        //Only allow valid filename characters
-        $folder = preg_replace('/[^a-z0-9\.\-_]/i', '', $folder);
-
-        //If this is a bad path or a bad end folder name
-        if( !$dir OR !$folder OR $folder === '.') {
-            throw new \Exception("Directory name is not valid", 400);
-        }
-
-        //Rebuild path
-        $path = $dir. DIRECTORY_SEPARATOR. $folder;
+        /* /app/uploads */
+        $upload_path = realpath($this->upload_path);
 
         //If this path is higher than the parent folder
-        if( strcasecmp($path, $this->upload_path) > 0 ) {
+        if(strcasecmp($realpath, $upload_path > 0 )) {
             return true;
         } else {
             throw new \Exception("Directory is not in the upload path", 403);
@@ -257,7 +246,7 @@ class MediaService
         }
 
         try{
-            $this->checkPath($dir .DIRECTORY_SEPARATOR. $filename);
+            $this->checkPath($dir);
             if(!is_null($target_file)){
                 $this->checkPath($target_file);
             }
@@ -549,7 +538,7 @@ class MediaService
         if ('POST' === $this->container->get('request')->getMethod()) {
             $form->handleRequest($this->container->get('request'));
             if ($form->isValid()) {
-
+                $this->checkPath($dir);
                 /** @var MediaDriver $driver */
                 $driver = $this->container->get('youwe.media.driver');
 
@@ -567,12 +556,19 @@ class MediaService
                     $new_file = $form->get('rename_file')->getData();
                     $new_file = str_replace("../", "", $new_file);
 
-                    if($form->get('origin_file_ext')->getData() != ""){
-                        $new_filename = $new_file . "." . $form->get('origin_file_ext')->getData();
+                    $org_filename = $form->get('origin_file_name')->getData();
+                    $org_extension = pathinfo($dir . DIRECTORY_SEPARATOR . $org_filename, PATHINFO_EXTENSION);
+
+                    if($org_extension != ""){
+                        $new_filename = $new_file . "." . $org_extension;
                     } else {
-                        $new_filename = $new_file;
+                        if(is_dir($dir . DIRECTORY_SEPARATOR . $org_filename)){
+                            $new_filename = $new_file;
+                        } else {
+                            throw new \Exception("Extension is empty", 500);
+                        }
                     }
-                    $driver->renameFile($dir, $form->get('origin_file_name')->getData(), $new_filename);
+                    $driver->renameFile($dir, $org_filename, $new_filename);
                 }
             } else {
                 throw new \Exception($form->getErrorsAsString(), 500);
