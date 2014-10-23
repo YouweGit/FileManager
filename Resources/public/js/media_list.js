@@ -121,7 +121,8 @@ var Media = function () {
                 extract: 'extract',
                 rename: 'rename',
                 previewVideo: selectors.ids.previewVideo,
-                previewImage: selectors.classes.previewImage
+                previewImage: selectors.classes.previewImage,
+                new_dir: 'new_dir'
             },
             types: [
                 "zip",
@@ -142,7 +143,7 @@ var Media = function () {
             subItems: {
                 preview_img: {name: "Preview", icon: "preview"},
                 preview_vid: {name: "Preview", icon: "preview"},
-                rename: {name: "New Directory", icon: "newdir"},
+                rename: {name: "New Directory", icon: "rename"},
                 extract: {name: "Extract", icon: "extract"},
                 new_dir: {name: "New Directory", icon: "newdir"}
             }
@@ -165,16 +166,20 @@ var Media = function () {
          * @param url
          * @param data
          * @param method
+         * @param {bool=true} reloadList
          */
-        ajaxRequest = function (url, data, method) {
+        ajaxRequest = function (url, data, method, reloadList) {
+            reloadList = (reloadList === undefined) ? true : reloadList;
             $.ajax({
                 type: method,
                 async: false,
                 url: url,
                 data: data,
                 success: function () {
+                    if (reloadList === true) {
+                        self.reloadDirList();
+                    }
                     self.reloadFileList();
-                    self.reloadDirList();
                     return true;
                 },
                 error: function (xhr) {
@@ -278,7 +283,7 @@ var Media = function () {
             var row = $("." + selectors.classes.emptyMedia);
             row.removeClass("hidden");
             row.find('span').html(
-                '<input type="text" name="' + selectors.fields.names.newDir + '" id="' + selectors.fields.ids.newDir + '">'
+                '<input type="text" name="' + selectors.fields.names.newDir + '" id="' + selectors.ids.newDir + '">'
             );
             active_input = true;
             $(selectors.fields.newDir).focus();
@@ -430,6 +435,7 @@ var Media = function () {
             activePath = dir_path;
 
             loadingScreen();
+            parent_li.find('>ul').slideDown();
             self.reloadFileList();
             if (!isPopup) {
                 window.history.pushState({url: dir_route}, document.title, dir_route);
@@ -547,33 +553,29 @@ var Media = function () {
          * @param key
          */
         contextCallback = function (element, key) {
-
             var zip_name, file_name, path, preview_html, item_element = element.closest("." + selectors.classes.mediaType);
             if (activePath !== null) {
                 path = "/" + root_dir + "/" + activePath + "/";
             } else {
                 path = "/" + root_dir + "/";
             }
-            if (key === contextMenu.keys.extract) {
+            if (key === contextMenu.keys.new_dir) {
+                addFolder();
+            } else if (key === contextMenu.keys.extract) {
                 zip_name = item_element.find("span." + selectors.classes.mediaPage + "." + contextMenu.types.zip).html();
                 extractZip(zip_name);
-            }
-            if (key === contextMenu.keys.rename) {
+            } else if (key === contextMenu.keys.rename) {
                 renameFile(item_element);
-            }
-            if (key === contextMenu.keys.info) {
+            } else if (key === contextMenu.keys.info) {
                 showInfo(item_element);
-            }
-            if (key === contextMenu.keys.delete) {
+            } else if (key === contextMenu.keys.delete) {
                 file_name = item_element.find("span").html();
                 deleteConfirm(file_name);
-            }
-            if (key === contextMenu.keys.previewImage) {
+            } else if (key === contextMenu.keys.previewImage) {
                 file_name = item_element.find("span").html();
                 $(selectors.containers.previewContent).html("<img src='" + path + file_name + "'/>");
                 preview_modal.modal({show: true});
-            }
-            if (key === contextMenu.keys.previewVideo) {
+            } else if (key === contextMenu.keys.previewVideo) {
                 file_name = item_element.find("span").html();
                 preview_html = "<video id='" + selectors.ids.previewVideo + "' preload='metadata' controls> " +
                     "<source src='" + path + file_name + "' type='video/mp4'></video>";
@@ -608,6 +610,7 @@ var Media = function () {
          * @param type
          */
         setContextMenu = function (type) {
+
             ItemsContainer.contextMenu({
                 selector: '.' + selectors.classes.mediaType + ' .' + type,
                 callback: function (key) {
@@ -617,12 +620,20 @@ var Media = function () {
             });
 
             ItemsContainer.contextMenu({
-                selector: '.' + selectors.classes.emptyRow,
+                selector: '.' + selectors.classes.mediaDir,
+                callback: function (key) {
+                    contextCallback($(this), key);
+                },
+                items: getContextItems(type)
+            });
+
+            ItemsContainer.contextMenu({
+                selector: selectors.containers.mediaTable,
                 callback: function (key) {
                     contextCallback($(this), key);
                 },
                 items: {
-                    "rename": contextMenu.subItems.new_dir
+                    "new_dir": contextMenu.subItems.new_dir
                 }
             });
         },
@@ -653,8 +664,10 @@ var Media = function () {
                 revert: true,
                 helper: 'clone',
                 start: function (e, ui) {
-                    $(ui.helper).addClass(selectors.classes.dragHelper);
-                    $(this).children().addClass(selectors.classes.mediaDragging);
+                    if (e.originalEvent) {
+                        $(ui.helper).addClass(selectors.classes.dragHelper);
+                        $(this).children().addClass(selectors.classes.mediaDragging);
+                    }
                 },
                 stop: function () {
                     $(this).children().removeClass(selectors.classes.mediaDragging);
@@ -755,10 +768,9 @@ var Media = function () {
                 success: function () {
                     upload_modal.modal('hide');
                     self.reloadFileList();
-                    uploadloadingScreen();
                 },
                 addedfile: function () {
-
+                    uploadloadingScreen();
                 },
                 init: function () {
                     setDropZoneFunctions(this);
@@ -865,10 +877,10 @@ var Media = function () {
              */
             $(document).on("click", selectors.buttons.listView, function () {
                 var new_dir_route = Routing.generate(routes.list, {"dir_path": activePath});
-                ajaxRequest(new_dir_route, {'display_type': selectors.layout.list}, "GET");
+                ajaxRequest(new_dir_route, {'display_type': selectors.layout.list}, "GET", false);
             }).on("click", selectors.buttons.blockView, function () {
                 var new_dir_route = Routing.generate(routes.list, {"dir_path": activePath});
-                ajaxRequest(new_dir_route, {'display_type': selectors.layout.block}, "GET");
+                ajaxRequest(new_dir_route, {'display_type': selectors.layout.block}, "GET", false);
             });
 
             /**
