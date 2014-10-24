@@ -168,9 +168,9 @@ var Media = function () {
 
         /**
          * The ajax request for handling the form actions
-         * @param url
-         * @param data
-         * @param method
+         * @param {string} url
+         * @param {json} data
+         * @param {string} method
          * @param {bool=true} reloadList
          */
         ajaxRequest = function (url, data, method, reloadList) {
@@ -197,7 +197,7 @@ var Media = function () {
 
         /**
          * Set the popover on the file usages element
-         * @param element
+         * @param {jQuery} element
          */
         setPopover = function (element) {
             element.popover({
@@ -209,7 +209,7 @@ var Media = function () {
         },
 
         /**
-         * @param element
+         * @param {jQuery} element
          */
         addActiveClass = function (element) {
             $("." + selectors.classes.activeDir).removeClass(selectors.classes.activeDir);
@@ -232,7 +232,7 @@ var Media = function () {
 
         /**
          * Get the extension of the file
-         * @param filename
+         * @param {string} filename
          * @returns {string}
          */
         getExt = function (filename) {
@@ -245,7 +245,7 @@ var Media = function () {
 
         /**
          * Get parameters from the URL
-         * @param paramName
+         * @param {string} paramName
          * @returns {*}
          */
         getUrlParam = function (paramName) {
@@ -257,7 +257,7 @@ var Media = function () {
 
         /**
          * Display the input field for renaming the file
-         * @param element
+         * @param {jQuery} element
          */
         renameFile = function (element) {
             // these variables are defined at start of the file
@@ -296,7 +296,7 @@ var Media = function () {
 
         /**
          * Send ajax request to delete the selected file
-         * @param file_name
+         * @param {string} file_name
          */
         deleteFile = function (file_name) {
             var dir_route = Routing.generate(routes.delete),
@@ -310,7 +310,7 @@ var Media = function () {
 
         /**
          * Confirm box for the delete action
-         * @param file_name
+         * @param {string} file_name
          */
         deleteConfirm = function (file_name) {
             var modalHTML = $(selectors.modals.confirm).html(),
@@ -325,7 +325,7 @@ var Media = function () {
 
         /**
          * Send ajax request to extract the selected zip
-         * @param zip_element
+         * @param {string} zip_element
          */
         extractZip = function (zip_element) {
             var new_dir_route = Routing.generate(routes.extract),
@@ -422,8 +422,8 @@ var Media = function () {
 
         /**
          * Navigate through directories
-         * @param parent_li
-         * @param dir_path
+         * @param {string} parent_li
+         * @param {string} dir_path
          */
         navigateTo = function (parent_li, dir_path) {
             addActiveClass(parent_li);
@@ -449,7 +449,7 @@ var Media = function () {
 
         /**
          * Change directory and slide down the selected directory in the directory list
-         * @param element
+         * @param {string} element
          */
         changeDir = function (element) {
             var dir_path = (activePath !== null ? activePath + "/" : ""
@@ -467,7 +467,7 @@ var Media = function () {
 
         /**
          * Callback function for CKEditor
-         * @param file
+         * @param {string} file
          */
         getFileCallback = function (file) {
             var funcNum = getUrlParam('CKEditorFuncNum');
@@ -508,7 +508,7 @@ var Media = function () {
 
         /**
          * Show the file information
-         * @param element
+         * @param {jQuery} element
          */
         showInfo = function (element) {
             var filename = element.find("span").html(),
@@ -554,8 +554,8 @@ var Media = function () {
 
         /**
          * Callback functions when clicking on a context menu item
-         * @param element
-         * @param key
+         * @param {string} element
+         * @param {string} key
          */
         contextCallback = function (element, key) {
             var zip_name, file_name, path, preview_html, item_element = element.closest("." + selectors.classes.mediaType);
@@ -594,7 +594,7 @@ var Media = function () {
 
         /**
          * Create context menu for the given type
-         * @param type
+         * @param {string} type
          */
         getContextItems = function (type) {
             var items = $.extend({}, contextMenu.items);
@@ -612,7 +612,7 @@ var Media = function () {
         /**
          * Set the context menu for right clicking on a file row
          * Create one for normal files, and one for zip files.
-         * @param type
+         * @param {string} type
          */
         setContextMenu = function (type) {
             ItemsContainer.contextMenu({
@@ -738,7 +738,7 @@ var Media = function () {
          * Define the functions of the dropzone.
          * This has be done with a 'on' because ajax reloads the dom elements
          *
-         * @param obj
+         * @param {Object} obj
          */
         setDropZoneFunctions = function (obj) {
 
@@ -760,7 +760,7 @@ var Media = function () {
 
         /**
          * Bind the dropzone to the drag and drop div
-         * @param dir_path
+         * @param {string} dir_path
          */
         setDropZone = function (dir_path) {
             var dir_route = Routing.generate(routes.list, {"dir_path": dir_path});

@@ -29,7 +29,7 @@ class MediaDriver
 
     /**
      * If true, display the real exception message
-     * @var boolean
+     * @var bool
      */
     public $full_exception;
 
@@ -57,10 +57,10 @@ class MediaDriver
 
 
     /**
-     * @param $files
-     * @param $dir
-     * @return string
-     * @throws \Exception
+     * @param string $files
+     * @param string $dir
+     * @return bool
+     * @throws \Exception - when mimetype is not valid
      */
     public function handleFiles($files, $dir){
         /** @var UploadedFile $file */
@@ -91,9 +91,9 @@ class MediaDriver
     }
 
     /**
-     * @param $dir
-     * @param $dir_name
-     * @throws \Exception
+     * @param string $dir
+     * @param string $dir_name
+     * @throws \Exception - when mimetype is not valid or when something went wrong when creating a dir on filesystem level
      * @return bool
      */
     public function makeDir($dir, $dir_name){
@@ -107,10 +107,10 @@ class MediaDriver
     }
 
     /**
-     * @param $dir
-     * @param $file_name
-     * @param $new_file_name
-     * @throws \Exception
+     * @param string $dir
+     * @param string $file_name
+     * @param string $new_file_name
+     * @throws \Exception - when mimetype is not valid or when something went wrong when renaming on filesystem level
      * @return bool
      */
     public function renameFile($dir, $file_name, $new_file_name){
@@ -126,10 +126,10 @@ class MediaDriver
     }
 
     /**
-     * @param $dir
-     * @param $file_name
-     * @param $new_file_name
-     * @throws \Exception
+     * @param string $dir
+     * @param string $file_name
+     * @param string $new_file_name
+     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
      * @return bool
      */
     public function moveFile($dir, $file_name, $new_file_name){
@@ -144,9 +144,9 @@ class MediaDriver
     }
 
     /**
-     * @param $dir
-     * @param $file_name
-     * @throws \Exception
+     * @param string $dir
+     * @param string $file_name
+     * @throws \Exception - when something went wrong while deleting the file on filesystem level
      * @return bool
      */
     public function deleteFile($dir, $file_name){
@@ -160,9 +160,9 @@ class MediaDriver
     }
 
     /**
-     * @param $dir
-     * @param $zip_file
-     * @throws \Exception
+     * @param string $dir
+     * @param string $zip_file
+     * @throws \Exception - when mimetype is not valid or when something went wrong when extracting on filesystem level
      * @return bool
      */
     public function extractZip($dir, $zip_file){
@@ -191,10 +191,10 @@ class MediaDriver
 
     /**
      * Validate the files to check if they have a valid filetype
-     * @param      $dir
-     * @param      $filename
-     * @param null $new_filename
-     * @throws \Exception
+     * @param string $dir
+     * @param string $filename
+     * @param null   $new_filename
+     * @throws \Exception - when mimetype is not valid
      */
     public function validateFile($dir, $filename, $new_filename = null){
         $file_path = $dir . DIRECTORY_SEPARATOR . $filename;
@@ -223,8 +223,8 @@ class MediaDriver
      * Check if the filetype is an valid filetype
      *
      * @param Filesystem $fm
-     * @param            $tmp_dir
-     * @throws \Exception
+     * @param string     $tmp_dir
+     * @throws \Exception - when mimetype is not valid
      */
     public function checkFileType(Filesystem $fm, $tmp_dir){
         $di = new \RecursiveDirectoryIterator($tmp_dir);
@@ -239,8 +239,8 @@ class MediaDriver
     }
 
     /**
-     * @param $name
-     * @return false
+     * @param string $name
+     * @return true
      */
     public function checkMimeType($name){
         $mime = mime_content_type($name);
