@@ -28,6 +28,12 @@ class MediaDriver
     public $upload_path;
 
     /**
+     * If true, display the real exception message
+     * @var boolean
+     */
+    public $full_exception;
+
+    /**
      * The class where the function is defined for getting
      * the usages amount of the media item
      *
@@ -46,6 +52,7 @@ class MediaDriver
         $parameters = $this->container->getParameter('youwe_media');
         $this->upload_path = $parameters['upload_path'];
         $this->mime_allowed = $parameters['mime_allowed'];
+        $this->full_exception = $parameters['full_exception'];
     }
 
 
@@ -77,7 +84,7 @@ class MediaDriver
                 $basename = $path_parts['filename'] . $increment . '.' . $extension;
                 $file->move($dir,$basename);
             } else {
-                throw new \Exception("Mimetype is not allowed", 500);
+                $this->throwError("Mimetype is not allowed", 500);
             }
         }
         return true;
@@ -95,7 +102,7 @@ class MediaDriver
         if(!file_exists($dir_path)){
             $fm->mkdir($dir_path, 0700);
         } else {
-            throw new \Exception("Cannot create directory '" . $dir_name ."': Directory already exists", 500);
+            $this->throwError("Cannot create directory '" . $dir_name ."': Directory already exists", 500);
         }
     }
 
@@ -114,7 +121,7 @@ class MediaDriver
             $new_file = rtrim($dir,"/") . "/" . $new_file_name;
             $fm->rename($old_file, $new_file);
         } catch(\Exception $e){
-            throw new \Exception("Cannot rename file or directory");
+            $this->throwError("Cannot rename file or directory", 500, $e);
         }
     }
 
@@ -132,7 +139,7 @@ class MediaDriver
             $file = new File($file_path, false);
             $file->move($new_file_name);
         } catch(\Exception $e){
-            throw new \Exception("Cannot move file or directory");
+            $this->throwError("Cannot move file or directory", 500, $e);
         }
     }
 
@@ -148,7 +155,7 @@ class MediaDriver
             $file = rtrim($dir,"/") . "/" . $file_name;
             $fm->remove($file);
         } catch(\Exception $e){
-            throw new \Exception("Cannot delete file or directory");
+            $this->throwError("Cannot delete file or directory", 500, $e);
         }
     }
 
@@ -178,7 +185,7 @@ class MediaDriver
                 $chapterZip->close();
             }
         } catch(\Exception $e){
-            throw new \Exception("Cannot extract zip");
+            $this->throwError("Cannot extract zip", 500, $e);
         }
     }
 
@@ -225,7 +232,7 @@ class MediaDriver
             $mime_valid = $this->checkMimeType($filename);
             if($mime_valid !== true){
                 $fm->remove($tmp_dir);
-                throw new \Exception($mime_valid, 500);
+                $this->throwError($mime_valid, 500);
             }
         }
         $fm->remove($tmp_dir);
@@ -246,6 +253,20 @@ class MediaDriver
         }
         else {
             return true;
+        }
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param string          $string - The displayed exception
+     * @param null|\Exception $e - The actual exception
+     * @throws \Exception
+     */
+    private function throwError($string, $code = 500, $e = null) {
+        if(!$this->full_exception || is_null($e)){
+            throw new \Exception($string, $code);
+        } else {
+            throw new \Exception($string. ": ". $e->getMessage(), $code);
         }
     }
 }

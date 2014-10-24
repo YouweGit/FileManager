@@ -124,7 +124,12 @@ var Media = function () {
                 previewImage: selectors.classes.previewImage,
                 new_dir: 'new_dir'
             },
-            types: [
+            extra_types: {
+                zip: "zip",
+                image: "image",
+                video: "video"
+            },
+            array_types: [
                 "zip",
                 "image",
                 "video",
@@ -385,7 +390,7 @@ var Media = function () {
 
                 parent_li.find('.' + selectors.classes.toggleDir).wrapInner('<a>').find('a').click(function () {
                     $(this).find('i').toggleClass(selectors.classes.arrows.down + " " + selectors.classes.arrows.right);
-                    addActiveClass(parent_li);
+                    //addActiveClass(parent_li);
                     sub_ul.slideToggle();
                     if ($(this).find('i').hasClass(selectors.classes.arrows.right)) {
                         sub_ul.each(function () {
@@ -450,7 +455,7 @@ var Media = function () {
             var dir_path = (activePath !== null ? activePath + "/" : ""
                     ) + element.html(),
                 parent_li = $("span[id='" + dir_path + "']").parent("span").parent("li"),
-                sub_ul = parent_li.children("ul");
+                sub_ul = parent_li.children();
 
             sub_ul.slideDown();
 
@@ -562,7 +567,7 @@ var Media = function () {
             if (key === contextMenu.keys.new_dir) {
                 addFolder();
             } else if (key === contextMenu.keys.extract) {
-                zip_name = item_element.find("span." + selectors.classes.mediaPage + "." + contextMenu.types.zip).html();
+                zip_name = item_element.find("span." + selectors.classes.mediaPage + "." + contextMenu.extra_types.zip).html();
                 extractZip(zip_name);
             } else if (key === contextMenu.keys.rename) {
                 renameFile(item_element);
@@ -592,13 +597,13 @@ var Media = function () {
          * @param type
          */
         getContextItems = function (type) {
-            var items = contextMenu.items;
+            var items = $.extend({}, contextMenu.items);
 
-            if (type === contextMenu.types.zip) {
+            if (type === contextMenu.extra_types.zip) {
                 items.extract = contextMenu.subItems.extract;
-            } else if (type === contextMenu.types.image) {
+            } else if (type === contextMenu.extra_types.image) {
                 items.preview_img = contextMenu.subItems.preview_img;
-            } else if (type === contextMenu.types.video) {
+            } else if (type === contextMenu.extra_types.video) {
                 items.preview_vid = contextMenu.subItems.preview_vid;
             }
             return items;
@@ -610,9 +615,8 @@ var Media = function () {
          * @param type
          */
         setContextMenu = function (type) {
-
             ItemsContainer.contextMenu({
-                selector: '.' + selectors.classes.mediaType + ' .' + type,
+                selector: '.' + selectors.classes.mediaType + '.' + type,
                 callback: function (key) {
                     contextCallback($(this), key);
                 },
@@ -620,11 +624,11 @@ var Media = function () {
             });
 
             ItemsContainer.contextMenu({
-                selector: '.' + selectors.classes.mediaDir,
+                selector: '.' + selectors.classes.mediaDir + ":not('.hidden')",
                 callback: function (key) {
                     contextCallback($(this), key);
                 },
-                items: getContextItems(type)
+                items: $.extend({}, contextMenu.items)
             });
 
             ItemsContainer.contextMenu({
@@ -644,7 +648,7 @@ var Media = function () {
          */
         createContextMenu = function () {
             var index,
-                types = contextMenu.types;
+                types = contextMenu.array_types;
             for (index = 0; index < Object.keys(types).length; index += 1) {
                 setContextMenu(types[index]);
             }
@@ -860,12 +864,12 @@ var Media = function () {
                 $(selectors.buttons.rename).removeAttr("disabled", "disabled");
                 $(selectors.buttons.delete).removeAttr("disabled", "disabled");
 
-                if (selected_item.hasClass(contextMenu.types.zip)) {
+                if (selected_item.hasClass(contextMenu.extra_types.zip)) {
                     $(selectors.buttons.extract).removeAttr("disabled", "disabled");
                 } else {
                     $(selectors.buttons.extract).attr("disabled", "disabled");
                 }
-                if (selected_item.hasClass(contextMenu.types.image) || selected_item.hasClass(contextMenu.types.video)) {
+                if (selected_item.hasClass(contextMenu.extra_types.image) || selected_item.hasClass(contextMenu.extra_types.video)) {
                     $(selectors.buttons.preview).removeAttr("disabled", "disabled");
                 } else {
                     $(selectors.buttons.preview).attr("disabled", "disabled");
@@ -928,7 +932,7 @@ var Media = function () {
             }).on("click", selectors.buttons.rename, function () {
                 renameFile(selected_item);
             }).on("click", selectors.buttons.extract, function () {
-                var zip_name = selected_item.find("span." + selectors.classes.mediaPage + "." + contextMenu.types.zip).html();
+                var zip_name = selected_item.find("span." + selectors.classes.mediaPage + "." + contextMenu.extra_types.zip).html();
                 extractZip(zip_name);
             }).on("click", selectors.buttons.preview, function () {
                 displayPreview();
