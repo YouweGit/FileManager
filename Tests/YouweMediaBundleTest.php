@@ -10,7 +10,7 @@ use Youwe\MediaBundle\YouweMediaBundle;
  */
 class YouweMediaBundleTest extends \PHPUnit_Framework_TestCase
 {
-    public function YouweMediaBundle()
+    public function testYouweMediaBundle()
     {
         $bundle = new YouweMediaBundle();
 
