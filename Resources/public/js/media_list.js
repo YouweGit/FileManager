@@ -1104,10 +1104,10 @@ var Media = function () {
             active_ul = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir + '>ul');
             active_span = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir + '>span');
             directoryListSetup();
-            for (array_index = 0, parent_li, dir_path; array_index < open_dirs_ids.length; array_index += 1) {
+            for (array_index = 0; array_index < open_dirs_ids.length; array_index += 1) {
                 element = $("span[id='" + open_dirs_ids[array_index] + "']");
                 sub_ul = element.closest("ul").children();
-                parent_li = element.parent("span").parent("li");
+                parent_li = element.closest("span").closest("li");
                 dir_path = element.attr('id') !== root_dir ? element.attr('id') : null;
 
                 sub_ul.show();
@@ -1124,5 +1124,7 @@ var Media = function () {
 
 $(function () {
     'use strict';
-    var MediaObject = new Media();
+    var MediaObject;
+    MediaObject = new Media();
+    MediaObject.reloadDirList();
 });
