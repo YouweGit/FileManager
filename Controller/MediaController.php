@@ -147,6 +147,77 @@ class MediaController extends Controller {
         return $response;
     }
 
+
+    /**
+     * @param type - copy or cut
+     * @throws \Exception
+     * @return bool
+     */
+    public function copyFileAction($type){
+        $response = new Response();
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
+        $request = $this->getRequest();
+
+        $dir_path = $request->get('dir_path');
+        $filename = $request->get('filename');
+
+        $cut = false;
+        if($type === 'cut'){
+            $cut = true;
+        }
+
+        try{
+            $dir = $service->getFilePath($dir_path, $filename);
+            $service->checkToken($request->get('token'));
+            $sources = array('source_dir' => $dir, 'source_file' => $filename, 'cut' => $cut);
+            $this->get('session')->set('copy', $sources);
+        } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+
+        return $response;
+    }
+
+    /**
+     * @throws \Exception
+     * @return bool
+     */
+    public function pasteFileAction(){
+        $response = new Response();
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
+        $request = $this->getRequest();
+
+        $dir_path = $request->get('dir_path');
+        $filename = $request->get('filename');
+
+        try{
+            $dir = $service->getFilePath($dir_path, $filename);
+            $service->checkToken($request->get('token'));
+            $sources = $this->get('session')->get('copy');
+            $filename = $sources['source_file'];
+            $targets = array('target_dir' => $dir, 'target_file' => $filename);
+            $driver->pasteFile($sources, $targets);
+        } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+
+        return $response;
+    }
+
     /**
      * @throws \Exception
      * @return bool

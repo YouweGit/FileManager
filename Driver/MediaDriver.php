@@ -77,7 +77,7 @@ class MediaDriver
                 $path_parts = pathinfo($original_file);
 
                 $increment = '';
-                while(file_exists($dir . "/" . $path_parts['filename'] . $increment . '.' . $extension)) {
+                while(file_exists($dir . DIRECTORY_SEPARATOR . $path_parts['filename'] . $increment . '.' . $extension)) {
                     $increment++;
                 }
 
@@ -98,7 +98,7 @@ class MediaDriver
      */
     public function makeDir($dir, $dir_name){
         $fm = new Filesystem();
-        $dir_path = rtrim($dir,"/") . "/" . $dir_name;
+        $dir_path = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $dir_name;
         if(!file_exists($dir_path)){
             $fm->mkdir($dir_path, 0700);
         } else {
@@ -117,8 +117,8 @@ class MediaDriver
         try{
             $this->validateFile($dir, $file_name, $new_file_name);
             $fm = new Filesystem();
-            $old_file = rtrim($dir,"/") . "/" . $file_name;
-            $new_file = rtrim($dir,"/") . "/" . $new_file_name;
+            $old_file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
+            $new_file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $new_file_name;
             $fm->rename($old_file, $new_file);
         } catch(\Exception $e){
             $this->throwError("Cannot rename file or directory", 500, $e);
@@ -135,11 +135,43 @@ class MediaDriver
     public function moveFile($dir, $file_name, $new_file_name){
         try{
             $this->validateFile($dir, $file_name);
-            $file_path = rtrim($dir,"/") . "/" . $file_name;
+            $file_path = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
             $file = new File($file_path, false);
             $file->move($new_file_name);
         } catch(\Exception $e){
             $this->throwError("Cannot move file or directory", 500, $e);
+        }
+    }
+
+    /**
+     * @param array $sources
+     * @param array $targets
+     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
+     * @return bool
+     */
+    public function pasteFile($sources, $targets){
+        try{
+            $source_dir = $sources['source_dir'];
+            $source_file =  $sources['source_file'];
+
+            $target_dir = $targets['target_dir'];
+            $target_file = $targets['target_file'];
+
+
+            $source_file_path = rtrim($source_dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $source_file;
+            $target_file_path = rtrim($target_dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $target_file;
+
+            $this->validateFile($source_dir, $source_file);
+
+            $fileSystem = new Filesystem();
+            $fileSystem->copy($source_file_path, $target_file_path);
+
+            $cut = $sources['cut'];
+            if($cut){
+                $fileSystem->remove($source_file_path);
+            }
+        } catch(\Exception $e){
+            $this->throwError("Cannot paste file", 500, $e);
         }
     }
 
@@ -152,7 +184,7 @@ class MediaDriver
     public function deleteFile($dir, $file_name){
         try{
             $fm = new Filesystem();
-            $file = rtrim($dir,"/") . "/" . $file_name;
+            $file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
             $fm->remove($file);
         } catch(\Exception $e){
             $this->throwError("Cannot delete file or directory", 500, $e);
@@ -171,7 +203,7 @@ class MediaDriver
         $fm = new Filesystem();
         $tmp_dir = $this->createTmpDir($fm);
 
-        if ($chapterZip->open ( $dir . "/" . $zip_file )) {
+        if ($chapterZip->open ( $dir . DIRECTORY_SEPARATOR . $zip_file )) {
             $chapterZip->extractTo($tmp_dir);
             $chapterZip->close();
         }
@@ -179,7 +211,7 @@ class MediaDriver
         $this->checkFileType($fm, $tmp_dir);
 
         try{
-            if ($chapterZip->open ( $dir . "/" . $zip_file )) {
+            if ($chapterZip->open ( $dir . DIRECTORY_SEPARATOR . $zip_file )) {
 
                 $chapterZip->extractTo($dir);
                 $chapterZip->close();
@@ -214,7 +246,7 @@ class MediaDriver
      * @return string
      */
     public function createTmpDir(Filesystem $fm){
-        $tmp_dir = $this->upload_path . "/" . "." . strtotime("now");
+        $tmp_dir = $this->upload_path . DIRECTORY_SEPARATOR . "." . strtotime("now");
         $fm->mkdir($tmp_dir);
         return $tmp_dir;
     }

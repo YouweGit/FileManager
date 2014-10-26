@@ -104,6 +104,9 @@ var Media = function () {
                 select: "#select_btn",
                 rename: "#rename_btn",
                 extract: "#extract_btn",
+                copy: "#copy_btn",
+                cut: "#cut_btn",
+                paste: "#paste_btn",
                 preview: "#preview_btn",
                 delete: "#delete_btn",
                 back: "#back_btn",
@@ -158,7 +161,9 @@ var Media = function () {
             list: "youwe_media_list",
             extract: "youwe_media_extract",
             fileInfo: "youwe_media_fileinfo",
-            move: "youwe_media_move"
+            move: "youwe_media_move",
+            paste: "youwe_media_paste",
+            copy: "youwe_media_copy"
         },
         messages = {
             errors: {
@@ -279,6 +284,33 @@ var Media = function () {
                 rename_origin_ext + '">');
             active_input = true;
             $(selectors.fields.renameItem).focus();
+        },
+
+        /**
+         * Set the copied file in the session
+         * @param {jQuery} file_element
+         */
+        copyFile = function (file_element, type) {
+            var file_name = file_element.find("span").html(),
+                route = Routing.generate(routes.copy, {'type': type}),
+                data = {
+                    token: $(selectors.fields.token).val(),
+                    dir_path: activePath,
+                    filename: file_name
+                };
+            ajaxRequest(route, data, "POST");
+        },
+
+        /**
+         * Paste the copied/cutted file in the active dir
+         */
+        pasteFile = function () {
+            var route = Routing.generate(routes.paste),
+                data = {
+                    token: $(selectors.fields.token).val(),
+                    dir_path: activePath
+                };
+            ajaxRequest(route, data, "POST");
         },
 
         /**
@@ -929,6 +961,12 @@ var Media = function () {
                 upload_modal.modal({show: true});
             }).on("click", selectors.buttons.select, function () {
                 selected_item.dblclick();
+            }).on("click", selectors.buttons.copy, function () {
+                copyFile(selected_item, 'copy');
+            }).on("click", selectors.buttons.cut, function () {
+                copyFile(selected_item, 'cut');
+            }).on("click", selectors.buttons.paste, function () {
+                pasteFile();
             }).on("click", selectors.buttons.rename, function () {
                 renameFile(selected_item);
             }).on("click", selectors.buttons.extract, function () {
