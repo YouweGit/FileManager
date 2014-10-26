@@ -174,7 +174,7 @@ var Media = function () {
         /**
          * The ajax request for handling the form actions
          * @param {string} url
-         * @param {json} data
+         * @param {{token: (*|jQuery), dir_path: *}} data
          * @param {string} method
          * @param {bool=true} reloadList
          */
@@ -289,6 +289,7 @@ var Media = function () {
         /**
          * Set the copied file in the session
          * @param {jQuery} file_element
+         * @param {string} type - copy or paste
          */
         copyFile = function (file_element, type) {
             var file_name = file_element.find("span").html(),
@@ -454,7 +455,7 @@ var Media = function () {
 
         /**
          * Navigate through directories
-         * @param {string} parent_li
+         * @param {jQuery} parent_li
          * @param {string} dir_path
          */
         navigateTo = function (parent_li, dir_path) {
@@ -481,7 +482,7 @@ var Media = function () {
 
         /**
          * Change directory and slide down the selected directory in the directory list
-         * @param {string} element
+         * @param {jQuery} element
          */
         changeDir = function (element) {
             var dir_path = (activePath !== null ? activePath + "/" : ""
@@ -586,7 +587,7 @@ var Media = function () {
 
         /**
          * Callback functions when clicking on a context menu item
-         * @param {string} element
+         * @param {jQuery} element
          * @param {string} key
          */
         contextCallback = function (element, key) {
