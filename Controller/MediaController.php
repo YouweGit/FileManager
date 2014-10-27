@@ -74,7 +74,9 @@ class MediaController extends Controller {
         $files = $service->getFileTree($dir_files, $dir, $dir_path);
         $dirs = $service->getDirectoryTree($root_dirs, $root, "");
         $isPopup = $this->getRequest()->get('popup');
+        $copy = $this->get('session')->get('copy');
         return $this->render($template, array(
+            "copy_file" => $copy,
             "files" => $files,
             "dirs" => $dirs,
             "current_path" => $dir_path,
@@ -175,7 +177,12 @@ class MediaController extends Controller {
         try{
             $dir = $service->getFilePath($dir_path, $filename);
             $service->checkToken($request->get('token'));
-            $sources = array('source_dir' => $dir, 'source_file' => $filename, 'cut' => $cut);
+            $sources = array(
+                'display_dir' => $dir_path,
+                'source_dir' => $dir,
+                'source_file' => $filename,
+                'cut' => $cut
+            );
             $this->get('session')->set('copy', $sources);
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
@@ -210,6 +217,7 @@ class MediaController extends Controller {
             $filename = $sources['source_file'];
             $targets = array('target_dir' => $dir, 'target_file' => $filename);
             $driver->pasteFile($sources, $targets);
+            $this->get('session')->remove('copy');
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());

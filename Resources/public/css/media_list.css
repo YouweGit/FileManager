@@ -284,6 +284,15 @@
     background: #fff;
     font-size: 1.2em;
 }
+#cut_btn[disabled].active,
+#copy_btn[disabled].active{
+    color: #333;
+    background-color: #d3d3d3;
+    border-color: #7b7b7b;
+}
+#paste_btn.hasFile{
+    background-color: rgb(178, 229, 255);
+}
 
 /**
  * File type Icons

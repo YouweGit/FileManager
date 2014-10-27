@@ -358,14 +358,14 @@ var Media = function () {
 
         /**
          * Send ajax request to extract the selected zip
-         * @param {string} zip_element
+         * @param {string} zip_name
          */
-        extractZip = function (zip_element) {
+        extractZip = function (zip_name) {
             var new_dir_route = Routing.generate(routes.extract),
                 data = {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath,
-                    zip_name: zip_element
+                    zip_name: zip_name
                 };
             ajaxRequest(new_dir_route, data, "POST");
         },
@@ -815,6 +815,43 @@ var Media = function () {
             });
         },
 
+        disableToolbarItems = function () {
+            $(selectors.buttons.select).attr("disabled", "disabled");
+            $(selectors.buttons.rename).attr("disabled", "disabled");
+            $(selectors.buttons.extract).attr("disabled", "disabled");
+            $(selectors.buttons.preview).attr("disabled", "disabled");
+            $(selectors.buttons.delete).attr("disabled", "disabled");
+            $(selectors.buttons.copy).attr("disabled", "disabled");
+            $(selectors.buttons.cut).attr("disabled", "disabled");
+        },
+
+        enableToolbarItems = function () {
+            $(selectors.buttons.select).removeAttr("disabled", "disabled");
+            $(selectors.buttons.rename).removeAttr("disabled", "disabled");
+            $(selectors.buttons.delete).removeAttr("disabled", "disabled");
+            $(selectors.buttons.copy).removeAttr("disabled", "disabled");
+            $(selectors.buttons.cut).removeAttr("disabled", "disabled");
+
+            if (selected_item.hasClass(selectors.classes.mediaDir)) {
+                $(selectors.buttons.copy).attr("disabled", "disabled");
+                $(selectors.buttons.cut).attr("disabled", "disabled");
+            } else {
+                $(selectors.buttons.copy).removeAttr("disabled", "disabled");
+                $(selectors.buttons.cut).removeAttr("disabled", "disabled");
+            }
+
+            if (selected_item.hasClass(contextMenu.extra_types.zip)) {
+                $(selectors.buttons.extract).removeAttr("disabled", "disabled");
+            } else {
+                $(selectors.buttons.extract).attr("disabled", "disabled");
+            }
+            if (selected_item.hasClass(contextMenu.extra_types.image) || selected_item.hasClass(contextMenu.extra_types.video)) {
+                $(selectors.buttons.preview).removeAttr("disabled", "disabled");
+            } else {
+                $(selectors.buttons.preview).attr("disabled", "disabled");
+            }
+        },
+
         /**
          * Because the list is refreshed by ajax, we cannot set some functions on the DOM elements.
          */
@@ -877,12 +914,19 @@ var Media = function () {
              */
             $(document).on("click", selectors.containers.mediaTable + " tr." + selectors.classes.emptyRow, function () {
                 selected_item = null;
+                $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
+                disableToolbarItems();
+            });
 
-                $(selectors.buttons.select).attr("disabled", "disabled");
-                $(selectors.buttons.rename).attr("disabled", "disabled");
-                $(selectors.buttons.extract).attr("disabled", "disabled");
-                $(selectors.buttons.preview).attr("disabled", "disabled");
-                $(selectors.buttons.delete).attr("disabled", "disabled");
+            /**
+             * When clicking on a empty part of the media wrapper, remove the selected item and disable the actions
+             */
+            $(document).on("click", selectors.containers.mediaTable, function (e) {
+                if($(e.target).is(selectors.containers.mediaTable) ) {
+                    selected_item = null;
+                    $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
+                    disableToolbarItems();
+                }
             });
 
             /**
@@ -892,21 +936,7 @@ var Media = function () {
                 $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
                 $(this).addClass(selectors.classes.selectedItem);
                 selected_item = $(this);
-
-                $(selectors.buttons.select).removeAttr("disabled", "disabled");
-                $(selectors.buttons.rename).removeAttr("disabled", "disabled");
-                $(selectors.buttons.delete).removeAttr("disabled", "disabled");
-
-                if (selected_item.hasClass(contextMenu.extra_types.zip)) {
-                    $(selectors.buttons.extract).removeAttr("disabled", "disabled");
-                } else {
-                    $(selectors.buttons.extract).attr("disabled", "disabled");
-                }
-                if (selected_item.hasClass(contextMenu.extra_types.image) || selected_item.hasClass(contextMenu.extra_types.video)) {
-                    $(selectors.buttons.preview).removeAttr("disabled", "disabled");
-                } else {
-                    $(selectors.buttons.preview).attr("disabled", "disabled");
-                }
+                enableToolbarItems();
             });
 
             /**
@@ -981,6 +1011,33 @@ var Media = function () {
             });
 
             /**
+             * Key functions
+             */
+            var ctrlDown = false;
+            var ctrlKey = 17, vKey = 86, cKey = 67, xKey = 88;
+
+            $(document).keydown(function(e) {
+                if (e.keyCode === ctrlKey) {
+                    ctrlDown = true;
+                }
+            }).keyup(function(e) {
+                if (e.keyCode === ctrlKey) {
+                    ctrlDown = false;
+                }
+            });
+            $(document).keydown(function(e) {
+                if (ctrlDown && (e.keyCode === cKey)) {
+                    copyFile(selected_item, 'copy');
+                }
+                if (ctrlDown && (e.keyCode === xKey)) {
+                    copyFile(selected_item, 'cut');
+                }
+                if (ctrlDown && (e.keyCode === vKey)) {
+                    pasteFile();
+                }
+            });
+
+            /**
              * Disable everything under the loading screen when the loading screen is visible
              */
             $(document).on("click", selectors.containers.mediaLoadingScreen, function () {
@@ -996,14 +1053,7 @@ var Media = function () {
                 "path": activePath,
                 "url": Routing.generate(routes.list, {"dir_path": activePath})
             });
-            $(selectors.buttons.forward).attr("disabled", "disabled");
-            $(selectors.buttons.back).attr("disabled", "disabled");
-            $(selectors.buttons.select).attr("disabled", "disabled");
-            $(selectors.buttons.rename).attr("disabled", "disabled");
-            $(selectors.buttons.extract).attr("disabled", "disabled");
-            $(selectors.buttons.preview).attr("disabled", "disabled");
-            $(selectors.buttons.delete).attr("disabled", "disabled");
-
+            disableToolbarItems();
             var popOverElement = $('.' + selectors.classes.popOver);
 
             directoryListSetup();
@@ -1069,11 +1119,7 @@ var Media = function () {
             if ((current_index + 1) === history_index.length) {
                 $(selectors.buttons.forward).attr("disabled", "disabled");
             }
-            $(selectors.buttons.select).attr("disabled", "disabled");
-            $(selectors.buttons.rename).attr("disabled", "disabled");
-            $(selectors.buttons.extract).attr("disabled", "disabled");
-            $(selectors.buttons.preview).attr("disabled", "disabled");
-            $(selectors.buttons.delete).attr("disabled", "disabled");
+            disableToolbarItems();
         });
     };
 

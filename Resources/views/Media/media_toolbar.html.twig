@@ -1,37 +1,3 @@
-{#<div class="btn-group">#}
-    {#<button id="back_btn" type="button" class="btn btn-default" title="Back">#}
-        {#<img src="/bundles/youwemedia/images/menu/arrow_back.png">#}
-    {#</button>#}
-    {#<button id="forward_btn" type="button" class="btn btn-default" title="Forward">#}
-        {#<img src="/bundles/youwemedia/images/menu/arrow_forward.png">#}
-    {#</button>#}
-{#</div>#}
-{#<div class="btn-group">#}
-    {#<button id="new_folder_btn" type="button" class="btn btn-default" title="New Folder">#}
-        {#<img src="/bundles/youwemedia/images/menu/new_folder.png">#}
-    {#</button>#}
-    {#<button id="upload_file_btn" type="button" class="btn btn-default" title="Upload">#}
-        {#<img src="/bundles/youwemedia/images/menu/upload.png">#}
-    {#</button>#}
-{#</div>#}
-{#<div class="btn-group">#}
-    {#<button id="select_btn" type="button" class="btn btn-default" title="Select">#}
-        {#<img src="/bundles/youwemedia/images/menu/cursor.png">#}
-    {#</button>#}
-    {#<button id="rename_btn" type="button" class="btn btn-default">#}
-        {#<img src="/bundles/youwemedia/images/menu/rename.png">#}
-    {#</button>#}
-    {#<button id="extract_btn" type="button" class="btn btn-default">#}
-        {#<img src="/bundles/youwemedia/images/menu/compress-icon.png">#}
-    {#</button>#}
-    {#<button id="preview_btn" type="button" class="btn btn-default">#}
-        {#<img src="/bundles/youwemedia/images/menu/image-preview.png">#}
-    {#</button>#}
-    {#<button id="delete_btn" type="button" class="btn btn-default">#}
-        {#<img src="/bundles/youwemedia/images/menu/page_white_delete.png">#}
-    {#</button>#}
-{#</div>#}
-
 <div class="btn-group">
     <button id="back_btn" type="button" class="btn btn-default" title="Back">
         <span class="fa fa-arrow-left"></span>
@@ -55,13 +21,16 @@
     <button id="rename_btn" type="button" class="btn btn-default">
         <span class="fa fa-pencil"></span>
     </button>
-    <button id="copy_btn" type="button" class="btn btn-default">
+    <button id="copy_btn" type="button" class="btn btn-default {% if copy_file and not copy_file['cut'] %}active{% endif %}"
+            {% if copy_file and not copy_file['cut'] %}title="Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}"{% endif %}>
         <span class="fa fa-copy"></span>
     </button>
-    <button id="cut_btn" type="button" class="btn btn-default">
+    <button id="cut_btn" type="button" class="btn btn-default {% if copy_file and copy_file['cut'] %}active{% endif %}"
+            {% if copy_file and copy_file['cut'] %}title="Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}"{% endif %}>
         <span class="fa fa-cut"></span>
     </button>
-    <button id="paste_btn" type="button" class="btn btn-default">
+    <button id="paste_btn" type="button" class="btn btn-default {% if not copy_file %}disabled{% else %}hasFile{% endif %}"
+            {% if copy_file %}title="Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}"{% endif %}>
         <span class="fa fa-paste"></span>
     </button>
     <button id="preview_btn" type="button" class="btn btn-default">
