@@ -48,8 +48,8 @@ class AppKernel extends Kernel
 }
 ```
 
-
-https://github.com/FriendsOfSymfony/FOSJsRoutingBundle
+Step 3: Set the config
+-------------------------
 
 ```yml
 Default Configuration:
@@ -99,6 +99,9 @@ Optional config:
   If true, display the exception in the error modal.<br>
   When you leave it false, it will not show the full error for security reasons.<br>
   You don't want to give an user all the information, like the full upload path, when something went wrong.
+
+Step 4: Add the route
+-------------------------
 
 Add the route to the routing.yml
 
