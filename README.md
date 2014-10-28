@@ -2,64 +2,88 @@
 YouweMediaBundle
 ==================
 
-Dev Docs: https://confluence.youwe.nl/display/ooipdev/Youwe+Media+Bundle
-
 Installation
--------------
-Add the bundle to composer.json
+============
 
-    composer require youwe/media-bundle:dev-master
+Step 1: Download the Bundle
+---------------------------
 
-Add the bundle to the AppKernel
+Open a command console, enter your project directory and execute the
+following command to download the latest stable version of this bundle:
 
+```bash
+$ composer require youwe/media-bundle
+```
+
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
+of the Composer documentation.
+
+Step 2: Enable the Bundle
+-------------------------
+
+Then, enable the bundle by adding the following line in the `app/AppKernel.php`
+file of your project:
+
+```php
+<?php
+// app/AppKernel.php
+
+// ...
+class AppKernel extends Kernel
+{
     public function registerBundles()
-        {
-            $bundles = array(
-                //...
-                new Youwe\MediaBundle\YouweMediaBundle(),
-                new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
-                //...
-            );
-    
-            return $bundles;
-        }
+    {
+        $bundles = array(
+            // ...
 
-You will also need the FOSJsRoutingBundle
+            new Youwe\MediaBundle\YouweMediaBundle(),
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+        );
+
+        // ...
+    }
+
+    // ...
+}
+```
+
 
 https://github.com/FriendsOfSymfony/FOSJsRoutingBundle
 
+```yml
 Default Configuration:
-
-    youwe_media:
-        upload_path:        %kernel.root_dir%/../web/uploads
-        usage_class: ~
-        template: ~
-        extended_template: ~
-        full_exceptions: false
-        mime_allowed:
-            - 'image/png'
-            - 'image/jpg'
-            - 'image/jpeg'
-            - 'image/gif'
-            - 'application/pdf'
-            - 'application/ogg'
-            - 'video/mp4'
-            - 'application/zip'
-            - 'multipart/x-zip'
-            - 'application/rar'
-            - 'application/x-rar-compressed'
-            - 'application/tar'
-            - 'application/x-tar'
-            - 'text/html'
-            - 'text/javascript'
-            - 'text/css'
-            - 'text/xml'
-            - 'text/plain'
-            - 'text/x-asm'
-            - 'application/xml'
-            - 'application/octet-stream'
-            - 'application/x-shockwave-flash'
-
+# app/config/config.yml
+youwe_media:
+    upload_path:        %kernel.root_dir%/../web/uploads
+    usage_class: ~
+    template: ~
+    extended_template: ~
+    full_exceptions: false
+    mime_allowed:
+        - 'image/png'
+        - 'image/jpg'
+        - 'image/jpeg'
+        - 'image/gif'
+        - 'application/pdf'
+        - 'application/ogg'
+        - 'video/mp4'
+        - 'application/zip'
+        - 'multipart/x-zip'
+        - 'application/rar'
+        - 'application/x-rar-compressed'
+        - 'application/tar'
+        - 'application/x-tar'
+        - 'text/html'
+        - 'text/javascript'
+        - 'text/css'
+        - 'text/xml'
+        - 'text/plain'
+        - 'text/x-asm'
+        - 'application/xml'
+        - 'application/octet-stream'
+        - 'application/x-shockwave-flash'
+```
 Optional config:
 
 * <b>usage_class</b> <br>
@@ -74,11 +98,13 @@ Optional config:
 * <b>full_exceptions</b><br>
   If true, display the exception in the error modal.<br>
   When you leave it false, it will not show the full error for security reasons.<br>
-  You don't want to give an user all the information, like the full upload path, when something went wrong.<br>
+  You don't want to give an user all the information, like the full upload path, when something went wrong.
 
-Route:
+Add the route to the routing.yml
 
-    youwe_media:
-        resource: "@YouweMediaBundle/Resources/config/routing.yml"
-        options:
-            expose: true
+```yml
+youwe_media:
+    resource: "@YouweMediaBundle/Resources/config/routing.yml"
+    options:
+        expose: true
+```
