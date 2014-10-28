@@ -13,6 +13,20 @@ youwe_media_extract:
     options:
         expose: true
 
+youwe_media_copy:
+    methods: post
+    pattern: /media/copy/{type}
+    defaults: { _controller: YouweMediaBundle:Media:copyFile }
+    options:
+        expose: true
+
+youwe_media_paste:
+    methods: post
+    pattern: /media/paste
+    defaults: { _controller: YouweMediaBundle:Media:pasteFile }
+    options:
+        expose: true
+
 youwe_media_fileinfo:
     pattern: /media/fileinfo
     defaults: { _controller: YouweMediaBundle:Media:fileInfo }

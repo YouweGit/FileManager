@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 class UploadsController extends Controller
 {
     /**
+     * @author Roelf Otten
      * @param $name
      *
      * @return int|Response

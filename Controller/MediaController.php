@@ -74,7 +74,9 @@ class MediaController extends Controller {
         $files = $service->getFileTree($dir_files, $dir, $dir_path);
         $dirs = $service->getDirectoryTree($root_dirs, $root, "");
         $isPopup = $this->getRequest()->get('popup');
+        $copy = $this->get('session')->get('copy');
         return $this->render($template, array(
+            "copy_file" => $copy,
             "files" => $files,
             "dirs" => $dirs,
             "current_path" => $dir_path,
@@ -139,6 +141,83 @@ class MediaController extends Controller {
             $dir = $service->getFilePath($dir_path, $filename, $target_file);
             $service->checkToken($request->get('token'));
             $driver->moveFile($dir, $filename, $target_file);
+        } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * @param type - copy or cut
+     * @throws \Exception
+     * @return bool
+     */
+    public function copyFileAction($type){
+        $response = new Response();
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
+        $request = $this->getRequest();
+
+        $dir_path = $request->get('dir_path');
+        $filename = $request->get('filename');
+
+        $cut = false;
+        if($type === 'cut'){
+            $cut = true;
+        }
+
+        try{
+            $dir = $service->getFilePath($dir_path, $filename);
+            $service->checkToken($request->get('token'));
+            $sources = array(
+                'display_dir' => $dir_path,
+                'source_dir' => $dir,
+                'source_file' => $filename,
+                'cut' => $cut
+            );
+            $this->get('session')->set('copy', $sources);
+        } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+
+        return $response;
+    }
+
+    /**
+     * @throws \Exception
+     * @return bool
+     */
+    public function pasteFileAction(){
+        $response = new Response();
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
+        $request = $this->getRequest();
+
+        $dir_path = $request->get('dir_path');
+        $filename = $request->get('filename');
+
+        try{
+            $dir = $service->getFilePath($dir_path, $filename);
+            $service->checkToken($request->get('token'));
+            $sources = $this->get('session')->get('copy');
+            $filename = $sources['source_file'];
+            $targets = array('target_dir' => $dir, 'target_file' => $filename);
+            $driver->pasteFile($sources, $targets);
+            $this->get('session')->remove('copy');
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());

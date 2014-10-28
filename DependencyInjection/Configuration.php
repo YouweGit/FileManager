@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')->end()
                     ->defaultValue(array('image'))->cannotBeEmpty()
                 ->end()
+                ->booleanNode('full_exception')->defaultValue(false)->end()
                 ->scalarNode('upload_path')->defaultValue('/uploads')->cannotBeEmpty()->end()
                 ->scalarNode('extended_template')->defaultValue('YouweMediaBundle:Media:media_layout.html.twig')->cannotBeEmpty()->end()
                 ->scalarNode('template')->defaultValue('YouweMediaBundle:Media:media.html.twig')->cannotBeEmpty()->end()
