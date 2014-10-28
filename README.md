@@ -6,15 +6,36 @@ Dev Docs: https://confluence.youwe.nl/display/ooipdev/Youwe+Media+Bundle
 
 Installation
 -------------
-You will also need the FOSJsRoutingBundle and the BmatznerFontAwesomeBundle
+Add the bundle to composer.json
 
-https://github.com/bmatzner/BmatznerFontAwesomeBundle
+    composer require youwe/media-bundle:dev-master
+
+Add the bundle to the AppKernel
+
+    public function registerBundles()
+        {
+            $bundles = array(
+                //...
+                new Youwe\MediaBundle\YouweMediaBundle(),
+                new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+                //...
+            );
+    
+            return $bundles;
+        }
+
+You will also need the FOSJsRoutingBundle
+
 https://github.com/FriendsOfSymfony/FOSJsRoutingBundle
 
-Configuration:
+Default Configuration:
 
     youwe_media:
         upload_path:        %kernel.root_dir%/../web/uploads
+        usage_class: ~
+        template: ~
+        extended_template: ~
+        full_exceptions: false
         mime_allowed:
             - 'image/png'
             - 'image/jpg'
@@ -50,6 +71,10 @@ Optional config:
 * <b>extended_template</b><br>
   The media template will extend with the given template.<br>
   For example: you can define your layout template in here.
+* <b>full_exceptions</b><br>
+  If true, display the exception in the error modal.<br>
+  When you leave it false, it will not show the full error for security reasons.<br>
+  You don't want to give an user all the information, like the full upload path, when something went wrong.<br>
 
 Route:
 

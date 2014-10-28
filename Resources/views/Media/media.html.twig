@@ -8,10 +8,10 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}"/>
     {% stylesheets
     '@YouweMediaBundle/Resources/public/css/jquery-ui.custom.min.css'
     '@YouweMediaBundle/Resources/public/css/bootstrap.min.css'
+    '@YouweMediaBundle/Resources/public/css/font-awesome.min.css'
     "@YouweMediaBundle/Resources/public/css/jquery.contextMenu.css"
     "@YouweMediaBundle/Resources/public/css/media_list.css"
     %}
@@ -20,7 +20,6 @@
 {% endblock %}
 
 {% block javascripts %}
-    {#{{ parent() }}#}
     {% javascripts
     '@YouweMediaBundle/Resources/public/js/jquery.js'
     '@YouweMediaBundle/Resources/public/js/jquery-ui.custom.min.js'
