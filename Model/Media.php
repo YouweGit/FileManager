@@ -153,19 +153,50 @@ class Media {
 
     /**
      * @author Jim Ouwerkerk
-     * @param null $dir_path
+     * @param null|string $dir_path
+     * @param null|string $filename
+     * @param bool        $full_path
      * @return string
      */
-    public function getWebPath($dir_path = null, $filename = null)
+    public function getPath($dir_path = null, $filename = null, $full_path = false)
     {
-        $web_path = $this->web_path;
+        if($full_path){
+            $path = $this->upload_path;
+        } else {
+            $path = $this->web_path;
+        }
         if (!is_null($dir_path)) {
-            $web_path = DIRECTORY_SEPARATOR . Utils::DirTrim($web_path, $dir_path);
+            $path = DIRECTORY_SEPARATOR . Utils::DirTrim($path, $dir_path);
         }
         if (!is_null($filename)) {
-            $web_path = DIRECTORY_SEPARATOR . Utils::DirTrim($web_path, $filename);
+            $path = DIRECTORY_SEPARATOR . Utils::DirTrim($path, $filename);
         }
-        return $web_path;
+        return $path;
+    }
+
+    public function checkPath(){
+        if (($filename == "" && !is_null($target_file))) {
+            throw new \Exception("Filename cannot be empty when there is a target path");
+        }
+
+        $root = $this->settings->getUploadPath();
+
+        if (empty($dir_path)) {
+            $dir = $root;
+        } else {
+            $dir = str_replace("../", "", $dir_path);
+        }
+
+        try {
+            $this->checkPath($dir);
+            if (!is_null($target_file)) {
+                $this->checkPath($target_file);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
+
+        return $dir;
     }
 
     /**

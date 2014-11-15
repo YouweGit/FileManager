@@ -164,11 +164,15 @@ class MediaDriver
             $this->validateFile($source_dir, $source_file);
 
             $fileSystem = new Filesystem();
-            $fileSystem->copy($source_file_path, $target_file_path);
+            if(!file_exists($target_file_path)) {
+                $fileSystem->copy($source_file_path, $target_file_path);
 
-            $cut = $sources['cut'];
-            if($cut){
-                $fileSystem->remove($source_file_path);
+                $cut = $sources['cut'];
+                if ($cut) {
+                    $fileSystem->remove($source_file_path);
+                }
+            } else {
+                throw new \Exception(sprintf("File '%s' already exists", $target_file));
             }
         } catch(\Exception $e){
             $this->throwError("Cannot paste file", 500, $e);

@@ -332,7 +332,7 @@ class MediaService
         } else {
             $readableType = "Undefined";
         }
-        $web_path = Utils::DirTrim($this->settings->getWebPath($dir_path), $file, true);
+        $web_path = Utils::DirTrim($this->settings->getPath($dir_path), $file, true);
         $files = array(
             "filepath"        => $web_path,
             "mimetype"        => $mimetype,
@@ -531,7 +531,7 @@ class MediaService
 
         $options['files'] = $this->getFileTree($dir_files, $settings->getDir(), $settings->getDirPath());
         $options['file_body_display'] = $this->getDisplayType();
-        $options['root_folder'] = $settings->getWebPath();
+        $options['root_folder'] = $settings->getPath();
         $options['dirs'] = $this->getDirectoryTree($root_dirs, $settings->getUploadPath(), "");
         $options['isPopup'] = $this->container->get('request')->get('popup');
         $options['copy_file'] = $this->container->get('session')->get('copy');

@@ -126,7 +126,7 @@ class MediaController extends Controller {
 
 
     /**
-     * @Route("/copy", name="youwe_media_copy", options={"expose":true})
+     * @Route("/copy/{type}", name="youwe_media_copy", options={"expose":true})
      * @Method("POST")
      *
      * @param Request $request
@@ -290,7 +290,7 @@ class MediaController extends Controller {
     {
         $parameters = $this->container->getParameter('youwe_media');
         $media = new Media($parameters);
-        $web_path = Utils::DirTrim($media->getWebPath($path));
+        $web_path = $media->getPath($path);
         $content = file_get_contents($web_path);
         $filename = basename($path);
         $response = new Response();
