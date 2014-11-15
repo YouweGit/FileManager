@@ -37,7 +37,7 @@ class MediaSettings {
         $this->setExtendedTemplate($parameters['extended_template']);
         $this->setTemplate($parameters['template']);
         $this->setUploadPath($parameters['upload_path']);
-        $this->setUsagesClass($parameters['upload_path']);
+        $this->setUsagesClass($parameters['usage_class']);
     }
 
     /**
