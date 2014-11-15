@@ -30,7 +30,6 @@ class MediaController extends Controller {
         $service = $this->get('youwe.media.service');
 
         $settings->setDirPaths($service, $dir_path);
-
         $form = $this->createForm(new MediaType);
         try{
             $service->handleFormSubmit($form, $settings->getDir());

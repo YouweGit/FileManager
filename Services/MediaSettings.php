@@ -29,6 +29,9 @@ class MediaSettings {
     /** @var  string|null */
     private $usages_class;
 
+    /** @var  string */
+    private $web_path;
+
     /**
      * @param array $parameters
      */
@@ -38,6 +41,7 @@ class MediaSettings {
         $this->setTemplate($parameters['template']);
         $this->setUploadPath($parameters['upload_path']);
         $this->setUsagesClass($parameters['usage_class']);
+        $this->setWebPath();
     }
 
     /**
@@ -138,6 +142,26 @@ class MediaSettings {
         $this->usages_class = $usages_class;
     }
 
+    private function setWebPath()
+    {
+        $folder_array = explode(DIRECTORY_SEPARATOR, $this->getUploadPath());
+        $this->web_path = array_pop($folder_array);
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param null $dir_path
+     * @return string
+     */
+    public function getWebPath($dir_path = null)
+    {
+        $web_path = $this->web_path;
+        if (!is_null($dir_path)) {
+            $web_path = Utils::DirTrim($web_path, $dir_path);
+        }
+        return DIRECTORY_SEPARATOR . $web_path;
+    }
+
     /**
      * @author Jim Ouwerkerk
      * @param MediaService $service
@@ -149,6 +173,7 @@ class MediaSettings {
             $this->setDir($this->getUploadPath());
             $this->setDirPath("");
         } else {
+            $this->setDirPath($dir_path);
             $this->setDir($this->getUploadPath().DIRECTORY_SEPARATOR.$dir_path);
         }
 
@@ -157,6 +182,4 @@ class MediaSettings {
             $this->setDir($this->getUploadPath());
         }
     }
-
-
 }

@@ -513,17 +513,6 @@ var Media = function () {
         },
 
         /**
-         * Set the preview for each image
-         */
-        setPreview = function () {
-            $(".block_holder>div.image").each(function () {
-                var imagename = $(this).parent().find("span").html();
-                $(this).html("<img src='/" + root_dir + "/" +
-                    (activePath !== null ? activePath + "/" : "") + imagename + "' alt='preview' class='" + selectors.classes.previewImage + "'>");
-            });
-        },
-
-        /**
          * Displays the preview of the selected element
          */
         displayPreview = function () {
@@ -1062,7 +1051,6 @@ var Media = function () {
             setPopover(popOverElement);
             setDropZone(activePath);
             setFileDrag();
-            setPreview();
         },
 
         /**
@@ -1112,7 +1100,6 @@ var Media = function () {
             setPopover(popOverElement);
             createContextMenu();
             setFileDrag();
-            setPreview();
             if (current_index === 0) {
                 $(selectors.buttons.back).attr("disabled", "disabled");
             }

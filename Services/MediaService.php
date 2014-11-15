@@ -331,8 +331,9 @@ class MediaService
         } else {
             $readableType = "Undefined";
         }
-
+        $web_path = Utils::DirTrim($this->settings->getWebPath($dir_path), $file, true);
         $files = array(
+            "filepath"        => $web_path,
             "mimetype"        => $mimetype,
             "readableType"    => $readableType,
             "name"            => $file,
@@ -493,12 +494,12 @@ class MediaService
                     }
                     $new_dir_files = scandir($filepath);
                     $new_dir_path = Utils::DirTrim($dir_path, $file, true);
-                    $new_dir = $this->settings->getUploadPath() . DIRECTORY_SEPARATOR . Utils::DirTrim($dir_path);
+                    $new_dir = $this->settings->getUploadPath() . DIRECTORY_SEPARATOR . Utils::DirTrim($new_dir_path);
                     $fileType = "directory";
                     $tmp_array = array(
                         "mimetype" => $fileType,
                         "name"     => $file,
-                        "path"     => Utils::DirTrim($dir_path),
+                        "path"     => Utils::DirTrim($new_dir_path),
                         "tree"     => $this->getDirectoryTree($new_dir_files, $new_dir, $new_dir_path, array(), true),
                     );
                     $dirs[] = $tmp_array;
@@ -603,14 +604,14 @@ class MediaService
      */
     public function getRenderOptions(MediaSettings $settings, Form $form)
     {
-        $folder_array = explode(DIRECTORY_SEPARATOR, $settings->getUploadPath());
+
 
         $dir_files = scandir($settings->getDir());
         $root_dirs = scandir($settings->getUploadPath());
 
         $options['files'] = $this->getFileTree($dir_files, $settings->getDir(), $settings->getDirPath());
         $options['file_body_display'] = $this->getDisplayType();
-        $options['root_folder'] = array_pop($folder_array);
+        $options['root_folder'] = $settings->getWebPath();
         $options['dirs'] = $this->getDirectoryTree($root_dirs, $settings->getUploadPath(), "");
         $options['isPopup'] = $this->container->get('request')->get('popup');
         $options['copy_file'] = $this->container->get('session')->get('copy');

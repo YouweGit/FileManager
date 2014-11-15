@@ -21,6 +21,9 @@
         <div class="block_row yw_media_item yw_media_drag yw_media_type {{ file.fileClass }}">
             <div class="block_holder">
                 <div class="{{ file.fileClass }}">
+                    {% if file.fileClass == 'image' %}
+                        <img src="{{ file.filepath }}" class="preview_img" title="{{ file.name }}"/>
+                    {% endif %}
                 </div>
                 <span class="yw_media_page {{ file.fileClass }}" title="{{ file.name }}">{{ file.name }}</span>
             </div>
