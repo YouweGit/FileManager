@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
+use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class MediaDriver
@@ -57,7 +58,7 @@ class MediaDriver
 
 
     /**
-     * @param string $files
+     * @param array $files
      * @param string $dir
      * @return bool
      * @throws \Exception - when mimetype is not valid
@@ -98,7 +99,7 @@ class MediaDriver
      */
     public function makeDir($dir, $dir_name){
         $fm = new Filesystem();
-        $dir_path = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $dir_name;
+        $dir_path = Utils::DirTrim($dir, $dir_name, true);
         if(!file_exists($dir_path)){
             $fm->mkdir($dir_path, 0700);
         } else {
@@ -117,8 +118,8 @@ class MediaDriver
         try{
             $this->validateFile($dir, $file_name, $new_file_name);
             $fm = new Filesystem();
-            $old_file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
-            $new_file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $new_file_name;
+            $old_file = Utils::DirTrim($dir, $file_name, true);
+            $new_file = Utils::DirTrim($dir, $new_file_name, true);
             $fm->rename($old_file, $new_file);
         } catch(\Exception $e){
             $this->throwError("Cannot rename file or directory", 500, $e);
@@ -135,7 +136,7 @@ class MediaDriver
     public function moveFile($dir, $file_name, $new_file_name){
         try{
             $this->validateFile($dir, $file_name);
-            $file_path = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
+            $file_path = Utils::DirTrim($dir, $file_name, true);
             $file = new File($file_path, false);
             $file->move($new_file_name);
         } catch(\Exception $e){
@@ -157,9 +158,8 @@ class MediaDriver
             $target_dir = $targets['target_dir'];
             $target_file = $targets['target_file'];
 
-
-            $source_file_path = rtrim($source_dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $source_file;
-            $target_file_path = rtrim($target_dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $target_file;
+            $source_file_path = Utils::DirTrim($source_dir, $source_file, true);
+            $target_file_path = Utils::DirTrim($target_dir, $target_file, true);
 
             $this->validateFile($source_dir, $source_file);
 
@@ -184,7 +184,7 @@ class MediaDriver
     public function deleteFile($dir, $file_name){
         try{
             $fm = new Filesystem();
-            $file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
+            $file = Utils::DirTrim($dir, $file_name, true);
             $fm->remove($file);
         } catch(\Exception $e){
             $this->throwError("Cannot delete file or directory", 500, $e);
@@ -291,7 +291,8 @@ class MediaDriver
     /**
      * @author Jim Ouwerkerk
      * @param string          $string - The displayed exception
-     * @param null|\Exception $e - The actual exception
+     * @param int             $code
+     * @param null|\Exception $e      - The actual exception
      * @throws \Exception
      */
     private function throwError($string, $code = 500, $e = null) {

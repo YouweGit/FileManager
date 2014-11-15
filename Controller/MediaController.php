@@ -115,9 +115,6 @@ class MediaController extends Controller {
     public function copyFileAction($type){
         $response = new Response();
 
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
@@ -195,7 +192,6 @@ class MediaController extends Controller {
         $request = $this->getRequest();
         $dir_path = $request->get('dir_path');
         $zip_name = $request->get('zip_name');
-        $token = $request->get('token');
 
         /** @var MediaDriver $driver */
         $driver = $this->get('youwe.media.driver');

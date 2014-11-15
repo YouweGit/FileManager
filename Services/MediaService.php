@@ -319,7 +319,7 @@ class MediaService
      */
     public function createFileArray($file, $filepath, $dir_path)
     {
-        $file_size = $this->humanFilesize($filepath);
+        $file_size = Utils::readableSize(filesize($filepath));
         $file_modification = filemtime($filepath);
 
         $pathinfo = pathinfo($filepath);
@@ -342,78 +342,11 @@ class MediaService
             "modified"        => date("Y-m-d H:m:s", $file_modification),
             "usages"          => count($usages),
             "usage_locations" => $usages,
-            "fileClass"       => $this->getFileClass($mimetype)
+            "fileClass"       => Utils::getFileClass($mimetype)
         );
 
         return $files;
     }
-
-
-    /**
-     * @param $mimetype
-     * @return string
-     */
-    private function getFileClass($mimetype)
-    {
-        switch ($mimetype) {
-            case 'directory':
-                $fileclass = "dir";
-                break;
-            case 'application/pdf':
-                $fileclass = "pdf";
-                break;
-            case 'application/zip':
-            case 'application/x-gzip':
-            case 'application/x-bzip2':
-            case 'application/x-zip':
-            case 'application/x-rar':
-            case 'application/x-tar':
-                $fileclass = "zip";
-                break;
-            case 'video/mp4':
-            case 'video/ogg':
-            case 'video/mpeg':
-            case 'application/ogg':
-                $fileclass = "video";
-                break;
-            case 'audio/ogg':
-            case 'audio/mpeg':
-                $fileclass = "audio";
-                break;
-            case 'image/jpeg':
-            case 'image/jpg':
-            case 'image/gif':
-            case 'image/png':
-                $fileclass = "image";
-                break;
-            case 'image/svg+xml':
-                $fileclass = "svg";
-                break;
-            case 'text/x-shellscript':
-                $fileclass = 'shellscript';
-                break;
-            case 'text/html':
-            case 'text/javascript':
-            case 'text/css':
-            case 'text/xml':
-            case 'application/javascript':
-            case 'application/xml':
-                $fileclass = "code";
-                break;
-            case 'text/x-php':
-                $fileclass = "php";
-                break;
-            case 'application/x-shockwave-flash':
-                $fileclass = 'swf';
-                break;
-            default:
-                $fileclass = "default";
-                break;
-        }
-
-        return $fileclass;
-    }
-
 
     /**
      * Return the usages locations of the file.
@@ -453,7 +386,7 @@ class MediaService
      */
     public function createDirArray($file, $filepath, $dir_path)
     {
-        $file_size = $this->humanFilesize($filepath);
+        $file_size = Utils::readableSize(filesize($filepath));
         $file_modification = filemtime($filepath);
 
         $new_dir_path = Utils::DirTrim($dir_path, $file, true);
@@ -530,20 +463,6 @@ class MediaService
         }
 
         return $mimetype;
-    }
-
-    /**
-     * @param string $filepath
-     * @param int    $decimals
-     * @return string
-     */
-    public function humanFilesize($filepath, $decimals = 2)
-    {
-        $bytes = filesize($filepath);
-        $sz = array('B', 'KB', 'MB', 'GB');
-        $factor = (int) floor((strlen($bytes) - 1) / 3);
-
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor];
     }
 
     /**
