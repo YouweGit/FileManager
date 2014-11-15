@@ -10,6 +10,7 @@ use Youwe\MediaBundle\Services\MediaService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Youwe\MediaBundle\Model\Media;
+use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class MediaController
@@ -229,7 +230,7 @@ class MediaController extends Controller {
             $dir = $service->getFilePath($dir_path, $filename);
             $filepath = $dir . DIRECTORY_SEPARATOR . $filename;
 
-            $file_size = $service->humanFilesize($filepath);
+            $file_size = Utils::readableSize(filesize($filepath));
             $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
             $mimetype = mime_content_type($filepath);
 

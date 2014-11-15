@@ -176,7 +176,7 @@ class Media {
             $this->setDir($this->getUploadPath());
             $this->setDirPath("");
         } else {
-            $this->setDirPath($dir_path);
+            $this->setDirPath(Utils::DirTrim($dir_path));
             $this->setDir($this->getUploadPath().DIRECTORY_SEPARATOR.$dir_path);
         }
 
