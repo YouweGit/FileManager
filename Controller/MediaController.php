@@ -65,7 +65,6 @@ class MediaController extends Controller {
         try{
             $dir = $service->getFilePath($dir_path, $filename);
             $service->checkToken($request->get('token'));
-            $service->checkPath($dir);
             $driver->deleteFile($dir, $filename);
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
@@ -131,7 +130,6 @@ class MediaController extends Controller {
         try{
             $dir = $service->getFilePath($dir_path, $filename);
             $service->checkToken($request->get('token'));
-            $service->checkPath($dir);
             $sources = array(
                 'display_dir' => $dir_path,
                 'source_dir' => $dir,
@@ -168,7 +166,6 @@ class MediaController extends Controller {
         try{
             $dir = $service->getFilePath($dir_path, $filename);
             $service->checkToken($request->get('token'));
-            $service->checkPath($dir);
             $sources = $this->get('session')->get('copy');
             $filename = $sources['source_file'];
             $targets = array('target_dir' => $dir, 'target_file' => $filename);
@@ -202,7 +199,6 @@ class MediaController extends Controller {
         try{
             $dir = $service->getFilePath($dir_path, $zip_name);
             $service->checkToken($request->get('token'));
-            $service->checkPath($dir);
             $driver->extractZip($dir, $zip_name);
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
