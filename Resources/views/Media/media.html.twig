@@ -61,7 +61,7 @@
             </div>
             <div class="panel-body">
                 <ul>
-                    <li>
+                    <li {% if current_path is empty %}class="dir_active"{% endif %}>
                         <span class="yw_media_directory_line">
                             <span class="toggleDir"><i class="fa fa-caret-down"></i></span>
                             <span class="yw_media_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>

@@ -1,12 +1,15 @@
 <?php
 
-namespace Youwe\MediaBundle\Services;
+namespace Youwe\MediaBundle\Model;
+
+use Youwe\MediaBundle\Services\MediaService;
+use Youwe\MediaBundle\Services\Utils;
 
 /**
- * Class MediaSettings
- * @package Youwe\MediaBundle\Services
+ * Class Media
+ * @package Youwe\MediaBundle\Model
  */
-class MediaSettings {
+class Media {
 
     /** @var  array - All allowed extensions*/
     private $extensions_allowed;
@@ -157,9 +160,9 @@ class MediaSettings {
     {
         $web_path = $this->web_path;
         if (!is_null($dir_path)) {
-            $web_path = Utils::DirTrim($web_path, $dir_path);
+            $web_path = DIRECTORY_SEPARATOR . Utils::DirTrim($web_path, $dir_path);
         }
-        return DIRECTORY_SEPARATOR . $web_path;
+        return $web_path;
     }
 
     /**

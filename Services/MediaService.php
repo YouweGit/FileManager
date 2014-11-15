@@ -7,6 +7,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
 use Youwe\MediaBundle\Driver\MediaDriver;
+use Youwe\MediaBundle\Model\Media;
 
 /**
  * Class MediaService
@@ -173,7 +174,7 @@ class MediaService
     {
         $this->container = $container;
         $parameters = $this->container->getParameter('youwe_media');
-        $this->settings = new MediaSettings($parameters);
+        $this->settings = new Media($parameters);
     }
 
     /**
@@ -598,11 +599,11 @@ class MediaService
 
     /**
      * @author Jim Ouwerkerk
-     * @param MediaSettings $settings
+     * @param Media $settings
      * @param               $form
      * @return array
      */
-    public function getRenderOptions(MediaSettings $settings, Form $form)
+    public function getRenderOptions(Media $settings, Form $form)
     {
 
 
