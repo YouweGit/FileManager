@@ -112,6 +112,7 @@ var Media = function () {
                 back: "#back_btn",
                 forward: "#forward_btn",
                 upload: "#upload_file_btn",
+                download: "#download_btn",
                 folder: "#new_folder_btn",
                 blockView: "#set_display_block",
                 listView: "#set_display_list"
@@ -151,6 +152,7 @@ var Media = function () {
             subItems: {
                 preview_img: {name: "Preview", icon: "preview"},
                 preview_vid: {name: "Preview", icon: "preview"},
+                download: {name: "Download", icon: "download"},
                 rename: {name: "New Directory", icon: "rename"},
                 extract: {name: "Extract", icon: "extract"},
                 new_dir: {name: "New Directory", icon: "newdir"}
@@ -162,6 +164,7 @@ var Media = function () {
             extract: "youwe_media_extract",
             fileInfo: "youwe_media_fileinfo",
             move: "youwe_media_move",
+            download: "youwe_media_download",
             paste: "youwe_media_paste",
             copy: "youwe_media_copy"
         },
@@ -177,19 +180,23 @@ var Media = function () {
          * @param {{token: (*|jQuery), dir_path: *}} data
          * @param {string} method
          * @param {bool=true} reloadList
+         * @param {bool=true} reloadFileList
          */
-        ajaxRequest = function (url, data, method, reloadList) {
+        ajaxRequest = function (url, data, method, reloadList, reloadFileList) {
             reloadList = (reloadList === undefined) ? true : reloadList;
+            reloadFileList = (reloadFileList === undefined) ? true : reloadFileList;
             $.ajax({
                 type: method,
                 async: false,
                 url: url,
                 data: data,
-                success: function () {
+                success: function (data) {
                     if (reloadList === true) {
                         self.reloadDirList();
                     }
-                    self.reloadFileList();
+                    if (reloadFileList === true) {
+                        self.reloadFileList();
+                    }
                     return true;
                 },
                 error: function (xhr) {
@@ -284,6 +291,23 @@ var Media = function () {
                 rename_origin_ext + '">');
             active_input = true;
             $(selectors.fields.renameItem).focus();
+        },
+
+        /**
+         * Download the selected file
+         * @param {jQuery} file_element
+         */
+        downloadFile = function (file_element) {
+            var file_name = file_element.find("span").html(),
+                dir_path = (activePath !== null ? activePath : ""),
+                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name}),
+                data = {
+                    token: $(selectors.fields.token).val(),
+                    dir_path: activePath,
+                    filename: file_name
+                };
+            window.open(route, '_blank');
+            //ajaxRequest(route, data, "POST", false, false);
         },
 
         /**
@@ -805,6 +829,7 @@ var Media = function () {
         },
 
         disableToolbarItems = function () {
+            $(selectors.buttons.download).attr("disabled", "disabled");
             $(selectors.buttons.select).attr("disabled", "disabled");
             $(selectors.buttons.rename).attr("disabled", "disabled");
             $(selectors.buttons.extract).attr("disabled", "disabled");
@@ -820,11 +845,14 @@ var Media = function () {
             $(selectors.buttons.delete).removeAttr("disabled", "disabled");
             $(selectors.buttons.copy).removeAttr("disabled", "disabled");
             $(selectors.buttons.cut).removeAttr("disabled", "disabled");
+            $(selectors.buttons.download).removeAttr("disabled", "disabled");
 
             if (selected_item.hasClass(selectors.classes.mediaDir)) {
+                $(selectors.buttons.download).attr("disabled", "disabled");
                 $(selectors.buttons.copy).attr("disabled", "disabled");
                 $(selectors.buttons.cut).attr("disabled", "disabled");
             } else {
+                $(selectors.buttons.download).removeAttr("disabled", "disabled");
                 $(selectors.buttons.copy).removeAttr("disabled", "disabled");
                 $(selectors.buttons.cut).removeAttr("disabled", "disabled");
             }
@@ -979,6 +1007,8 @@ var Media = function () {
                 addFolder();
             }).on("click", selectors.buttons.upload, function () {
                 upload_modal.modal({show: true});
+            }).on("click", selectors.buttons.download, function () {
+                downloadFile(selected_item);
             }).on("click", selectors.buttons.select, function () {
                 selected_item.dblclick();
             }).on("click", selectors.buttons.copy, function () {

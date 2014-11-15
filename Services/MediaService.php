@@ -543,4 +543,14 @@ class MediaService
 
         return $options;
     }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param $file_path
+     * @return int
+     */
+    public function getFileSize($file_path)
+    {
+        return filesize($file_path);
+    }
 }

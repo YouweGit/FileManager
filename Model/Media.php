@@ -156,11 +156,14 @@ class Media {
      * @param null $dir_path
      * @return string
      */
-    public function getWebPath($dir_path = null)
+    public function getWebPath($dir_path = null, $filename = null)
     {
         $web_path = $this->web_path;
         if (!is_null($dir_path)) {
             $web_path = DIRECTORY_SEPARATOR . Utils::DirTrim($web_path, $dir_path);
+        }
+        if (!is_null($filename)) {
+            $web_path = DIRECTORY_SEPARATOR . Utils::DirTrim($web_path, $filename);
         }
         return $web_path;
     }

@@ -2,8 +2,14 @@
 
 namespace Youwe\MediaBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Annotation\Route;
 use Youwe\MediaBundle\Driver\MediaDriver;
 use Youwe\MediaBundle\Form\Type\MediaType;
 use Youwe\MediaBundle\Services\MediaService;
@@ -19,6 +25,13 @@ use Youwe\MediaBundle\Services\Utils;
 class MediaController extends Controller {
 
     /**
+     * @Route(
+     *      "/list/{dir_path}",
+     *      name="youwe_media_list",
+     *      defaults={"dir_path":null},
+     *      options={"expose":true},
+     *      requirements={"dir_path":".+"}
+     * )
      * @param string $dir_path
      * @return Response
      */
@@ -47,10 +60,14 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/delete", name="youwe_media_delete", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function deleteFileAction(){
+    public function deleteFileAction(Request $request){
         $response = new Response();
 
         /** @var MediaDriver $driver */
@@ -59,7 +76,6 @@ class MediaController extends Controller {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $request = $this->getRequest();
         $dir_path = $request->get('dir_path');
         $filename = $request->get('filename');
 
@@ -75,10 +91,14 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/move", name="youwe_media_move", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function moveFileAction(){
+    public function moveFileAction(Request $request){
         $response = new Response();
 
         /** @var MediaDriver $driver */
@@ -86,8 +106,6 @@ class MediaController extends Controller {
 
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-
-        $request = $this->getRequest();
 
         $dir_path = $request->get('dir_path');
         $filename = $request->get('filename');
@@ -108,17 +126,19 @@ class MediaController extends Controller {
 
 
     /**
+     * @Route("/copy", name="youwe_media_copy", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @param type - copy or cut
      * @throws \Exception
      * @return bool
      */
-    public function copyFileAction($type){
+    public function copyFileAction(Request $request, $type){
         $response = new Response();
 
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-
-        $request = $this->getRequest();
 
         $dir_path = $request->get('dir_path');
         $filename = $request->get('filename');
@@ -147,10 +167,14 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/paste", name="youwe_media_paste", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function pasteFileAction(){
+    public function pasteFileAction(Request $request){
         $response = new Response();
 
         /** @var MediaDriver $driver */
@@ -158,8 +182,6 @@ class MediaController extends Controller {
 
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-
-        $request = $this->getRequest();
 
         $dir_path = $request->get('dir_path');
         $filename = $request->get('filename');
@@ -181,13 +203,16 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/extract", name="youwe_media_extract", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function extractZipAction(){
+    public function extractZipAction(Request $request){
         $response = new Response();
 
-        $request = $this->getRequest();
         $dir_path = $request->get('dir_path');
         $zip_name = $request->get('zip_name');
 
@@ -209,11 +234,14 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/fileinfo", name="youwe_media_fileinfo", options={"expose":true})
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function FileInfoAction(){
-        $request = $this->getRequest();
+    public function FileInfoAction(Request $request)
+    {
         $dir_path = $request->get('dir_path');
         $filename = $request->get('filename');
 
@@ -248,6 +276,28 @@ class MediaController extends Controller {
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
         }
+        return $response;
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @Route("/download/{path}", name="youwe_media_download", requirements={"path"=".+"}, options={"expose":true})
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function DownloadAction($path)
+    {
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = new Media($parameters);
+        $web_path = Utils::DirTrim($media->getWebPath($path));
+        $content = file_get_contents($web_path);
+        $filename = basename($path);
+        $response = new Response();
+
+        $response->headers->set('Content-Type', 'mime/type');
+        $response->headers->set('Content-Disposition', 'attachment;filename="'.$filename);
+        $response->setContent($content);
         return $response;
     }
 }
