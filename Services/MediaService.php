@@ -224,6 +224,22 @@ class MediaService
         }
     }
 
+    public function getDisplayType()
+    {
+        /** @var Session $session */
+        $session = $this->container->get('session');
+        $display_type = $session->get('display_media_type');
+
+        if($this->container->get('request')->get('display_type') != null){
+            $display_type = $this->container->get('request')->get('display_type');
+            $session->set('display_media_type', $display_type);
+        } else if (is_null($display_type)){
+            $display_type = "file_body_block";
+        }
+
+        $file_body_display = $display_type !== null ? $display_type : "file_body_block" ;
+        return $file_body_display;
+    }
     /**
      * @param      $dir_path
      * @param      $filename
@@ -574,5 +590,32 @@ class MediaService
                 throw new \Exception($form->getErrorsAsString(), 500);
             }
         }
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param MediaSettings $settings
+     * @param               $form
+     * @return array
+     */
+    public function getRenderOptions(MediaSettings $settings, Form $form) {
+        $folder_array = explode(DIRECTORY_SEPARATOR, $settings->getUploadPath());
+
+        $dir_files = scandir($settings->getDir());
+        $root_dirs = scandir($settings->getUploadPath());
+
+        $options['files'] = $this->getFileTree($dir_files, $settings->getDir(), $settings->getDirPath());
+        $options['file_body_display'] = $this->getDisplayType();
+        $options['root_folder'] = array_pop($folder_array);
+        $options['dirs'] = $this->getDirectoryTree($root_dirs, $settings->getUploadPath(), "");
+        $options['isPopup'] = $this->container->get('request')->get('popup');
+        $options['copy_file'] = $this->container->get('session')->get('copy');
+        $options['current_path'] = $settings->getDirPath();
+        $options['form'] = $form->createView();
+        $options['upload_allow'] = $settings->getExtensionsAllowed();
+        $options['extended_template'] = $settings->getExtendedTemplate();
+        $options['usages'] = $settings->getUsagesClass();
+
+        return $options;
     }
 }

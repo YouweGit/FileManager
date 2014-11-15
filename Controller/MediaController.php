@@ -9,6 +9,7 @@ use Youwe\MediaBundle\Form\Type\MediaType;
 use Youwe\MediaBundle\Services\MediaService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Youwe\MediaBundle\Services\MediaSettings;
 
 /**
  * Class MediaController
@@ -23,71 +24,26 @@ class MediaController extends Controller {
     public function listMediaAction($dir_path = null)
     {
         $parameters = $this->container->getParameter('youwe_media');
-        $extensions_allowed = $parameters['mime_allowed'];
-        $extended_template = $parameters['extended_template'];
-        $template = $parameters['template'];
-        $root = $parameters['upload_path'];
-
-        if(is_null($dir_path)){
-            $dir = $root;
-            $dir_path = "";
-        } else {
-            $dir = $root.DIRECTORY_SEPARATOR.$dir_path;
-        }
+        $settings = new MediaSettings($parameters);
 
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $path_valid = $service->checkPath($dir);
-        if(!$path_valid){
-            $dir = $root;
-        }
+        $settings->setDirPaths($service, $dir_path);
 
         $form = $this->createForm(new MediaType);
         try{
-            $service->handleFormSubmit($form, $dir);
+            $service->handleFormSubmit($form, $settings->getDir());
         } catch(\Exception $e){
             $response = new Response();
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
             return $response;
         }
-        $folder_array = explode(DIRECTORY_SEPARATOR,$root);
-        $root_folder = array_pop($folder_array);
 
-        $dir_files = scandir($dir);
-        $root_dirs = scandir($root);
+        $renderParameters = $service->getRenderOptions($settings, $form);
 
-        /** @var Session $session */
-        $session = $this->get('session');
-        $display_type = $session->get('display_media_type');
-
-        if($this->getRequest()->get('display_type') != null){
-            $display_type = $this->getRequest()->get('display_type');
-            $session->set('display_media_type', $display_type);
-        } else if (is_null($display_type)){
-            $display_type = "file_body_block";
-        }
-
-        $file_body_display = $display_type !== null ? $display_type : "file_body_block" ;
-
-        $files = $service->getFileTree($dir_files, $dir, $dir_path);
-        $dirs = $service->getDirectoryTree($root_dirs, $root, "");
-        $isPopup = $this->getRequest()->get('popup');
-        $copy = $this->get('session')->get('copy');
-        return $this->render($template, array(
-            "copy_file" => $copy,
-            "files" => $files,
-            "dirs" => $dirs,
-            "current_path" => $dir_path,
-            "root_folder" => $root_folder,
-            "form" => $form->createView(),
-            "upload_allow" => $extensions_allowed,
-            "extended_template" => $extended_template,
-            "usages" => $parameters['usage_class'],
-            "isPopup" => $isPopup,
-            "file_body_display" => $file_body_display,
-        ));
+        return $this->render($settings->getTemplate(), $renderParameters);
     }
 
     /**
@@ -265,7 +221,8 @@ class MediaController extends Controller {
         $filename = $request->get('filename');
 
         $parameters = $this->container->getParameter('youwe_media');
-        $root = explode(DIRECTORY_SEPARATOR,$parameters['upload_path']);
+        $settings = new MediaSettings($parameters);
+        $root = explode(DIRECTORY_SEPARATOR, $settings->getUploadPath());
         $web_root = end($root);
 
         /** @var MediaService $service */
