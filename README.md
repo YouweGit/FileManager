@@ -72,17 +72,12 @@ youwe_media:
         - 'multipart/x-zip'
         - 'application/rar'
         - 'application/x-rar-compressed'
+        - 'application/x-zip-compressed'
         - 'application/tar'
         - 'application/x-tar'
-        - 'text/html'
-        - 'text/javascript'
-        - 'text/css'
-        - 'text/xml'
         - 'text/plain'
         - 'text/x-asm'
-        - 'application/xml'
         - 'application/octet-stream'
-        - 'application/x-shockwave-flash'
 ```
 Optional config:
 

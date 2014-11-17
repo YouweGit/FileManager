@@ -23,7 +23,25 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('mime_allowed')
                     ->prototype('scalar')->end()
-                    ->defaultValue(array('image'))->cannotBeEmpty()
+                    ->defaultValue(array(
+                        'image/png',
+                        'image/jpg',
+                        'image/jpeg',
+                        'image/gif',
+                        'application/pdf',
+                        'application/ogg',
+                        'video/mp4',
+                        'application/zip',
+                        'multipart/x-zip',
+                        'application/rar',
+                        'application/x-rar-compressed',
+                        'application/x-zip-compressed',
+                        'application/tar',
+                        'application/x-tar',
+                        'text/plain',
+                        'text/x-asm',
+                        'application/octet-stream'
+                    ))->cannotBeEmpty()
                 ->end()
                 ->booleanNode('full_exception')->defaultValue(false)->end()
                 ->scalarNode('upload_path')->defaultValue('/uploads')->cannotBeEmpty()->end()
