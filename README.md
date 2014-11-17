@@ -53,12 +53,11 @@ Step 3: Set the config
 
 ```yml
 Default Configuration:
-# app/config/config.yml
 youwe_media:
-    upload_path:        %kernel.root_dir%/../web/uploads
-    usage_class: ~
-    template: ~
-    extended_template: ~
+    upload_path: %kernel.root_dir%/../web/uploads
+    usage_class: false
+    extended_template: YouweMediaBundle:Media:media_layout.html.twig
+    template: YouweMediaBundle:Media:media.html.twig
     full_exceptions: false
     mime_allowed:
         - 'image/png'
