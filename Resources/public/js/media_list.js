@@ -1056,6 +1056,12 @@ var Media = function () {
                 }
             });
 
+            /** Make the back/forward button work */
+            window.addEventListener("popstate", function(e) {
+                current_index -= 1;
+                navigateHistory();
+            });
+
             /**
              * Disable everything under the loading screen when the loading screen is visible
              */
