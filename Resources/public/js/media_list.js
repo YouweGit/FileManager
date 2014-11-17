@@ -389,7 +389,7 @@ var Media = function () {
                 data = {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath,
-                    zip_name: zip_name
+                    filename: zip_name
                 };
             ajaxRequest(new_dir_route, data, "POST");
         },

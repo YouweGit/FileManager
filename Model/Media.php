@@ -2,6 +2,7 @@
 
 namespace Youwe\MediaBundle\Model;
 
+use Symfony\Component\HttpFoundation\Request;
 use Youwe\MediaBundle\Services\MediaService;
 use Youwe\MediaBundle\Services\Utils;
 
@@ -9,15 +10,16 @@ use Youwe\MediaBundle\Services\Utils;
  * Class Media
  * @package Youwe\MediaBundle\Model
  */
-class Media {
+class Media
+{
 
-    /** @var  array - All allowed extensions*/
+    /** @var  array - All allowed extensions */
     private $extensions_allowed;
 
-    /** @var  string - Extended Template*/
+    /** @var  string - Extended Template */
     private $extended_template;
 
-    /** @var  string - Template*/
+    /** @var  string - Template */
     private $template;
 
     /** @var  string - Upload path */
@@ -35,10 +37,23 @@ class Media {
     /** @var  string */
     private $web_path;
 
+    /** @var  string */
+    private $filename = null;
+
+    /** @var  string */
+    private $filepath = null;
+
+    /** @var  string */
+    private $target_filename = null;
+
+    /** @var  string */
+    private $target_filepath = null;
+
     /**
      * @param array $parameters
      */
-    public function __construct(array $parameters){
+    public function __construct(array $parameters)
+    {
         $this->setExtensionsAllowed($parameters['mime_allowed']);
         $this->setExtendedTemplate($parameters['extended_template']);
         $this->setTemplate($parameters['template']);
@@ -50,98 +65,144 @@ class Media {
     /**
      * @return string
      */
-    public function getExtendedTemplate() {
+    public function getExtendedTemplate()
+    {
         return $this->extended_template;
     }
 
     /**
      * @param string $extended_template
      */
-    public function setExtendedTemplate($extended_template) {
+    public function setExtendedTemplate($extended_template)
+    {
         $this->extended_template = $extended_template;
     }
 
     /**
      * @return array
      */
-    public function getExtensionsAllowed() {
+    public function getExtensionsAllowed()
+    {
         return $this->extensions_allowed;
     }
 
     /**
      * @param array $extensions_allowed
      */
-    public function setExtensionsAllowed($extensions_allowed) {
+    public function setExtensionsAllowed($extensions_allowed)
+    {
         $this->extensions_allowed = $extensions_allowed;
     }
 
     /**
      * @return string
      */
-    public function getUploadPath() {
+    public function getUploadPath()
+    {
         return $this->upload_path;
     }
 
     /**
      * @param string $root
      */
-    public function setUploadPath($root) {
+    public function setUploadPath($root)
+    {
         $this->upload_path = $root;
     }
 
     /**
      * @return string
      */
-    public function getTemplate() {
+    public function getTemplate()
+    {
         return $this->template;
     }
 
     /**
      * @param string $template
      */
-    public function setTemplate($template) {
+    public function setTemplate($template)
+    {
         $this->template = $template;
     }
 
     /**
      * @return string
      */
-    public function getDir() {
+    public function getDir()
+    {
         return $this->dir;
     }
 
     /**
      * @param string $dir
      */
-    public function setDir($dir) {
+    public function setDir($dir)
+    {
         $this->dir = $dir;
     }
 
     /**
      * @return string
      */
-    public function getDirPath() {
+    public function getDirPath()
+    {
         return $this->dir_path;
     }
 
     /**
      * @param string $dir_path
      */
-    public function setDirPath($dir_path) {
+    public function setDirPath($dir_path)
+    {
         $this->dir_path = $dir_path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @param string $filename
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilepath()
+    {
+        return $this->filepath;
+    }
+
+    /**
+     * @param string $filepath
+     */
+    public function setFilepath($filepath)
+    {
+        $this->filepath = $filepath;
     }
 
     /**
      * @return mixed
      */
-    public function getUsagesClass() {
+    public function getUsagesClass()
+    {
         return $this->usages_class;
     }
 
     /**
      * @param mixed $usages_class
      */
-    public function setUsagesClass($usages_class) {
+    public function setUsagesClass($usages_class)
+    {
         $this->usages_class = $usages_class;
     }
 
@@ -160,7 +221,7 @@ class Media {
      */
     public function getPath($dir_path = null, $filename = null, $full_path = false)
     {
-        if($full_path){
+        if ($full_path) {
             $path = $this->upload_path;
         } else {
             $path = $this->web_path;
@@ -174,49 +235,68 @@ class Media {
         return $path;
     }
 
-    public function checkPath(){
-        if (($filename == "" && !is_null($target_file))) {
-            throw new \Exception("Filename cannot be empty when there is a target path");
-        }
-
-        $root = $this->settings->getUploadPath();
-
-        if (empty($dir_path)) {
-            $dir = $root;
-        } else {
-            $dir = str_replace("../", "", $dir_path);
-        }
-
-        try {
-            $this->checkPath($dir);
-            if (!is_null($target_file)) {
-                $this->checkPath($target_file);
-            }
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), $e->getCode());
-        }
-
-        return $dir;
-    }
-
     /**
      * @author Jim Ouwerkerk
      * @param MediaService $service
      * @param              $dir_path
      * @throws \Exception
      */
-    public function setDirPaths(MediaService $service, $dir_path) {
-        if(is_null($dir_path)){
+    public function setDirPaths(MediaService $service, $dir_path)
+    {
+        if (is_null($dir_path)) {
             $this->setDir($this->getUploadPath());
             $this->setDirPath("");
         } else {
             $this->setDirPath(Utils::DirTrim($dir_path));
-            $this->setDir($this->getUploadPath().DIRECTORY_SEPARATOR.$dir_path);
+            $this->setDir($this->getUploadPath() . DIRECTORY_SEPARATOR . $dir_path);
         }
 
         $path_valid = $service->checkPath($this->getDir());
-        if(!$path_valid){
+        if (!$path_valid) {
             $this->setDir($this->getUploadPath());
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getTargetFilepath()
+    {
+        return $this->target_filepath;
+    }
+
+    /**
+     * @param string $target_filepath
+     */
+    public function setTargetFilepath($target_filepath)
+    {
+        $this->target_filepath = $target_filepath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTargetFilename()
+    {
+        return $this->target_filename;
+    }
+
+    /**
+     * @param string $target_filename
+     */
+    public function setTargetFilename($target_filename)
+    {
+        $this->target_filename = $target_filename;
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param Request $request
+     */
+    public function resolveRequest(Request $request)
+    {
+        $this->setDirPath($request->get('dir_path'));
+        $this->setFilename($request->get('filename'));
+        $this->setTargetFilepath($request->get('target_file'));
     }
 }

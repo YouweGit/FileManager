@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
+use Youwe\MediaBundle\Model\Media;
 use Youwe\MediaBundle\Services\Utils;
 
 /**
@@ -145,18 +146,17 @@ class MediaDriver
     }
 
     /**
-     * @param array $sources
-     * @param array $targets
+     * @param Media $media
      * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
      * @return bool
      */
-    public function pasteFile($sources, $targets){
+    public function pasteFile(Media $media, $type){
         try{
-            $source_dir = $sources['source_dir'];
-            $source_file =  $sources['source_file'];
+            $source_dir = $media->getFilepath();
+            $source_file =  $media->getFilename();
 
-            $target_dir = $targets['target_dir'];
-            $target_file = $targets['target_file'];
+            $target_dir = $media->getTargetFilepath();
+            $target_file = $media->getTargetFilename();
 
             $source_file_path = Utils::DirTrim($source_dir, $source_file, true);
             $target_file_path = Utils::DirTrim($target_dir, $target_file, true);
@@ -167,7 +167,7 @@ class MediaDriver
             if(!file_exists($target_file_path)) {
                 $fileSystem->copy($source_file_path, $target_file_path);
 
-                $cut = $sources['cut'];
+                $cut = $type;
                 if ($cut) {
                     $fileSystem->remove($source_file_path);
                 }

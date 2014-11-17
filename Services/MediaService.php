@@ -229,31 +229,32 @@ class MediaService
     }
 
     /**
-     * @param      $dir_path
-     * @param      $filename
-     * @param null $target_file
+     * @param Media $media
      * @throws \Exception
      * @return bool|string
      */
-    public function getFilePath($dir_path, $filename, $target_file = null)
+    public function getFilePath(Media $media)
     {
-        if (($filename == "" && !is_null($target_file))) {
+        if (($media->getFilename() == "" && !is_null($media->getTargetFilepath()))) {
             throw new \Exception("Filename cannot be empty when there is a target path");
         }
 
-        $root = $this->settings->getUploadPath();
-
+        $root = $media->getUploadPath();
+        $dir_path = $media->getDirPath();
         if (empty($dir_path)) {
             $dir = $root;
         } else {
+            if(strcasecmp("../", $dir_path) >= 1){
+                throw new \Exception("Invalid filepath or filename");
+            }
             $dir_path = str_replace("../", "", $dir_path);
             $dir = $root . DIRECTORY_SEPARATOR . $dir_path;
         }
 
         try {
             $this->checkPath($dir);
-            if (!is_null($target_file)) {
-                $this->checkPath($target_file);
+            if (!is_null($media->getTargetFilepath())) {
+                $this->checkPath($media->getTargetFilepath());
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
