@@ -48,6 +48,17 @@ class AppKernel extends Kernel
 }
 ```
 
+Add the bundle in the the assetic config:
+
+```yml
+# Assetic Configuration
+assetic:
+    #...
+    bundles:        [ YouweMediaBundle, ... ]
+    #...
+
+```
+
 Step 3: Set the config
 -------------------------
 
