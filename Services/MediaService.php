@@ -254,42 +254,13 @@ class MediaService
     {
         foreach ($dir_files as $file) {
             $filepath = Utils::DirTrim($dir, $file, true);
+
+            //Only show non-hidden files
             if ($file[0] != ".") {
-                if (is_dir($filepath)) {
-                    $files[] = $this->createDirArray($file, $filepath, $dir_path);
-                } else {
-                    $files[] = new FileInfo($filepath, $this->getMedia());
-                }
+                $files[] = new FileInfo($filepath, $this->getMedia());
             }
         }
         return $files;
-    }
-
-    /**
-     * @param $file
-     * @param $filepath
-     * @param $dir_path
-     * @return array
-     */
-    public function createDirArray($file, $filepath, $dir_path)
-    {
-        $file_size = Utils::readableSize(filesize($filepath));
-        $file_modification = filemtime($filepath);
-
-        $new_dir_path = Utils::DirTrim($dir_path, $file, true);
-        $filetype = "directory";
-
-        $dirs = array(
-            "mimetype"     => $filetype,
-            "readableType" => Utils::$humanReadableTypes[$filetype],
-            "name"         => $file,
-            "size"         => $file_size,
-            "path"         => trim($new_dir_path, DIRECTORY_SEPARATOR),
-            "modified"     => date("Y-m-d H:m:s", $file_modification),
-            "usages"       => ""
-        );
-
-        return $dirs;
     }
 
     /**
