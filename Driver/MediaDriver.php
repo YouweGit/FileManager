@@ -45,51 +45,52 @@ class MediaDriver
     public $usage_class;
 
     /**
+     * @var Media
+     */
+    private $media;
+
+    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-
-        $parameters = $this->container->getParameter('youwe_media');
-        $this->upload_path = $parameters['upload_path'];
-        $this->mime_allowed = $parameters['mime_allowed'];
-        $this->full_exception = $parameters['full_exception'];
     }
 
 
     /**
-     * @param array $files
-     * @param string $dir
-     * @return bool
-     * @throws \Exception - when mimetype is not valid
+     * @return Media
      */
-    public function handleFiles($files, $dir){
-        /** @var UploadedFile $file */
-        foreach($files as $file){
+    public function getMedia()
+    {
+        return $this->media;
+    }
 
-            $extension = $file->guessExtension();
-            if (!$extension) {
-                $extension = 'bin';
-            }
+    /**
+     * @param Media $media
+     */
+    public function setMedia(Media $media)
+    {
+        $this->media = $media;
+    }
 
-            if(in_array($file->getClientMimeType(), $this->mime_allowed)){
+    /**
+     * @param UploadedFile $file
+     * @param              $extension
+     * @param string       $dir
+     * @return bool
+     */
+    public function handleUploadedFiles(UploadedFile $file, $extension, $dir){
+        $original_file = $file->getClientOriginalName();
+        $path_parts = pathinfo($original_file);
 
-                $original_file = $file->getClientOriginalName();
-                $path_parts = pathinfo($original_file);
-
-                $increment = '';
-                while(file_exists($dir . DIRECTORY_SEPARATOR . $path_parts['filename'] . $increment . '.' . $extension)) {
-                    $increment++;
-                }
-
-                $basename = $path_parts['filename'] . $increment . '.' . $extension;
-                $file->move($dir,$basename);
-            } else {
-                $this->throwError("Mimetype is not allowed", 500);
-            }
+        $increment = '';
+        while(file_exists($dir . DIRECTORY_SEPARATOR . $path_parts['filename'] . $increment . '.' . $extension)) {
+            $increment++;
         }
-        return true;
+
+        $basename = $path_parts['filename'] . $increment . '.' . $extension;
+        $file->move($dir,$basename);
     }
 
     /**
@@ -150,13 +151,13 @@ class MediaDriver
      * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
      * @return bool
      */
-    public function pasteFile(Media $media, $type){
+    public function pasteFile($type){
         try{
-            $source_dir = $media->getFilepath();
-            $source_file =  $media->getFilename();
+            $source_dir = $this->getMedia()->getFilepath();
+            $source_file =  $this->getMedia()->getFilename();
 
-            $target_dir = $media->getTargetFilepath();
-            $target_file = $media->getTargetFilename();
+            $target_dir = $this->getMedia()->getTargetFilepath();
+            $target_file = $this->getMedia()->getTargetFilename();
 
             $source_file_path = Utils::DirTrim($source_dir, $source_file, true);
             $target_file_path = Utils::DirTrim($target_dir, $target_file, true);
@@ -226,7 +227,7 @@ class MediaDriver
     }
 
     /**
-     * Validate the files to check if they have a valid filetype
+     * Validate the files to check if they have a valid file type
      * @param string $dir
      * @param string $filename
      * @param null   $new_filename
@@ -250,7 +251,7 @@ class MediaDriver
      * @return string
      */
     public function createTmpDir(Filesystem $fm){
-        $tmp_dir = $this->upload_path . DIRECTORY_SEPARATOR . "." . strtotime("now");
+        $tmp_dir = $this->getMedia()->getUploadPath() . DIRECTORY_SEPARATOR . "." . strtotime("now");
         $fm->mkdir($tmp_dir);
         return $tmp_dir;
     }
@@ -282,7 +283,7 @@ class MediaDriver
         $mime = mime_content_type($name);
 
         if($mime !=  'directory'){
-            if (!in_array($mime, $this->mime_allowed)) {
+            if (!in_array($mime, $this->getMedia()->getExtensionsAllowed())) {
                 return 'Mime type "'.mime_content_type($name).'" not allowed for file "'. basename($name) .'"';
             }
             return true;
@@ -299,8 +300,8 @@ class MediaDriver
      * @param null|\Exception $e      - The actual exception
      * @throws \Exception
      */
-    private function throwError($string, $code = 500, $e = null) {
-        if(!$this->full_exception || is_null($e)){
+    public function throwError($string, $code = 500, $e = null) {
+        if(!$this->getMedia()->isFullException() || is_null($e)){
             throw new \Exception($string, $code);
         } else {
             throw new \Exception($string. ": ". $e->getMessage(), $code);

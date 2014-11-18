@@ -1045,11 +1045,18 @@ var Media = function () {
                 }
             });
             $(document).keydown(function(e) {
+                var is_disabled;
                 if (ctrlDown && (e.keyCode === cKey)) {
-                    copyFile(selected_item, 'copy');
+                    is_disabled = $(selectors.buttons.copy).attr("disabled");
+                    if(is_disabled !== "disabled"){
+                        copyFile(selected_item, 'copy');
+                    }
                 }
                 if (ctrlDown && (e.keyCode === xKey)) {
-                    copyFile(selected_item, 'cut');
+                    is_disabled = $(selectors.buttons.cut).attr("disabled");
+                    if(is_disabled !== "disabled"){
+                        copyFile(selected_item, 'cut');
+                    }
                 }
                 if (ctrlDown && (e.keyCode === vKey)) {
                     pasteFile();

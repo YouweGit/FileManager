@@ -2,7 +2,9 @@
 
 namespace Youwe\MediaBundle\Model;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Youwe\MediaBundle\Driver\MediaDriver;
 use Youwe\MediaBundle\Services\MediaService;
 use Youwe\MediaBundle\Services\Utils;
 
@@ -12,7 +14,6 @@ use Youwe\MediaBundle\Services\Utils;
  */
 class Media
 {
-
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
 
@@ -49,17 +50,45 @@ class Media
     /** @var  string */
     private $target_filepath = null;
 
+    /** @var  MediaDriver */
+    private $driver;
+
+    /** @var  bool */
+    private $full_exception;
+
     /**
      * @param array $parameters
      */
-    public function __construct(array $parameters)
+    public function __construct(array $parameters, ContainerInterface $container)
     {
         $this->setExtensionsAllowed($parameters['mime_allowed']);
         $this->setExtendedTemplate($parameters['extended_template']);
         $this->setTemplate($parameters['template']);
         $this->setUploadPath($parameters['upload_path']);
         $this->setUsagesClass($parameters['usage_class']);
+        $this->setFullException($parameters['full_exception']);
         $this->setWebPath();
+
+        /** @var MediaDriver $driver */
+        $driver = $container->get('youwe.media.driver');
+        $this->setDriver($driver);
+        $driver->setMedia($this);
+    }
+
+    /**
+     * @return MediaDriver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @param MediaDriver $driver
+     */
+    public function setDriver($driver)
+    {
+        $this->driver = $driver;
     }
 
     /**
@@ -290,6 +319,22 @@ class Media
     }
 
     /**
+     * @return boolean
+     */
+    public function isFullException()
+    {
+        return $this->full_exception;
+    }
+
+    /**
+     * @param boolean $full_exception
+     */
+    public function setFullException($full_exception)
+    {
+        $this->full_exception = $full_exception;
+    }
+
+    /**
      * @author Jim Ouwerkerk
      * @param Request $request
      */
@@ -298,5 +343,33 @@ class Media
         $this->setDirPath($request->get('dir_path'));
         $this->setFilename($request->get('filename'));
         $this->setTargetFilepath($request->get('target_file'));
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param $dir
+     */
+    public function extractZip()
+    {
+        $this->getDriver()->extractZip($this->getDir(), $this->getFilename());
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param $type
+     */
+    public function pasteFile($type)
+    {
+        $this->getDriver()->pasteFile($this, $type);
+    }
+
+    public function moveFile()
+    {
+        $this->getDriver()->moveFile($this->getDir(), $this->getFilename(), $this->getTargetFilepath());
+    }
+
+    public function deleteFile()
+    {
+        $this->getDriver()->deleteFile($this->getDir(), $this->getFilename());
     }
 }
