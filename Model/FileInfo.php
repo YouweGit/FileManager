@@ -32,28 +32,33 @@ class FileInfo
     /** @var  int */
     private $usages;
 
-    /** @var  array */
-    private $usages_locations;
 
     /** @var  string */
     private $fileclass;
 
+    /** @var  string */
+    private $web_path;
+
     /**
-     * @param $filepath
+     * @param       $filepath
+     * @param Media $media
      */
-    public function __construct($filepath)
+    public function __construct($filepath, Media $media)
     {
         $filename = basename($filepath);
 
         $file_size = Utils::readableSize(filesize($filepath));
         $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
         $mimetype = mime_content_type($filepath);
+        $web_path = Utils::DirTrim($media->getPath($media->getDirPath()), $filename, true);
 
         $this->setFilename($filename);
         $this->setMimetype($mimetype);
         $this->setModified($file_modification);
         $this->setFileSize($file_size);
         $this->setFilepath($filepath);
+        $this->setWebPath($web_path);
+        $this->setUsages($media);
     }
 
     /**
@@ -118,7 +123,12 @@ class FileInfo
     public function setMimetype($mimetype)
     {
         $this->mimetype = $mimetype;
-        $this->setReadableType(Utils::$humanReadableTypes[$mimetype]);
+
+        if (isset(Utils::$humanReadableTypes[$mimetype])) {
+            $this->setReadableType(Utils::$humanReadableTypes[$mimetype]);
+        } else {
+            $this->setReadableType("Undefined");
+        }
         $this->setFileclass(Utils::getFileClass($mimetype));
     }
 
@@ -179,27 +189,45 @@ class FileInfo
     }
 
     /**
-     * @param int $usages
+     * @param Media $media
      */
-    public function setUsages($usages)
+    private function setUsages(Media $media)
     {
-        $this->usages = $usages;
+        $usages = array();
+        $usage_class = $media->getUsagesClass();
+        if ($usage_class != false) {
+            /** @var mixed $usage_object */
+            $usage_object = new $usage_class;
+            $usages_result = $usage_object->returnUsages($this->getFilepath());
+            if (!empty($usages_result)) {
+                $usages = $usages_result;
+            }
+        }
+        $this->usages = count($usages);
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getUsagesLocations()
+    public function getWebPath()
     {
-        return $this->usages_locations;
+        return $this->web_path;
     }
 
     /**
-     * @param array $usages_locations
+     * @param string $web_path
      */
-    public function setUsagesLocations($usages_locations)
+    public function setWebPath($web_path)
     {
-        $this->usages_locations = $usages_locations;
+        $this->web_path = $web_path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDir()
+    {
+        return is_dir($this->getFilepath());
     }
 
     /**
@@ -214,4 +242,5 @@ class FileInfo
         }
         return $result;
     }
+
 }

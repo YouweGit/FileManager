@@ -18,14 +18,14 @@
 </div>
 {% for file in files %}
     {% if file.mimetype != 'directory' %}
-        <div class="block_row yw_media_item yw_media_drag yw_media_type {{ file.fileClass }}">
+        <div class="block_row yw_media_item yw_media_drag yw_media_type {{ file.fileclass }}">
             <div class="block_holder">
-                <div class="{{ file.fileClass }}">
-                    {% if file.fileClass == 'image' %}
-                        <img src="{{ file.filepath }}" class="preview_img" title="{{ file.name }}"/>
+                <div class="{{ file.fileclass }}">
+                    {% if file.fileclass == 'image' %}
+                        <img src="{{ file.webPath }}" class="preview_img" title="{{ file.filename }}"/>
                     {% endif %}
                 </div>
-                <span class="yw_media_page {{ file.fileClass }}" title="{{ file.name }}">{{ file.name }}</span>
+                <span class="yw_media_page {{ file.fileclass }}" title="{{ file.filename }}">{{ file.filename }}</span>
             </div>
         </div>
     {% endif %}

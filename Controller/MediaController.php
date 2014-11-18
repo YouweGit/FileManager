@@ -273,7 +273,7 @@ class MediaController extends Controller {
             $response = new JsonResponse();
 
             $filepath = $media->getPath($media->getDirPath(), $media->getFilename(), true);
-            $fileInfo = new FileInfo($filepath);
+            $fileInfo = new FileInfo($filepath, $media);
             $response->setData(json_encode($fileInfo->toArray()));
         } catch(\Exception $e){
             $response = new Response();

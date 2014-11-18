@@ -300,14 +300,8 @@ var Media = function () {
         downloadFile = function (file_element) {
             var file_name = file_element.find("span").html(),
                 dir_path = (activePath !== null ? activePath : ""),
-                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name}),
-                data = {
-                    token: $(selectors.fields.token).val(),
-                    dir_path: activePath,
-                    filename: file_name
-                };
+                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name});
             window.open(route, '_blank');
-            //ajaxRequest(route, data, "POST", false, false);
         },
 
         /**

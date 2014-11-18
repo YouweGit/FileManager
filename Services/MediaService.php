@@ -36,6 +36,10 @@ class MediaService
         $this->media = $media;
     }
 
+    /**
+     * @author Jim Ouwerkerk
+     * @return Media
+     */
     public function getMedia()
     {
         return $this->media;
@@ -254,7 +258,7 @@ class MediaService
                 if (is_dir($filepath)) {
                     $files[] = $this->createDirArray($file, $filepath, $dir_path);
                 } else {
-                    $files[] = $this->createFileArray($file, $filepath, $dir_path);
+                    $files[] = new FileInfo($filepath, $this->getMedia());
                 }
             }
         }
@@ -286,74 +290,6 @@ class MediaService
         );
 
         return $dirs;
-    }
-
-    /**
-     * @param $file
-     * @param $filepath
-     * @param $dir_path
-     * @return array
-     */
-    public function createFileArray($file, $filepath, $dir_path)
-    {
-        $file_size = Utils::readableSize(filesize($filepath));
-        $file_modification = filemtime($filepath);
-
-        $pathinfo = pathinfo($filepath);
-        $filename = $pathinfo['filename'];
-        $mimetype = mime_content_type($filepath);
-
-        $usages = $this->getUsages($filename, $dir_path);
-        if (isset(Utils::$humanReadableTypes[$mimetype])) {
-            $readableType = Utils::$humanReadableTypes[$mimetype];
-        } else {
-            $readableType = "Undefined";
-        }
-        $web_path = Utils::DirTrim($this->getMedia()->getPath($dir_path), $file, true);
-
-        $files = array(
-            "filepath"        => $web_path,
-            "mimetype"        => $mimetype,
-            "readableType"    => $readableType,
-            "name"            => $file,
-            "size"            => $file_size,
-            "modified"        => date("Y-m-d H:m:s", $file_modification),
-            "usages"          => count($usages),
-            "usage_locations" => $usages,
-            "fileClass"       => Utils::getFileClass($mimetype)
-        );
-
-        return $files;
-    }
-
-    /**
-     * Return the usages locations of the file.
-     * The class should always contain the returnUsages function.
-     *
-     * @param $filename
-     * @param $dir_path
-     * @return array
-     */
-    public function getUsages($filename, $dir_path)
-    {
-        $folder_array = explode(DIRECTORY_SEPARATOR, $this->getMedia()->getUploadPath());
-        $last_folder = end($folder_array);
-
-        $trimmed_path = Utils::DirTrim($dir_path, $filename);
-        $full_path = DIRECTORY_SEPARATOR . $last_folder . $trimmed_path;
-        $usages = array();
-        $usage_class = $this->getMedia()->getUsagesClass();
-        if ($usage_class != false) {
-
-            /** @var mixed $usage_object */
-            $usage_object = new $usage_class;
-            $usages_result = $usage_object->returnUsages($full_path);
-            if (!empty($usages_result)) {
-                $usages = $usages_result;
-            }
-        }
-
-        return $usages;
     }
 
     /**
@@ -423,7 +359,6 @@ class MediaService
 
     /**
      * @author   Jim Ouwerkerk
-     * @param Media $media
      * @param Form  $form
      * @internal param Media $settings
      * @return array
