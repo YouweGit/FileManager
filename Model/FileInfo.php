@@ -24,7 +24,7 @@ class FileInfo
     private $readableType;
 
     /** @var  string */
-    private $size;
+    private $file_size;
 
     /** @var  string */
     private $modified;
@@ -52,7 +52,7 @@ class FileInfo
         $this->setFilename($filename);
         $this->setMimetype($mimetype);
         $this->setModified($file_modification);
-        $this->setSize($file_size);
+        $this->setFileSize($file_size);
         $this->setFilepath($filepath);
     }
 
@@ -118,6 +118,8 @@ class FileInfo
     public function setMimetype($mimetype)
     {
         $this->mimetype = $mimetype;
+        $this->setReadableType(Utils::$humanReadableTypes[$mimetype]);
+        $this->setFileclass(Utils::getFileClass($mimetype));
     }
 
     /**
@@ -155,17 +157,17 @@ class FileInfo
     /**
      * @return string
      */
-    public function getSize()
+    public function getFileSize()
     {
-        return $this->size;
+        return $this->file_size;
     }
 
     /**
-     * @param string $size
+     * @param string $file_size
      */
-    public function setSize($size)
+    public function setFileSize($file_size)
     {
-        $this->size = $size;
+        $this->file_size = $file_size;
     }
 
     /**
@@ -200,4 +202,16 @@ class FileInfo
         $this->usages_locations = $usages_locations;
     }
 
+    /**
+     * @author Jim Ouwerkerk
+     * @return array
+     */
+    public function toArray()
+    {
+        $result = array();
+        foreach ($this as $key => $value) {
+            $result[$key] = $value;
+        }
+        return $result;
+    }
 }

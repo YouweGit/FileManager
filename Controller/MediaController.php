@@ -267,30 +267,14 @@ class MediaController extends Controller {
         $service = $this->get('youwe.media.service');
         $service->setMedia($media);
 
-        $root = explode(DIRECTORY_SEPARATOR, $media->getUploadPath());
-        $web_root = end($root);
-
         $media->resolveRequest($request);
 
         try{
             $response = new JsonResponse();
-            $dir = $service->getFilePath($media);
 
-            $filepath = $dir . DIRECTORY_SEPARATOR . $media->getFilename();
-//            $fileInfo = new FileInfo($media->getPath($media->getDirPath(), $media->getFilename(), true));
-            $file_size = Utils::readableSize(filesize($filepath));
-            $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
-            $mimetype = mime_content_type($filepath);
-
-            $file_info = array();
-            $file_info['filename'] = $media->getPath($media->getDirPath(), $media->getFilename());
-            $file_info['mimetype'] = $mimetype;
-            $file_info['modified'] = $file_modification;
-            $file_info['filesize'] = $file_size;
-            $file_info['usages'] = $service->getUsages($media->getFilename(), $media->getDirPath());
-            $file_info['filepath'] = $web_root . DIRECTORY_SEPARATOR . $media->getDirPath();
-
-            $response->setData(json_encode($file_info));
+            $filepath = $media->getPath($media->getDirPath(), $media->getFilename(), true);
+            $fileInfo = new FileInfo($filepath);
+            $response->setData(json_encode($fileInfo->toArray()));
         } catch(\Exception $e){
             $response = new Response();
             $response->setContent($e->getMessage());
