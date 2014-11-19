@@ -164,32 +164,33 @@ class Utils
      * @author Jim Ouwerkerk
      * @param string $path
      * @param string $file
-     * @param bool $rTrim
+     * @param bool   $rTrim
      * @return string
      */
-    public static function DirTrim($path, $file = null, $rTrim = false){
+    public static function DirTrim($path, $file = null, $rTrim = false)
+    {
         if ($rTrim) {
             $result = rtrim($path, DIRECTORY_SEPARATOR);
         } else {
             $result = trim($path, DIRECTORY_SEPARATOR);
         }
 
-        if(!is_null($file)){
+        if (!is_null($file)) {
             $file_result = trim($file, DIRECTORY_SEPARATOR);
         } else {
             $file_result = $file;
         }
 
-        if(!is_null($file_result)){
-            $result = $result .DIRECTORY_SEPARATOR. $file_result;
+        if (!is_null($file_result)) {
+            $result = $result . DIRECTORY_SEPARATOR . $file_result;
         }
 
         return $result;
     }
 
     /**
-     * @param int    $bytes
-     * @param int    $decimals
+     * @param int $bytes
+     * @param int $decimals
      * @return string
      */
     public static function readableSize($bytes, $decimals = 2)

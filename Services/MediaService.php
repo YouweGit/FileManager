@@ -44,15 +44,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
-     * @return Media
-     */
-    public function getMedia()
-    {
-        return $this->media;
-    }
-
-    /**
      * @param Media $media
      * @throws \Exception
      * @return bool|string
@@ -111,6 +102,15 @@ class MediaService
         } else {
             throw new \Exception("Directory is not in the upload path", 403);
         }
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @return Media
+     */
+    public function getMedia()
+    {
+        return $this->media;
     }
 
     /**
@@ -203,7 +203,7 @@ class MediaService
 
     /**
      * @author Jim Ouwerkerk
-     * @param Form  $form
+     * @param Form $form
      */
     private function handleNewDir($form)
     {
@@ -219,7 +219,7 @@ class MediaService
 
     /**
      * @author Jim Ouwerkerk
-     * @param Form  $form
+     * @param Form $form
      * @throws \Exception
      */
     private function handleRenameFile($form)
@@ -250,8 +250,35 @@ class MediaService
     }
 
     /**
-     * @param array  $dir_files - Files
-     * @param array  $files
+     * @author   Jim Ouwerkerk
+     * @param Form $form
+     * @internal param Media $settings
+     * @return array
+     */
+    public function getRenderOptions(Form $form)
+    {
+        $media = $this->getMedia();
+        $dir_files = scandir($media->getDir());
+        $root_dirs = scandir($media->getUploadPath());
+
+        $options['files'] = $this->getFiles($dir_files);
+        $options['file_body_display'] = $this->getDisplayType();
+        $options['root_folder'] = $media->getPath();
+        $options['dirs'] = $this->getDirectoryTree($root_dirs, $media->getUploadPath(), "");
+        $options['isPopup'] = $this->container->get('request')->get('popup');
+        $options['copy_file'] = $this->container->get('session')->get('copy');
+        $options['current_path'] = $media->getDirPath();
+        $options['form'] = $form->createView();
+        $options['upload_allow'] = $media->getExtensionsAllowed();
+        $options['extended_template'] = $media->getExtendedTemplate();
+        $options['usages'] = $media->getUsagesClass();
+
+        return $options;
+    }
+
+    /**
+     * @param array $dir_files - Files
+     * @param array $files
      * @internal param bool $return_files - If false, only show dirs
      * @return array
      */
@@ -320,32 +347,5 @@ class MediaService
             }
         }
         return $dirs;
-    }
-
-    /**
-     * @author   Jim Ouwerkerk
-     * @param Form  $form
-     * @internal param Media $settings
-     * @return array
-     */
-    public function getRenderOptions(Form $form)
-    {
-        $media = $this->getMedia();
-        $dir_files = scandir($media->getDir());
-        $root_dirs = scandir($media->getUploadPath());
-
-        $options['files'] = $this->getFiles($dir_files);
-        $options['file_body_display'] = $this->getDisplayType();
-        $options['root_folder'] = $media->getPath();
-        $options['dirs'] = $this->getDirectoryTree($root_dirs, $media->getUploadPath(), "");
-        $options['isPopup'] = $this->container->get('request')->get('popup');
-        $options['copy_file'] = $this->container->get('session')->get('copy');
-        $options['current_path'] = $media->getDirPath();
-        $options['form'] = $form->createView();
-        $options['upload_allow'] = $media->getExtensionsAllowed();
-        $options['extended_template'] = $media->getExtendedTemplate();
-        $options['usages'] = $media->getUsagesClass();
-
-        return $options;
     }
 }
