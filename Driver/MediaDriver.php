@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
+use Youwe\MediaBundle\Model\FileInfo;
+use Youwe\MediaBundle\Model\Media;
+use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class MediaDriver
@@ -16,31 +19,9 @@ use Symfony\Component\Security\Core\SecurityContext;
 class MediaDriver
 {
     /**
-     * Contains all mime types that are allowed to upload.
-     * @var array
+     * @var Media
      */
-    public $mime_allowed;
-
-    /**
-     * The path to the upload directory
-     * @var string
-     */
-    public $upload_path;
-
-    /**
-     * If true, display the real exception message
-     * @var bool
-     */
-    public $full_exception;
-
-    /**
-     * The class where the function is defined for getting
-     * the usages amount of the media item
-     *
-     * This class should have the function returnUsage();
-     * @var
-     */
-    public $usage_class;
+    private $media;
 
     /**
      * @param ContainerInterface $container
@@ -48,194 +29,111 @@ class MediaDriver
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-
-        $parameters = $this->container->getParameter('youwe_media');
-        $this->upload_path = $parameters['upload_path'];
-        $this->mime_allowed = $parameters['mime_allowed'];
-        $this->full_exception = $parameters['full_exception'];
     }
 
-
     /**
-     * @param string $files
-     * @param string $dir
+     * @param UploadedFile $file
+     * @param              $extension
+     * @param string       $dir
      * @return bool
-     * @throws \Exception - when mimetype is not valid
      */
-    public function handleFiles($files, $dir){
-        /** @var UploadedFile $file */
-        foreach($files as $file){
+    public function handleUploadedFiles(UploadedFile $file, $extension, $dir)
+    {
+        $original_file = $file->getClientOriginalName();
+        $path_parts = pathinfo($original_file);
 
-            $extension = $file->guessExtension();
-            if (!$extension) {
-                $extension = 'bin';
-            }
-
-            if(in_array($file->getClientMimeType(), $this->mime_allowed)){
-
-                $original_file = $file->getClientOriginalName();
-                $path_parts = pathinfo($original_file);
-
-                $increment = '';
-                while(file_exists($dir . DIRECTORY_SEPARATOR . $path_parts['filename'] . $increment . '.' . $extension)) {
-                    $increment++;
-                }
-
-                $basename = $path_parts['filename'] . $increment . '.' . $extension;
-                $file->move($dir,$basename);
-            } else {
-                $this->throwError("Mimetype is not allowed", 500);
-            }
+        $increment = '';
+        while (file_exists($dir . DIRECTORY_SEPARATOR . $path_parts['filename'] . $increment . '.' . $extension)) {
+            $increment++;
         }
-        return true;
+
+        $basename = $path_parts['filename'] . $increment . '.' . $extension;
+        $file->move($dir, $basename);
     }
 
     /**
-     * @param string $dir
      * @param string $dir_name
      * @throws \Exception - when mimetype is not valid or when something went wrong when creating a dir on filesystem level
      * @return bool
      */
-    public function makeDir($dir, $dir_name){
+    public function makeDir($dir_name)
+    {
         $fm = new Filesystem();
-        $dir_path = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $dir_name;
-        if(!file_exists($dir_path)){
+        $dir_path = $this->getMedia()->getDir();
+        if (!file_exists($dir_path)) {
             $fm->mkdir($dir_path, 0700);
         } else {
-            $this->throwError("Cannot create directory '" . $dir_name ."': Directory already exists", 500);
+            $this->throwError("Cannot create directory '" . $dir_name . "': Directory already exists", 500);
         }
     }
 
     /**
-     * @param string $dir
-     * @param string $file_name
-     * @param string $new_file_name
+     * @return Media
+     */
+    public function getMedia()
+    {
+        return $this->media;
+    }
+
+    /**
+     * @param Media $media
+     */
+    public function setMedia(Media $media)
+    {
+        $this->media = $media;
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @param string          $string - The displayed exception
+     * @param int             $code
+     * @param null|\Exception $e      - The actual exception
+     * @throws \Exception
+     */
+    public function throwError($string, $code = 500, $e = null)
+    {
+        if (!$this->getMedia()->isFullException() || is_null($e)) {
+            throw new \Exception($string, $code);
+        } else {
+            throw new \Exception($string . ": " . $e->getMessage(), $code);
+        }
+    }
+
+    /**
+     * @param FileInfo $fileInfo
+     * @param string   $new_file_name
      * @throws \Exception - when mimetype is not valid or when something went wrong when renaming on filesystem level
      * @return bool
      */
-    public function renameFile($dir, $file_name, $new_file_name){
-        try{
-            $this->validateFile($dir, $file_name, $new_file_name);
+    public function renameFile(FileInfo $fileInfo, $new_file_name)
+    {
+        try {
+            $this->validateFile($fileInfo, $new_file_name);
             $fm = new Filesystem();
-            $old_file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
-            $new_file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $new_file_name;
+            $old_file = $fileInfo->getFilepath();
+            $new_file = Utils::DirTrim($this->getMedia()->getDir(), $new_file_name, true);
             $fm->rename($old_file, $new_file);
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->throwError("Cannot rename file or directory", 500, $e);
         }
     }
 
     /**
-     * @param string $dir
-     * @param string $file_name
-     * @param string $new_file_name
-     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
-     * @return bool
+     * Validate the files to check if they have a valid file type
+     * @param FileInfo $fileInfo
+     * @param null     $new_filename
      */
-    public function moveFile($dir, $file_name, $new_file_name){
-        try{
-            $this->validateFile($dir, $file_name);
-            $file_path = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
-            $file = new File($file_path, false);
-            $file->move($new_file_name);
-        } catch(\Exception $e){
-            $this->throwError("Cannot move file or directory", 500, $e);
-        }
-    }
-
-    /**
-     * @param array $sources
-     * @param array $targets
-     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
-     * @return bool
-     */
-    public function pasteFile($sources, $targets){
-        try{
-            $source_dir = $sources['source_dir'];
-            $source_file =  $sources['source_file'];
-
-            $target_dir = $targets['target_dir'];
-            $target_file = $targets['target_file'];
-
-
-            $source_file_path = rtrim($source_dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $source_file;
-            $target_file_path = rtrim($target_dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $target_file;
-
-            $this->validateFile($source_dir, $source_file);
-
-            $fileSystem = new Filesystem();
-            $fileSystem->copy($source_file_path, $target_file_path);
-
-            $cut = $sources['cut'];
-            if($cut){
-                $fileSystem->remove($source_file_path);
-            }
-        } catch(\Exception $e){
-            $this->throwError("Cannot paste file", 500, $e);
-        }
-    }
-
-    /**
-     * @param string $dir
-     * @param string $file_name
-     * @throws \Exception - when something went wrong while deleting the file on filesystem level
-     * @return bool
-     */
-    public function deleteFile($dir, $file_name){
-        try{
-            $fm = new Filesystem();
-            $file = rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
-            $fm->remove($file);
-        } catch(\Exception $e){
-            $this->throwError("Cannot delete file or directory", 500, $e);
-        }
-    }
-
-    /**
-     * @param string $dir
-     * @param string $zip_file
-     * @throws \Exception - when mimetype is not valid or when something went wrong when extracting on filesystem level
-     * @return bool
-     */
-    public function extractZip($dir, $zip_file){
-        $chapterZip = new \ZipArchive ();
-
-        $fm = new Filesystem();
-        $tmp_dir = $this->createTmpDir($fm);
-
-        if ($chapterZip->open ( $dir . DIRECTORY_SEPARATOR . $zip_file )) {
-            $chapterZip->extractTo($tmp_dir);
-            $chapterZip->close();
-        }
-
-        $this->checkFileType($fm, $tmp_dir);
-
-        try{
-            if ($chapterZip->open ( $dir . DIRECTORY_SEPARATOR . $zip_file )) {
-
-                $chapterZip->extractTo($dir);
-                $chapterZip->close();
-            }
-        } catch(\Exception $e){
-            $this->throwError("Cannot extract zip", 500, $e);
-        }
-    }
-
-    /**
-     * Validate the files to check if they have a valid filetype
-     * @param string $dir
-     * @param string $filename
-     * @param null   $new_filename
-     * @throws \Exception - when mimetype is not valid
-     */
-    public function validateFile($dir, $filename, $new_filename = null){
-        $file_path = $dir . DIRECTORY_SEPARATOR . $filename;
-        if(!is_dir($file_path)){
+    public function validateFile(FileInfo $fileInfo, $new_filename = null)
+    {
+        $file_path = $fileInfo->getWebPath(true);
+        if (!is_dir($file_path)) {
             $fm = new Filesystem();
             $tmp_dir = $this->createTmpDir($fm);
-            $fm->copy($file_path, $tmp_dir . DIRECTORY_SEPARATOR . $filename);
-            if(!is_null($new_filename)){
-                $fm->rename($tmp_dir . DIRECTORY_SEPARATOR . $filename, $tmp_dir . DIRECTORY_SEPARATOR . $new_filename);
+            $fm->copy($file_path, $tmp_dir . DIRECTORY_SEPARATOR . $fileInfo->getFilename());
+
+            if (!is_null($new_filename)) {
+                $fm->rename($tmp_dir . DIRECTORY_SEPARATOR . $fileInfo->getFilename(),
+                    $tmp_dir . DIRECTORY_SEPARATOR . $new_filename);
             }
             $this->checkFileType($fm, $tmp_dir);
         }
@@ -245,9 +143,11 @@ class MediaDriver
      * @param Filesystem $fm
      * @return string
      */
-    public function createTmpDir(Filesystem $fm){
-        $tmp_dir = $this->upload_path . DIRECTORY_SEPARATOR . "." . strtotime("now");
+    public function createTmpDir(Filesystem $fm)
+    {
+        $tmp_dir = $this->getMedia()->getUploadPath() . DIRECTORY_SEPARATOR . "." . strtotime("now");
         $fm->mkdir($tmp_dir);
+
         return $tmp_dir;
     }
 
@@ -258,11 +158,13 @@ class MediaDriver
      * @param string     $tmp_dir
      * @throws \Exception - when mimetype is not valid
      */
-    public function checkFileType(Filesystem $fm, $tmp_dir){
+    public function checkFileType(Filesystem $fm, $tmp_dir)
+    {
         $di = new \RecursiveDirectoryIterator($tmp_dir);
-        foreach (new \RecursiveIteratorIterator($di) as $filename => $file) {
-            $mime_valid = $this->checkMimeType($filename);
-            if($mime_valid !== true){
+        foreach (new \RecursiveIteratorIterator($di) as $filepath => $file) {
+            $fileInfo = new FileInfo($filepath, $this->getMedia());
+            $mime_valid = $this->checkMimeType($fileInfo);
+            if ($mime_valid !== true) {
                 $fm->remove($tmp_dir);
                 $this->throwError($mime_valid, 500);
             }
@@ -271,34 +173,120 @@ class MediaDriver
     }
 
     /**
-     * @param string $name
+     * @param FileInfo $fileInfo
      * @return true
      */
-    public function checkMimeType($name){
-        $mime = mime_content_type($name);
-
-        if($mime !=  'directory'){
-            if (!in_array($mime, $this->mime_allowed)) {
-                return 'Mime type "'.mime_content_type($name).'" not allowed for file "'. basename($name) .'"';
+    public function checkMimeType($fileInfo)
+    {
+        $mime = $fileInfo->getMimetype();
+        if ($mime != 'directory') {
+            if (!in_array($mime, $this->getMedia()->getExtensionsAllowed())) {
+                return 'Mime type "' . $mime . '" not allowed for file "' . $fileInfo->getFilename() . '"';
             }
+
             return true;
-        }
-        else {
+        } else {
             return true;
         }
     }
 
     /**
-     * @author Jim Ouwerkerk
-     * @param string          $string - The displayed exception
-     * @param null|\Exception $e - The actual exception
-     * @throws \Exception
+     * @param FileInfo $fileInfo
+     * @param string   $new_file_name
+     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
+     * @return bool
      */
-    private function throwError($string, $code = 500, $e = null) {
-        if(!$this->full_exception || is_null($e)){
-            throw new \Exception($string, $code);
-        } else {
-            throw new \Exception($string. ": ". $e->getMessage(), $code);
+    public function moveFile(FileInfo $fileInfo, $new_file_name)
+    {
+        try {
+            $this->validateFile($fileInfo);
+            $file_path = $fileInfo->getFilepath();
+            $file = new File($file_path, false);
+            $file->move($new_file_name);
+        } catch (\Exception $e) {
+            $this->throwError("Cannot move file or directory", 500, $e);
+        }
+    }
+
+    /**
+     * @param FileInfo $fileInfo
+     * @param          $type
+     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
+     * @return bool
+     */
+    public function pasteFile(FileInfo $fileInfo, $type)
+    {
+        try {
+            $source_dir = $this->getMedia()->getFilepath();
+            $source_file = $this->getMedia()->getFilename();
+
+            $target_dir = $this->getMedia()->getTargetFilepath();
+            $target_file = $this->getMedia()->getTargetFilename();
+
+            $source_file_path = Utils::DirTrim($source_dir, $source_file, true);
+            $target_file_path = Utils::DirTrim($target_dir, $target_file, true);
+            $this->validateFile($fileInfo);
+
+            $fileSystem = new Filesystem();
+            if (!file_exists($target_file_path)) {
+                $fileSystem->copy($source_file_path, $target_file_path);
+
+                $cut = $type;
+                if ($cut) {
+                    $fileSystem->remove($source_file_path);
+                }
+            } else {
+                throw new \Exception(sprintf("File '%s' already exists", $target_file));
+            }
+        } catch (\Exception $e) {
+            $this->throwError("Cannot paste file", 500, $e);
+        }
+    }
+
+    /**
+     * @param FileInfo $fileInfo
+     * @throws \Exception - when something went wrong while deleting the file on filesystem level
+     * @return bool
+     */
+    public function deleteFile(FileInfo $fileInfo)
+    {
+        try {
+            $fm = new Filesystem();
+            $file = $fileInfo->getFilepath();
+            $fm->remove($file);
+        } catch (\Exception $e) {
+            $this->throwError("Cannot delete file or directory", 500, $e);
+        }
+    }
+
+    /**
+     * @param FileInfo $fileInfo
+     * @throws \Exception - when mimetype is not valid or when something went wrong when extracting on filesystem level
+     * @return bool
+     */
+    public function extractZip(FileInfo $fileInfo)
+    {
+        $chapterZip = new \ZipArchive ();
+
+        $fm = new Filesystem();
+        $tmp_dir = $this->createTmpDir($fm);
+        var_dump($fileInfo->getFilepath());
+        if ($chapterZip->open($fileInfo->getFilepath())) {
+
+            $chapterZip->extractTo($tmp_dir);
+            $chapterZip->close();
+        }
+
+        $this->checkFileType($fm, $tmp_dir);
+
+        try {
+            if ($chapterZip->open($fileInfo->getFilepath())) {
+
+                $chapterZip->extractTo($this->getMedia()->getDir());
+                $chapterZip->close();
+            }
+        } catch (\Exception $e) {
+            $this->throwError("Cannot extract zip", 500, $e);
         }
     }
 }

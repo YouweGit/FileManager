@@ -112,6 +112,7 @@ var Media = function () {
                 back: "#back_btn",
                 forward: "#forward_btn",
                 upload: "#upload_file_btn",
+                download: "#download_btn",
                 folder: "#new_folder_btn",
                 blockView: "#set_display_block",
                 listView: "#set_display_list"
@@ -151,6 +152,7 @@ var Media = function () {
             subItems: {
                 preview_img: {name: "Preview", icon: "preview"},
                 preview_vid: {name: "Preview", icon: "preview"},
+                download: {name: "Download", icon: "download"},
                 rename: {name: "New Directory", icon: "rename"},
                 extract: {name: "Extract", icon: "extract"},
                 new_dir: {name: "New Directory", icon: "newdir"}
@@ -162,6 +164,7 @@ var Media = function () {
             extract: "youwe_media_extract",
             fileInfo: "youwe_media_fileinfo",
             move: "youwe_media_move",
+            download: "youwe_media_download",
             paste: "youwe_media_paste",
             copy: "youwe_media_copy"
         },
@@ -177,19 +180,23 @@ var Media = function () {
          * @param {{token: (*|jQuery), dir_path: *}} data
          * @param {string} method
          * @param {bool=true} reloadList
+         * @param {bool=true} reloadFileList
          */
-        ajaxRequest = function (url, data, method, reloadList) {
+        ajaxRequest = function (url, data, method, reloadList, reloadFileList) {
             reloadList = (reloadList === undefined) ? true : reloadList;
+            reloadFileList = (reloadFileList === undefined) ? true : reloadFileList;
             $.ajax({
                 type: method,
                 async: false,
                 url: url,
                 data: data,
-                success: function () {
+                success: function (data) {
                     if (reloadList === true) {
                         self.reloadDirList();
                     }
-                    self.reloadFileList();
+                    if (reloadFileList === true) {
+                        self.reloadFileList();
+                    }
                     return true;
                 },
                 error: function (xhr) {
@@ -287,6 +294,17 @@ var Media = function () {
         },
 
         /**
+         * Download the selected file
+         * @param {jQuery} file_element
+         */
+        downloadFile = function (file_element) {
+            var file_name = file_element.find("span").html(),
+                dir_path = (activePath !== null ? activePath : ""),
+                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name});
+            window.open(route, '_blank');
+        },
+
+        /**
          * Set the copied file in the session
          * @param {jQuery} file_element
          * @param {string} type - copy or paste
@@ -365,7 +383,7 @@ var Media = function () {
                 data = {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath,
-                    zip_name: zip_name
+                    filename: zip_name
                 };
             ajaxRequest(new_dir_route, data, "POST");
         },
@@ -510,17 +528,6 @@ var Media = function () {
                 window.opener.processFile(file);
             }
             window.close();
-        },
-
-        /**
-         * Set the preview for each image
-         */
-        setPreview = function () {
-            $(".block_holder>div.image").each(function () {
-                var imagename = $(this).parent().find("span").html();
-                $(this).html("<img src='/" + root_dir + "/" +
-                    (activePath !== null ? activePath + "/" : "") + imagename + "' alt='preview' class='" + selectors.classes.previewImage + "'>");
-            });
         },
 
         /**
@@ -816,6 +823,7 @@ var Media = function () {
         },
 
         disableToolbarItems = function () {
+            $(selectors.buttons.download).attr("disabled", "disabled");
             $(selectors.buttons.select).attr("disabled", "disabled");
             $(selectors.buttons.rename).attr("disabled", "disabled");
             $(selectors.buttons.extract).attr("disabled", "disabled");
@@ -831,11 +839,14 @@ var Media = function () {
             $(selectors.buttons.delete).removeAttr("disabled", "disabled");
             $(selectors.buttons.copy).removeAttr("disabled", "disabled");
             $(selectors.buttons.cut).removeAttr("disabled", "disabled");
+            $(selectors.buttons.download).removeAttr("disabled", "disabled");
 
             if (selected_item.hasClass(selectors.classes.mediaDir)) {
+                $(selectors.buttons.download).attr("disabled", "disabled");
                 $(selectors.buttons.copy).attr("disabled", "disabled");
                 $(selectors.buttons.cut).attr("disabled", "disabled");
             } else {
+                $(selectors.buttons.download).removeAttr("disabled", "disabled");
                 $(selectors.buttons.copy).removeAttr("disabled", "disabled");
                 $(selectors.buttons.cut).removeAttr("disabled", "disabled");
             }
@@ -990,6 +1001,8 @@ var Media = function () {
                 addFolder();
             }).on("click", selectors.buttons.upload, function () {
                 upload_modal.modal({show: true});
+            }).on("click", selectors.buttons.download, function () {
+                downloadFile(selected_item);
             }).on("click", selectors.buttons.select, function () {
                 selected_item.dblclick();
             }).on("click", selectors.buttons.copy, function () {
@@ -1026,15 +1039,28 @@ var Media = function () {
                 }
             });
             $(document).keydown(function(e) {
+                var is_disabled;
                 if (ctrlDown && (e.keyCode === cKey)) {
-                    copyFile(selected_item, 'copy');
+                    is_disabled = $(selectors.buttons.copy).attr("disabled");
+                    if(is_disabled !== "disabled"){
+                        copyFile(selected_item, 'copy');
+                    }
                 }
                 if (ctrlDown && (e.keyCode === xKey)) {
-                    copyFile(selected_item, 'cut');
+                    is_disabled = $(selectors.buttons.cut).attr("disabled");
+                    if(is_disabled !== "disabled"){
+                        copyFile(selected_item, 'cut');
+                    }
                 }
                 if (ctrlDown && (e.keyCode === vKey)) {
                     pasteFile();
                 }
+            });
+
+            /** Make the back/forward button work */
+            window.addEventListener("popstate", function(e) {
+                current_index -= 1;
+                navigateHistory();
             });
 
             /**
@@ -1062,7 +1088,6 @@ var Media = function () {
             setPopover(popOverElement);
             setDropZone(activePath);
             setFileDrag();
-            setPreview();
         },
 
         /**
@@ -1112,7 +1137,6 @@ var Media = function () {
             setPopover(popOverElement);
             createContextMenu();
             setFileDrag();
-            setPreview();
             if (current_index === 0) {
                 $(selectors.buttons.back).attr("disabled", "disabled");
             }

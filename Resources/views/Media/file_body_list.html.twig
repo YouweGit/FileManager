@@ -14,10 +14,10 @@
         {% if file.mimetype == 'directory' %}
             <tr class="yw_media_dir">
                 <td class="yw_media_type default yw_media_drag">
-                    <span class="yw_media_item_dir">{{ file.name }}</span>
+                    <span class="yw_media_item_dir">{{ file.filename }}</span>
                 </td>
                 <td>{{ file.readableType }}</td>
-                <td>{{ file.size }}</td>
+                <td>{{ file.filesize }}</td>
                 <td>{{ file.modified }}</td>
                 <td></td>
             </tr>
@@ -34,12 +34,12 @@
     </tr>
     {% for file in files %}
         {% if file.mimetype != 'directory' %}
-            <tr class="yw_media_drag yw_media_type {{ file.fileClass }}">
+            <tr class="yw_media_drag yw_media_type {{ file.fileclass }}">
                 <td class="">
-                    <span class="yw_media_page {{ file.fileClass }}">{{ file.name }}</span>
+                    <span class="yw_media_page {{ file.fileclass }}">{{ file.filename }}</span>
                 </td>
                 <td>{{ file.readableType }}</td>
-                <td>{{ file.size }}</td>
+                <td>{{ file.filesize }}</td>
                 <td>{{ file.modified }}</td>
                 {% if usages %}
                     <td>

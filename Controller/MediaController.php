@@ -2,10 +2,15 @@
 
 namespace Youwe\MediaBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 use Youwe\MediaBundle\Driver\MediaDriver;
 use Youwe\MediaBundle\Form\Type\MediaType;
+use Youwe\MediaBundle\Model\FileInfo;
 use Youwe\MediaBundle\Services\MediaService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,100 +22,67 @@ use Symfony\Component\HttpFoundation\Response;
 class MediaController extends Controller {
 
     /**
+     * @Route(
+     *      "/list/{dir_path}",
+     *      name="youwe_media_list",
+     *      defaults={"dir_path":null},
+     *      options={"expose":true},
+     *      requirements={"dir_path":".+"}
+     * )
      * @param string $dir_path
      * @return Response
      */
     public function listMediaAction($dir_path = null)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        $extensions_allowed = $parameters['mime_allowed'];
-        $extended_template = $parameters['extended_template'];
-        $template = $parameters['template'];
-        $root = $parameters['upload_path'];
-
-        if(is_null($dir_path)){
-            $dir = $root;
-            $dir_path = "";
-        } else {
-            $dir = $root.DIRECTORY_SEPARATOR.$dir_path;
-        }
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $path_valid = $service->checkPath($dir);
-        if(!$path_valid){
-            $dir = $root;
-        }
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver, $dir_path);
 
         $form = $this->createForm(new MediaType);
         try{
-            $service->handleFormSubmit($form, $dir);
+            $service->handleFormSubmit($form);
         } catch(\Exception $e){
             $response = new Response();
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
             return $response;
         }
-        $folder_array = explode(DIRECTORY_SEPARATOR,$root);
-        $root_folder = array_pop($folder_array);
 
-        $dir_files = scandir($dir);
-        $root_dirs = scandir($root);
+        $renderParameters = $service->getRenderOptions($form);
 
-        /** @var Session $session */
-        $session = $this->get('session');
-        $display_type = $session->get('display_media_type');
-
-        if($this->getRequest()->get('display_type') != null){
-            $display_type = $this->getRequest()->get('display_type');
-            $session->set('display_media_type', $display_type);
-        } else if (is_null($display_type)){
-            $display_type = "file_body_block";
-        }
-
-        $file_body_display = $display_type !== null ? $display_type : "file_body_block" ;
-
-        $files = $service->getFileTree($dir_files, $dir, $dir_path);
-        $dirs = $service->getDirectoryTree($root_dirs, $root, "");
-        $isPopup = $this->getRequest()->get('popup');
-        $copy = $this->get('session')->get('copy');
-        return $this->render($template, array(
-            "copy_file" => $copy,
-            "files" => $files,
-            "dirs" => $dirs,
-            "current_path" => $dir_path,
-            "root_folder" => $root_folder,
-            "form" => $form->createView(),
-            "upload_allow" => $extensions_allowed,
-            "extended_template" => $extended_template,
-            "usages" => $parameters['usage_class'],
-            "isPopup" => $isPopup,
-            "file_body_display" => $file_body_display,
-        ));
+        return $this->render($media->getTemplate(), $renderParameters);
     }
 
     /**
+     * @Route("/delete", name="youwe_media_delete", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function deleteFileAction(){
-        $response = new Response();
-
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-
+    public function deleteFileAction(Request $request)
+    {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $request = $this->getRequest();
-        $dir_path = $request->get('dir_path');
-        $filename = $request->get('filename');
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
+        $response = new Response();
+
+        $media->resolveRequest($request);
         try{
-            $dir = $service->getFilePath($dir_path, $filename);
+            $dir = $service->getFilePath($media);
+            $media->setDir($dir);
             $service->checkToken($request->get('token'));
-            $driver->deleteFile($dir, $filename);
+            $media->deleteFile();
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
@@ -119,28 +91,33 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/move", name="youwe_media_move", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function moveFileAction(){
-        $response = new Response();
-
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-
+    public function moveFileAction(Request $request)
+    {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $request = $this->getRequest();
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
-        $dir_path = $request->get('dir_path');
-        $filename = $request->get('filename');
-        $target_file = $request->get('target_file');
+        $response = new Response();
+
+        $media->resolveRequest($request);
 
         try{
-            $dir = $service->getFilePath($dir_path, $filename, $target_file);
+            $dir = $service->getFilePath($media);
+            $media->setDir($dir);
             $service->checkToken($request->get('token'));
-            $driver->moveFile($dir, $filename, $target_file);
+            $service->checkPath($dir);
+            $media->moveFile();
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
@@ -151,36 +128,39 @@ class MediaController extends Controller {
 
 
     /**
+     * @Route("/copy/{type}", name="youwe_media_copy", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @param type - copy or cut
      * @throws \Exception
      * @return bool
      */
-    public function copyFileAction($type){
-        $response = new Response();
-
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-
+    public function copyFileAction(Request $request, $type)
+    {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $request = $this->getRequest();
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
-        $dir_path = $request->get('dir_path');
-        $filename = $request->get('filename');
+        $response = new Response();
 
+        $media->resolveRequest($request);
         $cut = false;
         if($type === 'cut'){
             $cut = true;
         }
 
         try{
-            $dir = $service->getFilePath($dir_path, $filename);
+            $dir = $service->getFilePath($media);
             $service->checkToken($request->get('token'));
             $sources = array(
-                'display_dir' => $dir_path,
+                'display_dir' => $media->getDirPath(),
                 'source_dir' => $dir,
-                'source_file' => $filename,
+                'source_file' => $media->getFilename(),
                 'cut' => $cut
             );
             $this->get('session')->set('copy', $sources);
@@ -193,30 +173,42 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/paste", name="youwe_media_paste", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function pasteFileAction(){
+    public function pasteFileAction(Request $request)
+    {
         $response = new Response();
-
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
+        $copy_session = $this->get('session')->get('copy');
+        if(is_null($copy_session)){
+            return $response;
+        }
 
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
-        $request = $this->getRequest();
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
-        $dir_path = $request->get('dir_path');
-        $filename = $request->get('filename');
-
+        $media->resolveRequest($request);
         try{
-            $dir = $service->getFilePath($dir_path, $filename);
+            $dir = $service->getFilePath($media);
             $service->checkToken($request->get('token'));
             $sources = $this->get('session')->get('copy');
-            $filename = $sources['source_file'];
-            $targets = array('target_dir' => $dir, 'target_file' => $filename);
-            $driver->pasteFile($sources, $targets);
+            $media->setDir($sources['source_dir']);
+            $media->setDirPath($sources['display_dir']);
+            $media->setFilename($sources['source_file']);
+            $media->setFilepath($sources['source_dir']);
+            $media->setTargetFilepath($dir);
+            $media->setTargetFilename($sources['source_file']);
+            $type = $sources['cut'];
+            $media->pasteFile($type);
             $this->get('session')->remove('copy');
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
@@ -227,27 +219,32 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/extract", name="youwe_media_extract", options={"expose":true})
+     * @Method("POST")
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function extractZipAction(){
-        $response = new Response();
-
-        $request = $this->getRequest();
-        $dir_path = $request->get('dir_path');
-        $zip_name = $request->get('zip_name');
-        $token = $request->get('token');
-
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-
+    public function extractZipAction(Request $request)
+    {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
+
+        $response = new Response();
+
+        $media->resolveRequest($request);
+
         try{
-            $dir = $service->getFilePath($dir_path, $zip_name);
+            $dir = $service->getFilePath($media);
+            $media->setDir($dir);
             $service->checkToken($request->get('token'));
-            $driver->extractZip($dir, $zip_name);
+            $media->extractZip();
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
@@ -256,44 +253,63 @@ class MediaController extends Controller {
     }
 
     /**
+     * @Route("/fileinfo", name="youwe_media_fileinfo", options={"expose":true})
+     *
+     * @param Request $request
      * @throws \Exception
      * @return bool
      */
-    public function FileInfoAction(){
-        $request = $this->getRequest();
-        $dir_path = $request->get('dir_path');
-        $filename = $request->get('filename');
-
-        $parameters = $this->container->getParameter('youwe_media');
-        $root = explode(DIRECTORY_SEPARATOR,$parameters['upload_path']);
-        $web_root = end($root);
-
+    public function FileInfoAction(Request $request)
+    {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
 
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
+
+        $media->resolveRequest($request);
+
         try{
             $response = new JsonResponse();
-            $dir = $service->getFilePath($dir_path, $filename);
-            $filepath = $dir . DIRECTORY_SEPARATOR . $filename;
 
-            $file_size = $service->humanFilesize($filepath);
-            $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
-            $mimetype = mime_content_type($filepath);
-
-            $file_info = array();
-            $file_info['filename'] = $dir_path . DIRECTORY_SEPARATOR . $filename;
-            $file_info['mimetype'] = $mimetype;
-            $file_info['modified'] = $file_modification;
-            $file_info['filesize'] = $file_size;
-            $file_info['usages'] = $service->getUsages($filename, $dir_path);
-            $file_info['filepath'] = $web_root . DIRECTORY_SEPARATOR . $dir_path;
-
-            $response->setData(json_encode($file_info));
+            $filepath = $media->getPath($media->getDirPath(), $media->getFilename(), true);
+            $fileInfo = new FileInfo($filepath, $media);
+            $response->setData(json_encode($fileInfo->toArray()));
         } catch(\Exception $e){
             $response = new Response();
             $response->setContent($e->getMessage());
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
         }
+        return $response;
+    }
+
+    /**
+     * @author Jim Ouwerkerk
+     * @Route("/download/{path}", name="youwe_media_download", requirements={"path"=".+"}, options={"expose":true})
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function DownloadAction($path)
+    {
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
+
+        $web_path = $media->getPath($path, null, true);
+        $content = file_get_contents($web_path);
+        $filename = basename($path);
+        $response = new Response();
+
+        $response->headers->set('Content-Type', 'mime/type');
+        $response->headers->set('Content-Disposition', 'attachment;filename="'.$filename);
+        $response->setContent($content);
         return $response;
     }
 }
