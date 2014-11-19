@@ -147,7 +147,12 @@
     height: 360px;
     border-top: 1px solid #ddd;
 }
-
+#MediaContainer .MediaListItems .media-table-current-path {
+    background-color:#efefef;
+    padding:3px;
+    font-size:9pt;
+    color:#aaa;
+}
 #MediaContainer .MediaListItems > #Items {
     width: 100%;
     cursor: default;

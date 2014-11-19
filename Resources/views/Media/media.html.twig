@@ -99,6 +99,8 @@
                     <div id="set_display_block" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-th"></i></div>
                 {% endif %}
             </div>
+            {#Commented out for later#}
+            {#<div class="media-table-current-path">Current Directory: {{ root_folder }}{{ path_separator }}{{ current_path }}</div>#}
             <div id="media-table-wrapper">
                 {% include "YouweMediaBundle:Media:" ~file_body_display ~ ".html.twig" with {'files': files} %}
             </div>
