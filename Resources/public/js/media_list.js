@@ -18,6 +18,7 @@ var Media = function () {
         self = this,
         active_input = false,
         sub_dirs,
+        path_separator,
         active_dir,
         active_ul,
         active_span,
@@ -114,6 +115,7 @@ var Media = function () {
                 upload: "#upload_file_btn",
                 download: "#download_btn",
                 folder: "#new_folder_btn",
+                info: "#info_btn",
                 blockView: "#set_display_block",
                 listView: "#set_display_list"
             }
@@ -300,7 +302,7 @@ var Media = function () {
         downloadFile = function (file_element) {
             var file_name = file_element.find("span").html(),
                 dir_path = (activePath !== null ? activePath : ""),
-                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name});
+                route = Routing.generate(routes.download, {"path": dir_path+path_separator+file_name});
             window.open(route, '_blank');
         },
 
@@ -503,7 +505,7 @@ var Media = function () {
          * @param {jQuery} element
          */
         changeDir = function (element) {
-            var dir_path = (activePath !== null ? activePath + "/" : ""
+            var dir_path = (activePath !== null ? activePath + path_separator : ""
                     ) + element.html(),
                 parent_li = $("span[id='" + dir_path + "']").parent("span").parent("li"),
                 sub_ul = parent_li.children();
@@ -523,7 +525,7 @@ var Media = function () {
         getFileCallback = function (file) {
             var funcNum = getUrlParam('CKEditorFuncNum');
             if (funcNum) {
-                window.opener.CKEDITOR.tools.callFunction(funcNum, "/" + file);
+                window.opener.CKEDITOR.tools.callFunction(funcNum, path_separator + file);
             } else {
                 window.opener.processFile(file);
             }
@@ -537,9 +539,9 @@ var Media = function () {
             var path,
                 file_name = selected_item.find("span:first").html();
             if (activePath !== null) {
-                path = "/" + root_dir + "/" + activePath + "/";
+                path = path_separator + root_dir + path_separator + activePath + path_separator;
             } else {
-                path = "/" + root_dir + "/";
+                path = path_separator + root_dir + path_separator;
             }
 
             $(selectors.containers.previewContent).html("<img src='" + path + file_name + "'/>");
@@ -600,9 +602,9 @@ var Media = function () {
         contextCallback = function (element, key) {
             var zip_name, file_name, path, preview_html, item_element = element.closest("." + selectors.classes.mediaType);
             if (activePath !== null) {
-                path = "/" + root_dir + "/" + activePath + "/";
+                path = path_separator + root_dir + path_separator + activePath + path_separator;
             } else {
-                path = "/" + root_dir + "/";
+                path = path_separator + root_dir + path_separator;
             }
             if (key === contextMenu.keys.new_dir) {
                 addFolder();
@@ -727,7 +729,7 @@ var Media = function () {
                         filename = file.find("span").html(),
                         target = $(event.target),
                         target_name = target.find("span").html(),
-                        target_file = root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
+                        target_file = root_dir + path_separator + (activePath !== null ? activePath + path_separator : "") + target_name,
                         route = Routing.generate(routes.move),
                         data = {
                             token: $(selectors.fields.token).val(),
@@ -755,7 +757,7 @@ var Media = function () {
                         route = Routing.generate(routes.move),
                         data;
                     if (root_dir !== target_name) {
-                        target_dir = root_dir + "/" + target_name;
+                        target_dir = root_dir + path_separator + target_name;
                     } else {
                         target_dir = root_dir;
                     }
@@ -831,6 +833,7 @@ var Media = function () {
             $(selectors.buttons.delete).attr("disabled", "disabled");
             $(selectors.buttons.copy).attr("disabled", "disabled");
             $(selectors.buttons.cut).attr("disabled", "disabled");
+            $(selectors.buttons.info).attr("disabled", "disabled");
         },
 
         enableToolbarItems = function () {
@@ -840,6 +843,7 @@ var Media = function () {
             $(selectors.buttons.copy).removeAttr("disabled", "disabled");
             $(selectors.buttons.cut).removeAttr("disabled", "disabled");
             $(selectors.buttons.download).removeAttr("disabled", "disabled");
+            $(selectors.buttons.info).removeAttr("disabled", "disabled");
 
             if (selected_item.hasClass(selectors.classes.mediaDir)) {
                 $(selectors.buttons.download).attr("disabled", "disabled");
@@ -907,14 +911,14 @@ var Media = function () {
                 if (isPopup) {
                     var path, url;
                     if (activePath !== null) {
-                        path = root_dir + "/" + activePath;
+                        path = root_dir + path_separator + activePath;
                     } else {
                         path = root_dir;
                     }
                     if ($(this).hasClass(selectors.classes.blockRow)) {
-                        url = path + "/" + $(this).find("span").html();
+                        url = path + path_separator + $(this).find("span").html();
                     } else {
-                        url = path + "/" + $(this).html();
+                        url = path + path_separator + $(this).html();
                     }
                     getFileCallback(url);
                 }
@@ -1013,6 +1017,8 @@ var Media = function () {
                 pasteFile();
             }).on("click", selectors.buttons.rename, function () {
                 renameFile(selected_item);
+            }).on("click", selectors.buttons.info, function () {
+                showInfo(selected_item);
             }).on("click", selectors.buttons.extract, function () {
                 var zip_name = selected_item.find("span." + selectors.classes.mediaPage + "." + contextMenu.extra_types.zip).html();
                 extractZip(zip_name);
@@ -1055,8 +1061,13 @@ var Media = function () {
                 if (ctrlDown && (e.keyCode === vKey)) {
                     pasteFile();
                 }
+            }).keyup(function(e) {
+                var is_disabled = $(selectors.buttons.delete).attr("disabled");
+                if (e.keyCode === 46 && is_disabled !== "disabled") {
+                    var file_name = selected_item.find("span:first").html();
+                    deleteConfirm(file_name);
+                }
             });
-
             /** Make the back/forward button work */
             window.addEventListener("popstate", function(e) {
                 current_index -= 1;
@@ -1104,6 +1115,7 @@ var Media = function () {
             activePath = current_path;
             root_dir = root_folder;
             isPopup = is_popup;
+            path_separator = system_path_separator;
 
             if (activePath === "") {
                 activePath = null;

@@ -272,6 +272,7 @@ class MediaService
         $options['upload_allow'] = $media->getExtensionsAllowed();
         $options['extended_template'] = $media->getExtendedTemplate();
         $options['usages'] = $media->getUsagesClass();
+        $options['path_separator'] = DIRECTORY_SEPARATOR;
 
         return $options;
     }
