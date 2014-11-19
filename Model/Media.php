@@ -72,7 +72,6 @@ class Media
         /** @var MediaDriver $driver */
         $driver = $container->get('youwe.media.driver');
         $this->setDriver($driver);
-        $driver->setMedia($this);
     }
 
     /**
@@ -89,6 +88,7 @@ class Media
     public function setDriver($driver)
     {
         $this->driver = $driver;
+        $driver->setMedia($this);
     }
 
     /**
