@@ -232,6 +232,9 @@ class Media
         $this->usages_class = $usages_class;
     }
 
+    /**
+     * Set the correct web path
+     */
     private function setWebPath()
     {
         $folder_array = explode(DIRECTORY_SEPARATOR, $this->getUploadPath());
@@ -368,12 +371,18 @@ class Media
         $this->getDriver()->pasteFile($this->getFileInfo(), $type);
     }
 
+    /**
+     * Move the file
+     */
     public function moveFile()
     {
         $target_full_path = $this->getTargetFilepath();
         $this->getDriver()->moveFile($this->getFileInfo(), $target_full_path);
     }
 
+    /**
+     * Delete the file
+     */
     public function deleteFile()
     {
         $this->getDriver()->deleteFile($this->getFileInfo());
