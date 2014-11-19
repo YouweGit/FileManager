@@ -319,6 +319,15 @@ class Media
     }
 
     /**
+     * @return FileInfo
+     */
+    public function getFileInfo()
+    {
+        $fileInfo = new FileInfo($this->getDir() . DIRECTORY_SEPARATOR . $this->getFilename(), $this);
+        return $fileInfo;
+    }
+
+    /**
      * @return boolean
      */
     public function isFullException()
@@ -347,11 +356,10 @@ class Media
 
     /**
      * @author Jim Ouwerkerk
-     * @param $dir
      */
     public function extractZip()
     {
-        $this->getDriver()->extractZip($this->getDir(), $this->getFilename());
+        $this->getDriver()->extractZip($this->getFileInfo());
     }
 
     /**
@@ -360,16 +368,18 @@ class Media
      */
     public function pasteFile($type)
     {
-        $this->getDriver()->pasteFile($this, $type);
+        $this->getDriver()->pasteFile($this->getFileInfo(), $type);
     }
 
     public function moveFile()
     {
-        $this->getDriver()->moveFile($this->getDir(), $this->getFilename(), $this->getTargetFilepath());
+        $target_full_path = $this->getTargetFilepath();
+        $this->getDriver()->moveFile($this->getFileInfo(), $target_full_path);
     }
 
     public function deleteFile()
     {
-        $this->getDriver()->deleteFile($this->getDir(), $this->getFilename());
+        $this->getDriver()->deleteFile($this->getFileInfo());
     }
+
 }

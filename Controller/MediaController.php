@@ -192,21 +192,17 @@ class MediaController extends Controller {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
         $service->setMedia($media);
-
         $media->resolveRequest($request);
-
         try{
             $dir = $service->getFilePath($media);
-            $media->setDir($dir);
             $service->checkToken($request->get('token'));
             $sources = $this->get('session')->get('copy');
-
-            $filename = $sources['source_file'];
-            $filepath = $sources['source_dir'];
+            $media->setDir($sources['source_dir']);
+            $media->setDirPath($sources['display_dir']);
+            $media->setFilename($sources['source_file']);
+            $media->setFilepath($sources['source_dir']);
             $media->setTargetFilepath($dir);
-            $media->setTargetFilename($filename);
-            $media->setFilename($filename);
-            $media->setFilepath($filepath);
+            $media->setTargetFilename($sources['source_file']);
             $type = $sources['cut'];
             $media->pasteFile($type);
             $this->get('session')->remove('copy');

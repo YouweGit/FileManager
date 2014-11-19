@@ -207,11 +207,16 @@ class FileInfo
     }
 
     /**
+     * @param bool $trim
      * @return string
      */
-    public function getWebPath()
+    public function getWebPath($trim = false)
     {
-        return $this->web_path;
+        if($trim) {
+            return trim($this->web_path, DIRECTORY_SEPARATOR);
+        } else {
+            return $this->web_path;
+        }
     }
 
     /**

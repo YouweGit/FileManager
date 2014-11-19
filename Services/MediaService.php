@@ -53,19 +53,19 @@ class MediaService
     public function getFilePath(Media $media)
     {
         if (($media->getFilename() == "" && !is_null($media->getTargetFilepath()))) {
-            throw new \Exception("Filename cannot be empty when there is a target path");
+            throw new \Exception("Filename cannot be empty when there is a target file");
         }
 
         $root = $media->getUploadPath();
         $dir_path = $media->getDirPath();
+
         if (empty($dir_path)) {
             $dir = $root;
         } else {
             if (strcasecmp("../", $dir_path) >= 1) {
                 throw new \Exception("Invalid filepath or filename");
             }
-            $dir_path = str_replace("../", "", $dir_path);
-            $dir = $root . DIRECTORY_SEPARATOR . $dir_path;
+            $dir = Utils::DirTrim($root, $dir_path, true);
         }
 
         try {
@@ -87,16 +87,15 @@ class MediaService
      */
     public function checkPath($path)
     {
-
         /* /project/web/uploads/page */
         if (empty($path)) {
             throw new \Exception("Directory path is empty", 400);
         }
 
-        /* /app/uploads/page */
+        /* /web/uploads/page */
         $realpath = realpath($path);
 
-        /* /app/uploads */
+        /* /web/uploads */
         $upload_path = realpath($this->getMedia()->getUploadPath());
 
         //If this path is higher than the parent folder
@@ -239,21 +238,20 @@ class MediaService
                 throw new \Exception("Extension is empty", 500);
             }
         }
-        $driver->renameFile($dir, $org_filename, $new_filename);
+        $fileInfo = new FileInfo(Utils::DirTrim($dir, $org_filename, true), $this->getMedia());
+        $driver->renameFile($fileInfo, $new_filename);
     }
 
     /**
      * @param array  $dir_files - Files
-     * @param string $dir       - Current Directory
-     * @param string $dir_path  - Current Dir path
      * @param array  $files
      * @internal param bool $return_files - If false, only show dirs
      * @return array
      */
-    public function getFileTree(array $dir_files, $dir, $dir_path, $files = array())
+    public function getFiles(array $dir_files, $files = array())
     {
         foreach ($dir_files as $file) {
-            $filepath = Utils::DirTrim($dir, $file, true);
+            $filepath = Utils::DirTrim($this->getMedia()->getDir(), $file, true);
 
             //Only show non-hidden files
             if ($file[0] != ".") {
@@ -318,17 +316,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
-     * @param $file_path
-     * @return int
-     */
-    public function getFileSize($file_path)
-    {
-        return filesize($file_path);
-    }
-
-
-    /**
      * @author   Jim Ouwerkerk
      * @param Form  $form
      * @internal param Media $settings
@@ -340,7 +327,7 @@ class MediaService
         $dir_files = scandir($media->getDir());
         $root_dirs = scandir($media->getUploadPath());
 
-        $options['files'] = $this->getFileTree($dir_files, $media->getDir(), $media->getDirPath());
+        $options['files'] = $this->getFiles($dir_files);
         $options['file_body_display'] = $this->getDisplayType();
         $options['root_folder'] = $media->getPath();
         $options['dirs'] = $this->getDirectoryTree($root_dirs, $media->getUploadPath(), "");
