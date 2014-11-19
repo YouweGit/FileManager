@@ -2,7 +2,6 @@
 
 namespace Youwe\MediaBundle\Model;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Youwe\MediaBundle\Driver\MediaDriver;
 use Youwe\MediaBundle\Services\MediaService;
@@ -59,7 +58,7 @@ class Media
     /**
      * @param array $parameters
      */
-    public function __construct(array $parameters, ContainerInterface $container)
+    public function __construct(array $parameters, $driver)
     {
         $this->setExtensionsAllowed($parameters['mime_allowed']);
         $this->setExtendedTemplate($parameters['extended_template']);
@@ -69,13 +68,11 @@ class Media
         $this->setFullException($parameters['full_exception']);
         $this->setWebPath();
 
-        /** @var MediaDriver $driver */
-        $driver = $container->get('youwe.media.driver');
         $this->setDriver($driver);
     }
 
     /**
-     * @return MediaDriver
+     * @return mixed|MediaDriver
      */
     public function getDriver()
     {
@@ -83,7 +80,7 @@ class Media
     }
 
     /**
-     * @param MediaDriver $driver
+     * @param mixed|MediaDriver $driver
      */
     public function setDriver($driver)
     {
