@@ -19,6 +19,7 @@ class MediaService
 {
     /** @var  Media */
     private $media;
+
     /**
      * @param ContainerInterface $container
      */
@@ -29,11 +30,17 @@ class MediaService
 
     /**
      * @author Jim Ouwerkerk
-     * @param Media $media
+     * @param $parameters
+     * @param $dir_path
+     * @param $driver
+     * @return Media
      */
-    public function setMedia(Media $media)
+    public function createMedia($parameters, $driver, $dir_path = null)
     {
+        $media = new Media($parameters, $driver);
         $this->media = $media;
+        $media->setDirPaths($this, $dir_path);
+        return $media;
     }
 
     /**

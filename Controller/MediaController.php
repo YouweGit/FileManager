@@ -14,8 +14,6 @@ use Youwe\MediaBundle\Model\FileInfo;
 use Youwe\MediaBundle\Services\MediaService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Youwe\MediaBundle\Model\Media;
-use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class MediaController
@@ -36,16 +34,14 @@ class MediaController extends Controller {
      */
     public function listMediaAction($dir_path = null)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-        
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        
-        $service->setMedia($media);
-        $media->setDirPaths($service, $dir_path);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver, $dir_path);
+
         $form = $this->createForm(new MediaType);
         try{
             $service->handleFormSubmit($form);
@@ -71,14 +67,13 @@ class MediaController extends Controller {
      */
     public function deleteFileAction(Request $request)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        $service->setMedia($media);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
         $response = new Response();
 
@@ -105,14 +100,13 @@ class MediaController extends Controller {
      */
     public function moveFileAction(Request $request)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        $service->setMedia($media);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
         $response = new Response();
 
@@ -144,14 +138,13 @@ class MediaController extends Controller {
      */
     public function copyFileAction(Request $request, $type)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        $service->setMedia($media);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
         $response = new Response();
 
@@ -195,14 +188,14 @@ class MediaController extends Controller {
             return $response;
         }
 
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        $service->setMedia($media);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
+
         $media->resolveRequest($request);
         try{
             $dir = $service->getFilePath($media);
@@ -235,14 +228,13 @@ class MediaController extends Controller {
      */
     public function extractZipAction(Request $request)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        $service->setMedia($media);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
         $response = new Response();
 
@@ -269,14 +261,13 @@ class MediaController extends Controller {
      */
     public function FileInfoAction(Request $request)
     {
-        $parameters = $this->container->getParameter('youwe_media');
-        /** @var MediaDriver $driver */
-        $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
-
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
-        $service->setMedia($media);
+
+        /** @var MediaDriver $driver */
+        $driver = $this->get('youwe.media.driver');
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
         $media->resolveRequest($request);
 
@@ -303,10 +294,13 @@ class MediaController extends Controller {
      */
     public function DownloadAction($path)
     {
-        $parameters = $this->container->getParameter('youwe_media');
+        /** @var MediaService $service */
+        $service = $this->get('youwe.media.service');
+
         /** @var MediaDriver $driver */
         $driver = $this->get('youwe.media.driver');
-        $media = new Media($parameters, $driver);
+        $parameters = $this->container->getParameter('youwe_media');
+        $media = $service->createMedia($parameters, $driver);
 
         $web_path = $media->getPath($path, null, true);
         $content = file_get_contents($web_path);
