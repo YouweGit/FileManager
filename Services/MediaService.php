@@ -149,7 +149,7 @@ class MediaService
      * @throws \Exception
      * @return null|string
      */
-    public function handleFormSubmit($form)
+    public function handleFormSubmit(Form $form)
     {
         $media = $this->getMedia();
         $dir = $media->getDir();
@@ -208,13 +208,11 @@ class MediaService
     private function handleNewDir($form)
     {
         $dir = $this->getMedia()->getDir();
-        /** @var MediaDriver $driver */
-        $driver = $this->container->get('youwe.media.driver');
 
         $new_dir = $form->get("newfolder")->getData();
         $new_dir = str_replace("../", "", $new_dir);
 
-        $driver->makeDir($dir, $new_dir);
+        $this->getMedia()->getDriver()->makeDir($new_dir);
     }
 
     /**
