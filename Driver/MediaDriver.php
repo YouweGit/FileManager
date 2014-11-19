@@ -59,7 +59,7 @@ class MediaDriver
     public function makeDir($dir_name)
     {
         $fm = new Filesystem();
-        $dir_path = $this->getMedia()->getDir();
+        $dir_path = $this->getMedia()->getPath($this->getMedia()->getDirPath(), $dir_name, true);
         if (!file_exists($dir_path)) {
             $fm->mkdir($dir_path, 0700);
         } else {
