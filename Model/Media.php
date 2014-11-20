@@ -239,7 +239,7 @@ class Media
      */
     private function setWebPath()
     {
-        $folder_array = explode(DIRECTORY_SEPARATOR, $this->getUploadPath());
+        $folder_array = explode(self::DS, $this->getUploadPath());
         $this->web_path = array_pop($folder_array);
     }
 
@@ -258,10 +258,10 @@ class Media
             $path = $this->web_path;
         }
         if (!is_null($dir_path)) {
-            $path = DIRECTORY_SEPARATOR . $this->DirTrim($path, $dir_path);
+            $path = self::DS . $this->DirTrim($path, $dir_path);
         }
         if (!is_null($filename)) {
-            $path = DIRECTORY_SEPARATOR . $this->DirTrim($path, $filename);
+            $path = self::DS . $this->DirTrim($path, $filename);
         }
         return $path;
     }
@@ -279,7 +279,7 @@ class Media
             $this->setDirPath("");
         } else {
             $this->setDirPath($this->DirTrim($dir_path));
-            $this->setDir($this->getUploadPath() . DIRECTORY_SEPARATOR . $dir_path);
+            $this->setDir($this->getUploadPath() . self::DS . $dir_path);
         }
 
         $path_valid = $service->checkPath($this->getDir());
@@ -325,7 +325,7 @@ class Media
      */
     public function getFileInfo()
     {
-        $fileInfo = new FileInfo($this->getDir() . DIRECTORY_SEPARATOR . $this->getFilename(), $this);
+        $fileInfo = new FileInfo($this->getDir() . self::DS . $this->getFilename(), $this);
         return $fileInfo;
     }
 
@@ -400,19 +400,19 @@ class Media
     public function DirTrim($path, $file = null, $rTrim = false)
     {
         if ($rTrim) {
-            $result = rtrim($path, DIRECTORY_SEPARATOR);
+            $result = rtrim($path, self::DS);
         } else {
-            $result = trim($path, DIRECTORY_SEPARATOR);
+            $result = trim($path, self::DS);
         }
 
         if (!is_null($file)) {
-            $file_result = trim($file, DIRECTORY_SEPARATOR);
+            $file_result = trim($file, self::DS);
         } else {
             $file_result = $file;
         }
 
         if (!is_null($file_result)) {
-            $result = $result . DIRECTORY_SEPARATOR . $file_result;
+            $result = $result . self::DS . $file_result;
         }
 
         return $result;
