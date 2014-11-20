@@ -5,9 +5,7 @@
     <th>Type</th>
     <th>Size</th>
     <th>Modified</th>
-    {% if usages %}
-        <th>Usages</th>
-    {% endif %}
+    <th>{% if usages %}Usages{% endif %}</th>
     </thead>
     <tbody>
     {% for file in files %}
@@ -28,9 +26,7 @@
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        {% if usages %}
-            <td>&nbsp;</td>
-        {% endif %}
+        <td>{% if usages %}&nbsp;{% endif %}</td>
     </tr>
     {% for file in files %}
         {% if file.mimetype != 'directory' %}
@@ -66,9 +62,7 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
-                {% if usages %}
-                    <td>&nbsp;</td>
-                {% endif %}
+                <td>{% if usages %}&nbsp;{% endif %}</td>
             </tr>
         {% endfor %}
     {% endif %}

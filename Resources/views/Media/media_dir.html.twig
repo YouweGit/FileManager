@@ -3,14 +3,14 @@
         <li {% if current_path == dir.path %}class="dir_active"{% endif %}>
             <span class="yw_media_directory_line">
                 {% if dir.tree is not empty %}
-                    <span class="toggleDir"><i class="fa fa-caret-right"></i></span>
+                    <span class="toggleIcon toggleDir"><i class="fa fa-caret-right"></i></span>
                 {% else %}
-                    <span class="noToggle"></span>
+                    <span class="toggleIcon noToggle"></span>
                 {% endif %}
                 <span title="{{ dir.name }}" class="yw_media_dir nowrap" id="{{ dir.path }}">{{ dir.name }}</span>
             </span>
             <ul>
-                {% include "YouweMediaBundle:Media:media_dir.html.twig" with {'dirs': dir.tree} %}
+                {% include "YouweMediaBundle:Media:media_dir.html.twig" with {'dirs': dir.tree, 'inner': 'inner_tree'} %}
             </ul>
         </li>
     {% endif %}

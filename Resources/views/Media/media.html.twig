@@ -44,6 +44,7 @@
     <div id="MediaContainer" {% if isPopup %}class="popup"{% endif %}>
         <form action="" id="media_form" method="post" enctype="multipart/form-data">
             <div class="MediaList">
+                <div class="MediaHead">File Manager</div>
                 {{ block('media_content') }}
             </div>
             {{ form_row(form._token) }}
@@ -63,11 +64,11 @@
                 <ul>
                     <li {% if current_path is empty %}class="dir_active"{% endif %}>
                         <span class="yw_media_directory_line">
-                            <span class="toggleDir"><i class="fa fa-caret-down"></i></span>
+                            <span class="toggleIcon toggleDir"><i class="fa fa-caret-down"></i></span>
                             <span class="yw_media_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>
                         </span>
                         <ul>
-                            {% include "YouweMediaBundle:Media:media_dir.html.twig" with {'dirs': dirs} %}
+                            {% include "YouweMediaBundle:Media:media_dir.html.twig" with {'dirs': dirs , 'inner': ''} %}
                         </ul>
                     </li>
                 </ul>
@@ -81,26 +82,23 @@
         </div>
         <div class="panel panel-default panel-actions">
             <div class="panel-heading">
-                <h3 class="panel-title">Actions</h3>
-            </div>
-            <div class="panel-body">
-                <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                <div class="ToolBar">
                     {% include "YouweMediaBundle:Media:media_toolbar.html.twig" %}
+                    
+                    <div class="ViewOption">
+                        {% if file_body_display == 'file_body_block' %}
+                            <div id="set_display_list" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-list"></i></div>
+                        {% else %}
+                            <div id="set_display_block" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-th"></i></div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
         <div class="panel panel-default panel-items">
-            <div class="panel-heading">
-                <h3 class="panel-title pull-left">Files</h3>
-                {% if file_body_display == 'file_body_block' %}
-                    <div id="set_display_list" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-list"></i></div>
-                {% else %}
-                    <div id="set_display_block" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-th"></i></div>
-                {% endif %}
-            </div>
             {#Commented out for later#}
             {#<div class="media-table-current-path">Current Directory: {{ root_folder }}{{ path_separator }}{{ current_path }}</div>#}
-            <div id="media-table-wrapper">
+            <div id="media-table-wrapper" class="{{ file_body_display }}">
                 {% include "YouweMediaBundle:Media:" ~file_body_display ~ ".html.twig" with {'files': files} %}
             </div>
         </div>
