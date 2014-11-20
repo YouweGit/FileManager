@@ -97,7 +97,7 @@ class FileInfo
     {
         $filename = basename($filepath);
 
-        $file_size = $this->readableSize(filesize($filepath));
+        $file_size = $this->calculateReadableSize(filesize($filepath));
         $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
         $mimetype = mime_content_type($filepath);
         $web_path = $media->DirTrim($media->getPath($media->getDirPath()), $filename, true);
@@ -120,7 +120,7 @@ class FileInfo
     }
 
     /**
-     * @param string $fileclass
+     * @param string $mimetype
      */
     public function setFileclass($mimetype)
     {
@@ -384,11 +384,13 @@ class FileInfo
 
 
     /**
+     * This function returns the file size in a readable way for the user.
+     *
      * @param int $bytes
      * @param int $decimals
-     * @return string
+     * @return string - returns the file size in Bytes, Kilobytes, Megabytes or Gigabytes.
      */
-    public function readableSize($bytes, $decimals = 2)
+    public function calculateReadableSize($bytes, $decimals = 2)
     {
         $sz = array('B', 'KB', 'MB', 'GB');
         $factor = (int) floor((strlen($bytes) - 1) / 3);
