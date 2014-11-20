@@ -323,7 +323,7 @@ class FileInfo
     public function getWebPath($trim = false)
     {
         if($trim) {
-            return trim($this->web_path, DIRECTORY_SEPARATOR);
+            return trim($this->web_path, Media::DS);
         } else {
             return $this->web_path;
         }
