@@ -54,7 +54,7 @@ class MediaController extends Controller {
 
         $renderParameters = $service->getRenderOptions($form);
 
-        return $this->render($media->getTemplate(), $renderParameters);
+        return $this->render($media->getThemeTemplate(), $renderParameters);
     }
 
     /**

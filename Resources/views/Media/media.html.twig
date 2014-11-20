@@ -1,10 +1,10 @@
 {% if app.request.isXmlHttpRequest() %}
-    {% set extended_template = 'YouweMediaBundle:Media:empty_layout.html.twig' %}
-{% elseif isPopup %}
-    {% set extended_template = 'YouweMediaBundle:Media:media_layout.html.twig' %}
+    {% set media_template = 'YouweMediaBundle:Media:empty_layout.html.twig' %}
+{% else %}
+    {% set media_template = 'YouweMediaBundle:Media:media_layout.html.twig' %}
 {% endif %}
 
-{% extends extended_template %}
+{% extends media_template %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -17,6 +17,7 @@
     %}
     <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
+    <link rel="stylesheet" href="{{ theme_css }}">
 {% endblock %}
 
 {% block javascripts %}
