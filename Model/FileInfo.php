@@ -3,7 +3,6 @@
 namespace Youwe\MediaBundle\Model;
 
 use Symfony\Component\HttpFoundation\Request;
-use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class FileInfo
@@ -39,6 +38,57 @@ class FileInfo
     /** @var  string */
     private $web_path;
 
+    /** @var bool */
+    private $is_dir = false;
+
+    /** @var bool */
+    private $is_image = false;
+
+    /** @var bool */
+    private $is_video = false;
+
+    /** @var bool */
+    private $is_audio = false;
+
+    /**
+     * This array is used for getting the readable file type
+     * with a mimetype
+     * @var array
+     */
+    public static $humanReadableTypes = array(
+        'unknown'                       => 'Unknown',
+        'directory'                     => 'Folder',
+        'application/pdf'               => 'PDF',
+        'application/xml'               => 'XML',
+        'application/x-shockwave-flash' => 'AppFlash',
+        'application/flash-video'       => 'Flash video',
+        'application/javascript'        => 'JS',
+        'application/x-gzip'            => 'GZIP',
+        'application/x-bzip2'           => 'BZIP',
+        'application/zip'               => 'ZIP',
+        'application/x-zip'             => 'ZIP',
+        'application/x-rar'             => 'RAR',
+        'application/x-tar'             => 'TAR',
+        'text/plain'                    => 'TXT',
+        'text/html'                     => 'HTML',
+        'text/javascript'               => 'JS',
+        'text/css'                      => 'CSS',
+        'text/xml'                      => 'XML',
+        'text/x-php'                    => 'PHP',
+        'text/x-shellscript'            => 'Shell Script',
+        'image/jpeg'                    => 'JPEG',
+        'image/gif'                     => 'GIF',
+        'image/png'                     => 'PNG',
+        'audio/mpeg'                    => 'Audio MPEG',
+        'audio/ogg'                     => 'Audio OGG',
+        'audio/mp4'                     => 'Audio MPEG4',
+        'video/mp4'                     => 'Video MPEG4',
+        'video/mpeg'                    => 'Video MPEG',
+        'video/ogg'                     => 'Video OGG',
+        'application/ogg'               => 'Video OGG',
+        'inode/x-empty'                 => 'Text'
+    );
+
     /**
      * @param       $filepath
      * @param Media $media
@@ -47,10 +97,10 @@ class FileInfo
     {
         $filename = basename($filepath);
 
-        $file_size = Utils::readableSize(filesize($filepath));
+        $file_size = $this->readableSize(filesize($filepath));
         $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
         $mimetype = mime_content_type($filepath);
-        $web_path = Utils::DirTrim($media->getPath($media->getDirPath()), $filename, true);
+        $web_path = $media->DirTrim($media->getPath($media->getDirPath()), $filename, true);
 
         $this->setFilename($filename);
         $this->setMimetype($mimetype);
@@ -72,8 +122,68 @@ class FileInfo
     /**
      * @param string $fileclass
      */
-    public function setFileclass($fileclass)
+    public function setFileclass($mimetype)
     {
+        switch ($mimetype) {
+            case 'directory':
+                $fileclass = "dir";
+                $this->is_dir = true;
+                break;
+            case 'application/pdf':
+                $fileclass = "pdf";
+                break;
+            case 'application/zip':
+            case 'application/x-gzip':
+            case 'application/x-bzip2':
+            case 'application/x-zip':
+            case 'application/x-rar':
+            case 'application/x-tar':
+                $fileclass = "zip";
+                break;
+            case 'video/mp4':
+            case 'video/ogg':
+            case 'video/mpeg':
+            case 'application/ogg':
+                $fileclass = "video";
+                $this->is_video = true;
+                break;
+            case 'audio/ogg':
+            case 'audio/mpeg':
+                $fileclass = "audio";
+                $this->is_audio = true;
+                break;
+            case 'image/jpeg':
+            case 'image/jpg':
+            case 'image/gif':
+            case 'image/png':
+                $fileclass = "image";
+                $this->is_image = true;
+                break;
+            case 'image/svg+xml':
+                $fileclass = "svg";
+                $this->is_image = true;
+                break;
+            case 'text/x-shellscript':
+                $fileclass = 'shellscript';
+                break;
+            case 'text/html':
+            case 'text/javascript':
+            case 'text/css':
+            case 'text/xml':
+            case 'application/javascript':
+            case 'application/xml':
+                $fileclass = "code";
+                break;
+            case 'text/x-php':
+                $fileclass = "php";
+                break;
+            case 'application/x-shockwave-flash':
+                $fileclass = 'swf';
+                break;
+            default:
+                $fileclass = "default";
+                break;
+        }
         $this->fileclass = $fileclass;
     }
 
@@ -124,12 +234,12 @@ class FileInfo
     {
         $this->mimetype = $mimetype;
 
-        if (isset(Utils::$humanReadableTypes[$mimetype])) {
-            $this->setReadableType(Utils::$humanReadableTypes[$mimetype]);
+        if (isset(self::$humanReadableTypes[$mimetype])) {
+            $this->setReadableType(self::$humanReadableTypes[$mimetype]);
         } else {
             $this->setReadableType("Undefined");
         }
-        $this->setFileclass(Utils::getFileClass($mimetype));
+        $this->setFileclass($mimetype);
     }
 
     /**
@@ -232,7 +342,31 @@ class FileInfo
      */
     public function isDir()
     {
-        return is_dir($this->getFilepath());
+        return $this->is_dir;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isImage()
+    {
+        return $this->is_image;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isVideo()
+    {
+        return $this->is_video;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAudio()
+    {
+        return $this->is_audio;
     }
 
     /**
@@ -248,4 +382,17 @@ class FileInfo
         return $result;
     }
 
+
+    /**
+     * @param int $bytes
+     * @param int $decimals
+     * @return string
+     */
+    public function readableSize($bytes, $decimals = 2)
+    {
+        $sz = array('B', 'KB', 'MB', 'GB');
+        $factor = (int) floor((strlen($bytes) - 1) / 3);
+
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor];
+    }
 }

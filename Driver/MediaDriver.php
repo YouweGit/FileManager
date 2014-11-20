@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
 use Youwe\MediaBundle\Model\FileInfo;
 use Youwe\MediaBundle\Model\Media;
-use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class MediaDriver
@@ -111,7 +110,7 @@ class MediaDriver
             $this->validateFile($fileInfo, $new_file_name);
             $fm = new Filesystem();
             $old_file = $fileInfo->getFilepath();
-            $new_file = Utils::DirTrim($this->getMedia()->getDir(), $new_file_name, true);
+            $new_file = $this->getMedia()->DirTrim($this->getMedia()->getDir(), $new_file_name, true);
             $fm->rename($old_file, $new_file);
         } catch (\Exception $e) {
             $this->throwError("Cannot rename file or directory", 500, $e);
@@ -223,8 +222,8 @@ class MediaDriver
             $target_dir = $this->getMedia()->getTargetFilepath();
             $target_file = $this->getMedia()->getTargetFilename();
 
-            $source_file_path = Utils::DirTrim($source_dir, $source_file, true);
-            $target_file_path = Utils::DirTrim($target_dir, $target_file, true);
+            $source_file_path = $this->getMedia()->DirTrim($source_dir, $source_file, true);
+            $target_file_path = $this->getMedia()->DirTrim($target_dir, $target_file, true);
             $this->validateFile($fileInfo);
 
             $fileSystem = new Filesystem();

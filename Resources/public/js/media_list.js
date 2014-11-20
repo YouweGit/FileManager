@@ -192,7 +192,7 @@ var Media = function () {
                 async: false,
                 url: url,
                 data: data,
-                success: function (data) {
+                success: function () {
                     if (reloadList === true) {
                         self.reloadDirList();
                     }
@@ -1069,7 +1069,7 @@ var Media = function () {
                 }
             });
             /** Make the back/forward button work */
-            window.addEventListener("popstate", function(e) {
+            window.addEventListener("popstate", function() {
                 current_index -= 1;
                 navigateHistory();
             });

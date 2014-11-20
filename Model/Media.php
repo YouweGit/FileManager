@@ -5,7 +5,6 @@ namespace Youwe\MediaBundle\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Youwe\MediaBundle\Driver\MediaDriver;
 use Youwe\MediaBundle\Services\MediaService;
-use Youwe\MediaBundle\Services\Utils;
 
 /**
  * Class Media
@@ -256,10 +255,10 @@ class Media
             $path = $this->web_path;
         }
         if (!is_null($dir_path)) {
-            $path = DIRECTORY_SEPARATOR . Utils::DirTrim($path, $dir_path);
+            $path = DIRECTORY_SEPARATOR . $this->DirTrim($path, $dir_path);
         }
         if (!is_null($filename)) {
-            $path = DIRECTORY_SEPARATOR . Utils::DirTrim($path, $filename);
+            $path = DIRECTORY_SEPARATOR . $this->DirTrim($path, $filename);
         }
         return $path;
     }
@@ -276,7 +275,7 @@ class Media
             $this->setDir($this->getUploadPath());
             $this->setDirPath("");
         } else {
-            $this->setDirPath(Utils::DirTrim($dir_path));
+            $this->setDirPath($this->DirTrim($dir_path));
             $this->setDir($this->getUploadPath() . DIRECTORY_SEPARATOR . $dir_path);
         }
 
@@ -388,4 +387,31 @@ class Media
         $this->getDriver()->deleteFile($this->getFileInfo());
     }
 
+    /**
+     * @author Jim Ouwerkerk
+     * @param string $path
+     * @param string $file
+     * @param bool   $rTrim
+     * @return string
+     */
+    public function DirTrim($path, $file = null, $rTrim = false)
+    {
+        if ($rTrim) {
+            $result = rtrim($path, DIRECTORY_SEPARATOR);
+        } else {
+            $result = trim($path, DIRECTORY_SEPARATOR);
+        }
+
+        if (!is_null($file)) {
+            $file_result = trim($file, DIRECTORY_SEPARATOR);
+        } else {
+            $file_result = $file;
+        }
+
+        if (!is_null($file_result)) {
+            $result = $result . DIRECTORY_SEPARATOR . $file_result;
+        }
+
+        return $result;
+    }
 }
