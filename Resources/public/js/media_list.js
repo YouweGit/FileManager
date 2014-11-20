@@ -18,7 +18,6 @@ var Media = function () {
         self = this,
         active_input = false,
         sub_dirs,
-        path_separator,
         active_dir,
         active_ul,
         active_span,
@@ -302,7 +301,7 @@ var Media = function () {
         downloadFile = function (file_element) {
             var file_name = file_element.find("span").html(),
                 dir_path = (activePath !== null ? activePath : ""),
-                route = Routing.generate(routes.download, {"path": dir_path+path_separator+file_name});
+                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name});
             window.open(route, '_blank');
         },
 
@@ -505,7 +504,7 @@ var Media = function () {
          * @param {jQuery} element
          */
         changeDir = function (element) {
-            var dir_path = (activePath !== null ? activePath + path_separator : ""
+            var dir_path = (activePath !== null ? activePath + "/" : ""
                     ) + element.html(),
                 parent_li = $("span[id='" + dir_path + "']").parent("span").parent("li"),
                 sub_ul = parent_li.children();
@@ -525,7 +524,7 @@ var Media = function () {
         getFileCallback = function (file) {
             var funcNum = getUrlParam('CKEditorFuncNum');
             if (funcNum) {
-                window.opener.CKEDITOR.tools.callFunction(funcNum, path_separator + file);
+                window.opener.CKEDITOR.tools.callFunction(funcNum, "/" + file);
             } else {
                 window.opener.processFile(file);
             }
@@ -539,9 +538,9 @@ var Media = function () {
             var path,
                 file_name = selected_item.find("span:first").html();
             if (activePath !== null) {
-                path = path_separator + root_dir + path_separator + activePath + path_separator;
+                path = "/" + root_dir + "/" + activePath + "/";
             } else {
-                path = path_separator + root_dir + path_separator;
+                path = "/" + root_dir + "/";
             }
 
             $(selectors.containers.previewContent).html("<img src='" + path + file_name + "'/>");
@@ -602,9 +601,9 @@ var Media = function () {
         contextCallback = function (element, key) {
             var zip_name, file_name, path, preview_html, item_element = element.closest("." + selectors.classes.mediaType);
             if (activePath !== null) {
-                path = path_separator + root_dir + path_separator + activePath + path_separator;
+                path = "/" + root_dir + "/" + activePath + "/";
             } else {
-                path = path_separator + root_dir + path_separator;
+                path = "/" + root_dir + "/";
             }
             if (key === contextMenu.keys.new_dir) {
                 addFolder();
@@ -729,7 +728,7 @@ var Media = function () {
                         filename = file.find("span").html(),
                         target = $(event.target),
                         target_name = target.find("span").html(),
-                        target_file = root_dir + path_separator + (activePath !== null ? activePath + path_separator : "") + target_name,
+                        target_file = root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
                         route = Routing.generate(routes.move),
                         data = {
                             token: $(selectors.fields.token).val(),
@@ -757,7 +756,7 @@ var Media = function () {
                         route = Routing.generate(routes.move),
                         data;
                     if (root_dir !== target_name) {
-                        target_dir = root_dir + path_separator + target_name;
+                        target_dir = root_dir + "/" + target_name;
                     } else {
                         target_dir = root_dir;
                     }
@@ -911,14 +910,14 @@ var Media = function () {
                 if (isPopup) {
                     var path, url;
                     if (activePath !== null) {
-                        path = root_dir + path_separator + activePath;
+                        path = root_dir + "/" + activePath;
                     } else {
                         path = root_dir;
                     }
                     if ($(this).hasClass(selectors.classes.blockRow)) {
-                        url = path + path_separator + $(this).find("span").html();
+                        url = path + "/" + $(this).find("span").html();
                     } else {
-                        url = path + path_separator + $(this).html();
+                        url = path + "/" + $(this).html();
                     }
                     getFileCallback(url);
                 }
@@ -1115,7 +1114,6 @@ var Media = function () {
             activePath = current_path;
             root_dir = root_folder;
             isPopup = is_popup;
-            path_separator = system_path_separator;
 
             if (activePath === "") {
                 activePath = null;
