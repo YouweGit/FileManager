@@ -12,6 +12,9 @@ use Youwe\MediaBundle\Services\MediaService;
  */
 class Media
 {
+    //Directory Separator
+    const DS = "/";
+
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
 

@@ -17,6 +17,9 @@ use Youwe\MediaBundle\Model\Media;
  */
 class MediaDriver
 {
+    /** Directory Separator */
+    const DS = "/";
+
     /**
      * @var Media
      */
@@ -42,7 +45,7 @@ class MediaDriver
         $path_parts = pathinfo($original_file);
 
         $increment = '';
-        while (file_exists($dir . DIRECTORY_SEPARATOR . $path_parts['filename'] . $increment . '.' . $extension)) {
+        while (file_exists($dir . Media::DS . $path_parts['filename'] . $increment . '.' . $extension)) {
             $increment++;
         }
 
@@ -128,11 +131,11 @@ class MediaDriver
         if (!is_dir($file_path)) {
             $fm = new Filesystem();
             $tmp_dir = $this->createTmpDir($fm);
-            $fm->copy($file_path, $tmp_dir . DIRECTORY_SEPARATOR . $fileInfo->getFilename());
+            $fm->copy($file_path, $tmp_dir . Media::DS . $fileInfo->getFilename());
 
             if (!is_null($new_filename)) {
-                $fm->rename($tmp_dir . DIRECTORY_SEPARATOR . $fileInfo->getFilename(),
-                    $tmp_dir . DIRECTORY_SEPARATOR . $new_filename);
+                $fm->rename($tmp_dir . Media::DS . $fileInfo->getFilename(),
+                    $tmp_dir . Media::DS . $new_filename);
             }
             $this->checkFileType($fm, $tmp_dir);
         }
@@ -144,7 +147,7 @@ class MediaDriver
      */
     public function createTmpDir(Filesystem $fm)
     {
-        $tmp_dir = $this->getMedia()->getUploadPath() . DIRECTORY_SEPARATOR . "." . strtotime("now");
+        $tmp_dir = $this->getMedia()->getUploadPath() . Media::DS . "." . strtotime("now");
         $fm->mkdir($tmp_dir);
 
         return $tmp_dir;

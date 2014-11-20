@@ -381,7 +381,6 @@ class MediaService
         $options['upload_allow'] = $media->getExtensionsAllowed();
         $options['extended_template'] = $media->getExtendedTemplate();
         $options['usages'] = $media->getUsagesClass();
-        $options['path_separator'] = DIRECTORY_SEPARATOR;
 
         return $options;
     }
@@ -444,7 +443,7 @@ class MediaService
                 if (is_dir($filepath)) {
                     $new_dir_files = scandir($filepath);
                     $new_dir_path = $this->getMedia()->DirTrim($dir_path, $file, true);
-                    $new_dir = $this->getMedia()->getUploadPath() . DIRECTORY_SEPARATOR . $this->getMedia()->DirTrim($new_dir_path);
+                    $new_dir = $this->getMedia()->getUploadPath() . Media::DS . $this->getMedia()->DirTrim($new_dir_path);
                     $fileType = "directory";
                     $tmp_array = array(
                         "mimetype" => $fileType,
