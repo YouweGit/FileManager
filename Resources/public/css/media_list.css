@@ -1,23 +1,58 @@
+/*
+ * Basic HTML styles
+ */
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+
 /**
  * Media Main
  */
+#MediaContainer {
+    height: 100%;
+    width: 100%;
+}
+
 #MediaContainer.popup {
     font-size: 13px;
     overflow: hidden;
     height: 490px;
 }
 
-#MediaContainer .MediaList {
-    position: relative;
-    min-height: 500px;
+#MediaContainer > form {
+    height: 100%;
     width: 100%;
 }
 
-#MediaContainer .MediaList .panel-actions,
+
+/**
+ * Media LIST
+ */
+#MediaContainer .MediaList {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+#MediaContainer .MediaList .MediaHead{
+    background: #ddd;
+    font-size: 16px;
+    padding: 10px 15px;
+    position: relative;
+    z-index: 2;
+    
+    -webkit-box-shadow: 0 1px 3px rgba(60,56,63,0.9);
+       -moz-box-shadow: 0 1px 3px rgba(60,56,63,0.9);
+            box-shadow: 0 1px 3px rgba(60,56,63,0.9);
+}
+
+/*#MediaContainer .MediaList .panel-actions,
 #MediaContainer .MediaList .panel-actions .panel-body{
     padding:2px;
     margin-bottom:2px;
-}
+}*/
 
 #MediaContainer .MediaList .panel-actions .panel-body .btn{
     padding:1px 5px;
@@ -27,9 +62,9 @@
     height:100%;
 }
 
-#MediaContainer .MediaList .panel-items .panel-heading{
+/*#MediaContainer .MediaList .panel-items .panel-heading{
     height:35px;
-}
+}*/
 
 #MediaContainer .MediaList .panel-items .panel-heading .btn{
     padding:1px 5px;
@@ -37,9 +72,27 @@
     margin-top:-5px;
 }
 
-#MediaContainer .MediaList span.yw_media_item_dir,
-#MediaContainer .MediaList span.yw_media_dir {
+#MediaContainer .MediaList .yw_media_directory_line {
+    display: inline-table;
+    position: relative;
+    width: 100%;
+}
+
+#MediaContainer .MediaList .yw_media_directory_line .toggleIcon {
+    font-size: 20px;
+    position: absolute;
+    left: 8px;
+    top: 5px;
+}
+
+#MediaContainer .MediaList span.yw_media_item_dir{
     cursor: pointer;
+}
+
+#MediaContainer .MediaList span.yw_media_dir {
+    display: block;
+    cursor: pointer;
+    padding: 10px 15px 10px 25px;
 }
 
 #MediaContainer .MediaList .droppable-highlight {
@@ -56,12 +109,13 @@
 }
 
 /**
- * Media Dirs
+ * Media DIRECTORY
  */
 #MediaContainer .MediaListDirs {
+    background: #fafafa;
     width: 320px;
+    height: 100%;
     float: left;
-    margin-right: 10px;
 }
 
 #MediaContainer.popup .MediaListDirs {
@@ -76,16 +130,17 @@
 }
 
 #MediaContainer .MediaList table td span.yw_media_page,
-#MediaContainer .MediaList table td span.yw_media_item_dir,
-#MediaContainer .MediaList ul span.yw_media_dir{
+#MediaContainer .MediaList table td span.yw_media_item_dir{
     background-repeat: no-repeat;
     padding-left: 25px;
 }
 
 #MediaContainer .MediaListDirs li.dir_active > span > span.yw_media_dir {
-    border-radius: 3px;
-    padding: 3px 3px 3px 25px;
-    background-color: #b9e5ff;
+    background-color: #f1f1f1;
+    
+    -webkit-box-shadow: 0 0 10px 0px rgba(60,56,63,0.9) inset;
+       -moz-box-shadow: 0 0 10px 0px rgba(60,56,63,0.9) inset;
+            box-shadow: 0 0 10px 0px rgba(60,56,63,0.9) inset;
 }
 
 #MediaContainer .MediaListDirs ul {
@@ -102,6 +157,7 @@
 }
 
 #MediaContainer .MediaListDirs span.toggleDir i.fa-caret-right {
+    margin-left: 5px;
     padding-right: 2px;
 }
 
@@ -109,20 +165,14 @@
     margin-right: -1px;
 }
 
-#MediaContainer .MediaListDirs span.toggleDir:hover,
-#MediaContainer .MediaListDirs span.yw_media_dir:hover {
-    border-radius: 5px;
-    background-color: #eee;
-}
-
 #MediaContainer .MediaListDirs span.noToggle {
     padding-left: 13px;
 }
 
-#MediaContainer .MediaListDirs ul span.yw_media_dir {
+/*#MediaContainer .MediaListDirs ul span.yw_media_dir {
     background-position: 5px;
     padding: 8px 2px 3px 25px;
-}
+}*/
 
 #MediaContainer .MediaListDirs a {
     padding: 1px;
@@ -134,25 +184,58 @@
  * Media Files
  */
 #MediaContainer .MediaListItems {
+    height: 100%;
     margin-left: 10px;
+    position: relative;
     overflow: auto;
+    z-index: 1;
+    
+    -webkit-box-shadow: 0 0 15px rgba(60,56,63,0.9);
+       -moz-box-shadow: 0 0 15px rgba(60,56,63,0.9);
+            box-shadow: 0 0 15px rgba(60,56,63,0.9);
+}
+
+#Items .panel-actions{
+    margin-bottom: 0;
 }
 
 #MediaContainer .MediaListItems #media-table-wrapper {
     min-height: 360px;
     overflow:hidden;
 }
+
+#media-table-wrapper.file_body_block {
+    padding: 0 20px;
+    margin-top: 20px;
+}
+
+#media-table-wrapper.file_body_list .table {}
+#media-table-wrapper.file_body_list .table thead {
+    background: #fafafa;
+}
+#media-table-wrapper.file_body_list .table thead tr {}
+#media-table-wrapper.file_body_list .table thead tr th {
+    font-weight: normal;
+    padding: 4px 0;
+}
+
+#media-table-wrapper.file_body_list .table thead tr th:first-child {
+    padding-left: 8px;
+}
+
 #MediaContainer.popup .MediaListItems #media-table-wrapper {
     overflow: auto;
     height: 360px;
     border-top: 1px solid #ddd;
 }
+
 #MediaContainer .MediaListItems .media-table-current-path {
     background-color:#efefef;
     padding:3px;
     font-size:9pt;
     color:#aaa;
 }
+
 #MediaContainer .MediaListItems > #Items {
     width: 100%;
     cursor: default;
@@ -168,26 +251,37 @@
 }
 
 #MediaContainer .MediaListItems div.block_row:hover {
-    border-radius: 5px;
+    border-radius: 8px;
     background-color: rgb(238, 238, 238);
+    -webkit-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+       -moz-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+            box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
 }
+
 #MediaContainer .MediaListItems .item_selected:hover,
 #MediaContainer .MediaListItems div.block_row.item_selected:hover {
-    background-color: rgb(222, 238, 238);
+    background-color: rgb(238, 238, 238);
+    -webkit-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+       -moz-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+            box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
 }
 
 #MediaContainer .MediaListItems .item_selected {
-    border-radius: 5px;
-    background-color: rgb(227, 245, 255);
+    border-radius: 8px;
+    /*background-color: rgb(227, 245, 255);*/
+    background-color: #fff;
+    -webkit-box-shadow: 0 0 15px 0 rgba(60,56,63,0.6) inset;
+       -moz-box-shadow: 0 0 15px 0 rgba(60,56,63,0.6) inset;
+            box-shadow: 0 0 15px 0 rgba(60,56,63,0.6) inset;
 }
 
 #MediaContainer .MediaListItems div.block_row>div.block_holder {
     text-align:center;
     overflow: hidden;
-    width:120px;
-    padding:0 7px;
+/*    width:120px;
+    padding:0 7px;*/
     text-overflow: ellipsis;
-    padding-top: 6px;
+    padding-top: 15px;
 }
 .preview_img,
 #MediaContainer .MediaListItems div.block_row>div.block_holder>div {
@@ -203,7 +297,13 @@
 
 
 #MediaContainer .MediaListItems > #Items table.table tr td {
+    border-top: 0px;
     padding: 2px;
+}
+
+#MediaContainer .MediaListItems > #Items table.table tr td:first-child
+{
+    padding-left: 8px;
 }
 
 #MediaContainer .MediaListItems > #Items table.table tr td span > input {
@@ -295,16 +395,80 @@
     background-color: #d3d3d3;
     border-color: #7b7b7b;
 }
-#paste_btn.hasFile{
+/*#paste_btn.hasFile{
     background-color: rgb(178, 229, 255);
-}
+}*/
 
 /**
  * File type Icons
  */
-#MediaContainer .MediaList ul span,
+/*#MediaContainer .MediaList ul span,*/
 #MediaContainer .MediaList table td span {
     padding-bottom: 2px;
+}
+
+/*
+ * Toolbar
+ */
+
+.ToolBar .btn:hover,
+.ToolBar .btn:active,
+.ToolBar .btn:focus,
+#paste_btn.hasFile {
+    background: #fff;
+    -webkit-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+       -moz-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+            box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
+}
+
+.ToolBar .ViewOption {
+    display: inline-block;
+    float: right;
+}
+
+/**
+ * Elements Override
+ */
+
+.panel{
+    background: #fafafa;
+    border: 0;
+    border-radius: 0;
+    
+    -webkit-box-shadow: none;
+       -moz-box-shadow: none;
+            box-shadow: none;
+}
+
+.panel-default>.panel-heading{
+    background: #ddd;
+    border: 0;
+}
+
+.panel-body{
+    padding: 0;
+}
+
+#Items .panel{
+    background: #fff;
+}
+
+/* context menu*/
+.context-menu-list {
+    background: #fff;
+}
+
+.context-menu-item {
+    background: none;
+    padding: 5px 2px 5px 24px;
+}
+
+.context-menu-item.icon {
+    background-position: 4px 5px;
+}
+
+.context-menu-item.not-selectable {
+    padding: 0px;
 }
 
 /*#MediaContainer .MediaListItems div.block_row>div.block_holder>div              {background-image: url(/bundles/youwemedia/images/icons/48x48/unknow_file.png);}*/
@@ -319,7 +483,7 @@
 #MediaContainer .MediaListItems div.block_row>div.block_holder>div.swf          {background-image: url(/bundles/youwemedia/images/icons/48x48/swf.png);}
 #MediaContainer .MediaListItems div.block_row>div.block_holder>div.default      {background-image: url(/bundles/youwemedia/images/icons/48x48/txt.png);}
 
-#MediaContainer .MediaList ul span.yw_media_dir,
+/*#MediaContainer .MediaList ul span.yw_media_dir,*/
 #MediaContainer .MediaList table td span.yw_media_item_dir          { background-image: url(/bundles/youwemedia/images/icons/16x16/folder.png);}
 #MediaContainer .MediaList table td span.yw_media_page              { background-image: url(/bundles/youwemedia/images/icons/16x16/page.png);}
 #MediaContainer .MediaList table td span.yw_media_page.pdf          { background-image: url(/bundles/youwemedia/images/icons/16x16/doc-pdf.png);}
