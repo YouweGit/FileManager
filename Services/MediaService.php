@@ -379,8 +379,8 @@ class MediaService
         $options['current_path'] = $media->getDirPath();
         $options['form'] = $form->createView();
         $options['upload_allow'] = $media->getExtensionsAllowed();
-        $options['extended_template'] = $media->getExtendedTemplate();
         $options['usages'] = $media->getUsagesClass();
+        $options['theme_css'] = $media->getThemeCss();
 
         return $options;
     }

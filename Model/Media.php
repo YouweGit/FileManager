@@ -18,11 +18,8 @@ class Media
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
 
-    /** @var  string - Extended Template */
-    private $extended_template;
-
     /** @var  string - Template */
-    private $template;
+    private $theme_template;
 
     /** @var  string - Upload path */
     private $upload_path;
@@ -57,17 +54,21 @@ class Media
     /** @var  bool */
     private $full_exception;
 
+    /** @var string */
+    private $theme_css;
+
     /**
      * @param array $parameters
+     * @param       $driver
      */
     public function __construct(array $parameters, $driver)
     {
         $this->setExtensionsAllowed($parameters['mime_allowed']);
-        $this->setExtendedTemplate($parameters['extended_template']);
-        $this->setTemplate($parameters['template']);
+        $this->setThemeTemplate($parameters['theme']['template']);
         $this->setUploadPath($parameters['upload_path']);
         $this->setUsagesClass($parameters['usage_class']);
         $this->setFullException($parameters['full_exception']);
+        $this->setThemeCss($parameters['theme']['css']);
         $this->setWebPath();
 
         $this->setDriver($driver);
@@ -88,22 +89,6 @@ class Media
     {
         $this->driver = $driver;
         $driver->setMedia($this);
-    }
-
-    /**
-     * @return string
-     */
-    public function getExtendedTemplate()
-    {
-        return $this->extended_template;
-    }
-
-    /**
-     * @param string $extended_template
-     */
-    public function setExtendedTemplate($extended_template)
-    {
-        $this->extended_template = $extended_template;
     }
 
     /**
@@ -141,17 +126,17 @@ class Media
     /**
      * @return string
      */
-    public function getTemplate()
+    public function getThemeTemplate()
     {
-        return $this->template;
+        return $this->theme_template;
     }
 
     /**
-     * @param string $template
+     * @param string $theme_template
      */
-    public function setTemplate($template)
+    public function setThemeTemplate($theme_template)
     {
-        $this->template = $template;
+        $this->theme_template = $theme_template;
     }
 
     /**
@@ -416,5 +401,21 @@ class Media
         }
 
         return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThemeCss()
+    {
+        return $this->theme_css;
+    }
+
+    /**
+     * @param string $theme_css
+     */
+    public function setThemeCss($theme_css)
+    {
+        $this->theme_css = $theme_css;
     }
 }
