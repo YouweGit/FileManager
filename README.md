@@ -67,9 +67,10 @@ Default Configuration:
 youwe_media:
     upload_path: %kernel.root_dir%/../web/uploads
     usage_class: false
-    extended_template: YouweMediaBundle:Media:media_layout.html.twig
-    template: YouweMediaBundle:Media:media.html.twig
     full_exceptions: false
+    theme:
+        css: "/bundles/youwemedia/css/simple/media.css"
+        template: "YouweMediaBundle:Media:media.html.twig"
     mime_allowed:
         - 'image/png'
         - 'image/jpg'
@@ -94,12 +95,8 @@ Optional config:
 * <b>usage_class</b> <br>
   This is where the usage class is defined. <br>
   It requires the function 'returnUsages' that returns a array with strings of the usage locations.
-* <b>template</b><br>
-  The template of the media manager. <br>
-  This template should extend the media template and you have to include the media block: {{ block('media_block') }}
-* <b>extended_template</b><br>
-  The media template will extend with the given template.<br>
-  For example: you can define your layout template in here.
+* <b>theme</b><br>
+  You can define your own css and template here.
 * <b>full_exceptions</b><br>
   If true, display the exception in the error modal.<br>
   When you leave it false, it will not show the full error for security reasons.<br>
