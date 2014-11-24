@@ -1,0 +1,80 @@
+/*
+ *  dark
+ */
+
+#MediaContainer .MediaList .MediaHead
+{
+    /*background: #232323;*/
+    background: #ec1946;
+    color: #fff;
+    
+/*    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.9);
+       -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.9);*/
+}
+
+#MediaContainer .MediaListDirs,
+#Dirs .panel
+{
+    background: #fff;    
+    color: #333;
+}
+
+.panel-default>.panel-heading
+{
+    background: #333;
+    border-radius: 0;
+    color: #fff;
+}
+
+#MediaContainer .MediaListDirs .panel-body > ul
+{
+    color: #333;
+}
+
+#MediaContainer .MediaListDirs li.dir_active > span a
+{
+    color: #fff;
+}
+
+#MediaContainer .MediaListDirs li.dir_active > span > span.yw_media_dir
+{
+    background: #ec1946;
+    color: #fff;
+    
+    -webkit-box-shadow: none;
+       -moz-box-shadow: none;
+            box-shadow: none;
+}
+
+/*#MediaContainer .MediaListItems
+{
+    -webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+       -moz-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+            box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
+}*/
+
+.ToolBar .btn:hover,
+.ToolBar .btn:active,
+.ToolBar .btn:focus,
+#paste_btn.hasFile
+{
+    -webkit-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+       -moz-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+            box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+}
+
+#paste_btn.disabled
+{
+    opacity: 0.35;
+}
+
+#MediaContainer .MediaListItems div.block_row:hover,
+#MediaContainer .MediaListItems .item_selected,
+#MediaContainer .MediaListItems .item_selected:hover,
+#MediaContainer .MediaListItems div.block_row.item_selected:hover
+{
+    -webkit-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+       -moz-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+            box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+}

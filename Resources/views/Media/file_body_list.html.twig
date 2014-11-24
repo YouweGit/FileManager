@@ -55,7 +55,7 @@
             </tr>
         {% endif %}
     {% endfor %}
-    {% if files|length < 13 %}
+    {#% if files|length < 13 %}
         {% for i in files|length..13 %}
             <tr class="empty_row">
                 <td>&nbsp;</td>
@@ -65,6 +65,6 @@
                 <td>{% if usages %}&nbsp;{% endif %}</td>
             </tr>
         {% endfor %}
-    {% endif %}
+    {% endif %#}
     </tbody>
 </table>

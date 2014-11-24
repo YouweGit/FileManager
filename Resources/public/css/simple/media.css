@@ -421,6 +421,11 @@ html, body {
             box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
 }
 
+#paste_btn.disabled
+{
+    opacity: 0.35;
+}
+
 .ToolBar .ViewOption {
     display: inline-block;
     float: right;
