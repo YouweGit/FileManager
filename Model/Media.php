@@ -4,7 +4,6 @@ namespace Youwe\MediaBundle\Model;
 
 use Symfony\Component\HttpFoundation\Request;
 use Youwe\MediaBundle\Driver\MediaDriver;
-use Youwe\MediaBundle\Services\MediaService;
 
 /**
  * Class Media
@@ -56,6 +55,10 @@ class Media
 
     /** @var string */
     private $theme_css;
+
+    /** @var string */
+    private $display_type;
+
 
     /**
      * @param array $parameters
@@ -253,11 +256,10 @@ class Media
 
     /**
      * @author Jim Ouwerkerk
-     * @param MediaService $service
      * @param              $dir_path
      * @throws \Exception
      */
-    public function setDirPaths(MediaService $service, $dir_path)
+    public function setDirPaths($dir_path)
     {
         if (is_null($dir_path)) {
             $this->setDir($this->getUploadPath());
@@ -267,7 +269,7 @@ class Media
             $this->setDir($this->getUploadPath() . self::DS . $dir_path);
         }
 
-        $path_valid = $service->checkPath($this->getDir());
+        $path_valid = $this->checkPath($this->getDir());
         if (!$path_valid) {
             $this->setDir($this->getUploadPath());
         }
@@ -339,6 +341,27 @@ class Media
         $this->setDirPath($request->get('dir_path'));
         $this->setFilename($request->get('filename'));
         $this->setTargetFilepath($request->get('target_file'));
+    }
+
+    /**
+     * @param $path - Default is the media dir
+     * @throws \Exception
+     * @return bool|string
+     */
+    public function checkPath($path = null)
+    {
+        if (is_null($path)) {
+            $path = $this->getDir();
+        }
+
+        $real_path = realpath($path);
+        $upload_path = realpath($this->getUploadPath());
+
+        if (strcasecmp($real_path, $upload_path > 0)) {
+            return true;
+        } else {
+            throw new \Exception("Directory is not in the upload path", 403);
+        }
     }
 
     /**
@@ -417,5 +440,21 @@ class Media
     public function setThemeCss($theme_css)
     {
         $this->theme_css = $theme_css;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayType()
+    {
+        return $this->display_type;
+    }
+
+    /**
+     * @param string $display_type
+     */
+    public function setDisplayType($display_type)
+    {
+        $this->display_type = $display_type;
     }
 }

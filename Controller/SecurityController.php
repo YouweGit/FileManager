@@ -6,10 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class UploadsController
+ * Class SecurityController
  * @package Youwe\MediaBundle\Controller
  */
-class UploadsController extends Controller
+class SecurityController extends Controller
 {
     /**
      * @author Roelf Otten
@@ -36,6 +36,5 @@ class UploadsController extends Controller
         }
 
         throw $this->createNotFoundException('Error');
-        return 0;
     }
 }

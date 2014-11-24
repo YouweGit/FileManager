@@ -109,8 +109,6 @@ var Media = function () {
                 paste: "#paste_btn",
                 preview: "#preview_btn",
                 delete: "#delete_btn",
-                back: "#back_btn",
-                forward: "#forward_btn",
                 upload: "#upload_file_btn",
                 download: "#download_btn",
                 folder: "#new_folder_btn",
@@ -301,7 +299,7 @@ var Media = function () {
         downloadFile = function (file_element) {
             var file_name = file_element.find("span").html(),
                 dir_path = (activePath !== null ? activePath : ""),
-                route = Routing.generate(routes.download, {"path": dir_path+"/"+file_name});
+                route = Routing.generate(routes.download, {"token": $(selectors.fields.token).val(), "path": dir_path+"/"+file_name});
             window.open(route, '_blank');
         },
 
@@ -988,19 +986,7 @@ var Media = function () {
             /**
              * The action bar buttons functions
              */
-            $(document).on("click", selectors.buttons.back, function () {
-                if (current_index !== 0) {
-                    window.history.back();
-                    current_index -= 1;
-                    navigateHistory();
-                }
-            }).on("click", selectors.buttons.forward, function () {
-                if (current_index !== history_index.length) {
-                    window.history.forward();
-                    current_index += 1;
-                    navigateHistory();
-                }
-            }).on("click", selectors.buttons.folder, function () {
+            $(document).on("click", selectors.buttons.folder, function () {
                 addFolder();
             }).on("click", selectors.buttons.upload, function () {
                 upload_modal.modal({show: true});
@@ -1147,12 +1133,6 @@ var Media = function () {
             setPopover(popOverElement);
             createContextMenu();
             setFileDrag();
-            if (current_index === 0) {
-                $(selectors.buttons.back).attr("disabled", "disabled");
-            }
-            if ((current_index + 1) === history_index.length) {
-                $(selectors.buttons.forward).attr("disabled", "disabled");
-            }
             disableToolbarItems();
         });
     };

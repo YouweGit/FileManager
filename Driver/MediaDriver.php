@@ -156,6 +156,8 @@ class MediaDriver
     /**
      * Check if the filetype is an valid filetype
      *
+     * todo: check if there is a zip in the folder, and check that zip too
+     *
      * @param Filesystem $fm
      * @param string     $tmp_dir
      * @throws \Exception - when mimetype is not valid
@@ -219,14 +221,11 @@ class MediaDriver
     public function pasteFile(FileInfo $fileInfo, $type)
     {
         try {
-            $source_dir = $this->getMedia()->getFilepath();
-            $source_file = $this->getMedia()->getFilename();
-
             $target_dir = $this->getMedia()->getTargetFilepath();
             $target_file = $this->getMedia()->getTargetFilename();
 
-            $source_file_path = $this->getMedia()->DirTrim($source_dir, $source_file, true);
             $target_file_path = $this->getMedia()->DirTrim($target_dir, $target_file, true);
+            $source_file_path = $fileInfo->getFilepath();
             $this->validateFile($fileInfo);
 
             $fileSystem = new Filesystem();
