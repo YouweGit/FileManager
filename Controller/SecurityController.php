@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class SecurityController
  * @package Youwe\MediaBundle\Controller

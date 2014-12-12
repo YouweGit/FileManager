@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Youwe\MediaBundle\Driver\MediaDriver;
 
 /**
- * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class Media
  * @package Youwe\MediaBundle\Model

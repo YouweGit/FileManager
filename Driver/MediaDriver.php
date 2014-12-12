@@ -12,7 +12,7 @@ use Youwe\MediaBundle\Model\FileInfo;
 use Youwe\MediaBundle\Model\Media;
 
 /**
- * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class MediaDriver
  * @package Youwe\MediaBundle\Driver
