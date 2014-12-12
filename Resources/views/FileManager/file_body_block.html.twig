@@ -1,31 +1,31 @@
 {% for file in files %}
     {% if file.mimetype == 'directory' %}
-        <div class="block_row yw_media_dir yw_media_drag default yw_media_type">
+        <div class="block_row yw_file_manager_dir yw_file_manager_drag default yw_file_manager_type">
             <div class="block_holder">
                 <div class="folder_image">
                 </div>
-                <span class="yw_media_item_dir" title="{{ file.filename }}">{{ file.filename }}</span>
+                <span class="yw_file_manager_item_dir" title="{{ file.filename }}">{{ file.filename }}</span>
             </div>
         </div>
     {% endif %}
 {% endfor %}
-<div class="yw_media_empty hidden block_row yw_media_dir">
+<div class="yw_file_manager_empty hidden block_row yw_file_manager_dir">
     <div class="block_holder">
         <div class="folder_image">
         </div>
-        <span class="yw_media_item_dir"></span>
+        <span class="yw_file_manager_item_dir"></span>
     </div>
 </div>
 {% for file in files %}
     {% if file.mimetype != 'directory' %}
-        <div class="block_row yw_media_item yw_media_drag yw_media_type {{ file.fileclass }}">
+        <div class="block_row yw_file_manager_item yw_file_manager_drag yw_file_manager_type {{ file.fileclass }}">
             <div class="block_holder">
                 <div class="{{ file.fileclass }}">
                     {% if file.fileclass == 'image' %}
                         <img src="{{ file.webPath }}" class="preview_img" title="{{ file.filename }}"/>
                     {% endif %}
                 </div>
-                <span class="yw_media_page {{ file.fileclass }}" title="{{ file.filename }}">{{ file.filename }}</span>
+                <span class="yw_file_manager_page {{ file.fileclass }}" title="{{ file.filename }}">{{ file.filename }}</span>
             </div>
         </div>
     {% endif %}

@@ -1,5 +1,5 @@
-youwe_media:
-    resource: "@YouweMediaBundle/Controller/"
+youwe_file_manager_list:
+    resource: "@YouweFileManagerBundle/Controller/"
     type:     annotation
     prefix:   /media
 
@@ -8,4 +8,4 @@ youwe_uploads:
     requirements:
         name: .+
     defaults:
-        _controller: YouweMediaBundle:Security:security
+        _controller: YouweFileManagerBundle:Security:security

@@ -1,6 +1,6 @@
 <?php
 
-namespace Youwe\MediaBundle\Model;
+namespace Youwe\FileManagerBundle\Model;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class FileInfo
- * @package Youwe\MediaBundle\Model
+ * @package Youwe\FileManagerBundle\Model
  */
 class FileInfo
 {
@@ -32,7 +32,6 @@ class FileInfo
 
     /** @var  int */
     private $usages;
-
 
     /** @var  string */
     private $fileclass;
@@ -93,16 +92,16 @@ class FileInfo
 
     /**
      * @param       $filepath
-     * @param Media $media
+     * @param FileManager $file_manager
      */
-    public function __construct($filepath, Media $media)
+    public function __construct($filepath, FileManager $file_manager)
     {
         $filename = basename($filepath);
 
         $file_size = $this->calculateReadableSize(filesize($filepath));
         $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
         $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filepath);
-        $web_path = $media->DirTrim($media->getPath($media->getDirPath()), $filename, true);
+        $web_path = $file_manager->DirTrim($file_manager->getPath($file_manager->getDirPath()), $filename, true);
 
         $this->setFilename($filename);
         $this->setMimetype($mimetype);
@@ -110,7 +109,7 @@ class FileInfo
         $this->setFileSize($file_size);
         $this->setFilepath($filepath);
         $this->setWebPath($web_path);
-        $this->setUsages($media);
+        $this->setUsages($file_manager);
     }
 
     /**
@@ -301,12 +300,12 @@ class FileInfo
     }
 
     /**
-     * @param Media $media
+     * @param FileManager $file_manager
      */
-    private function setUsages(Media $media)
+    private function setUsages(FileManager $file_manager)
     {
         $usages = array();
-        $usage_class = $media->getUsagesClass();
+        $usage_class = $file_manager->getUsagesClass();
         if ($usage_class != false) {
             /** @var mixed $usage_object */
             $usage_object = new $usage_class;
@@ -325,7 +324,7 @@ class FileInfo
     public function getWebPath($trim = false)
     {
         if($trim) {
-            return trim($this->web_path, Media::DS);
+            return trim($this->web_path, FileManager::DS);
         } else {
             return $this->web_path;
         }

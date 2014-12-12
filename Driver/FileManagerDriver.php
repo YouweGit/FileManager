@@ -1,31 +1,29 @@
 <?php
 
-namespace Youwe\MediaBundle\Driver;
+namespace Youwe\FileManagerBundle\Driver;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\SecurityContext;
-use Youwe\MediaBundle\Model\FileInfo;
-use Youwe\MediaBundle\Model\Media;
+use Youwe\FileManagerBundle\Model\FileInfo;
+use Youwe\FileManagerBundle\Model\FileManager;
 
 /**
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
- * Class MediaDriver
- * @package Youwe\MediaBundle\Driver
+ * Class FileManagerDriver
+ * @package Youwe\FileManagerBundle\Driver
  */
-class MediaDriver
+class FileManagerDriver
 {
     /** Directory Separator */
     const DS = "/";
 
     /**
-     * @var Media
+     * @var FileManager
      */
-    private $media;
+    private $file_manager;
 
     /**
      * @param ContainerInterface $container
@@ -47,7 +45,7 @@ class MediaDriver
         $path_parts = pathinfo($original_file);
 
         $increment = '';
-        while (file_exists($dir . Media::DS . $path_parts['filename'] . $increment . '.' . $extension)) {
+        while (file_exists($dir . FileManager::DS . $path_parts['filename'] . $increment . '.' . $extension)) {
             $increment++;
         }
 
@@ -63,7 +61,7 @@ class MediaDriver
     public function makeDir($dir_name)
     {
         $fm = new Filesystem();
-        $dir_path = $this->getMedia()->getPath($this->getMedia()->getDirPath(), $dir_name, true);
+        $dir_path = $this->getFileManager()->getPath($this->getFileManager()->getDirPath(), $dir_name, true);
         if (!file_exists($dir_path)) {
             $fm->mkdir($dir_path, 0700);
         } else {
@@ -72,19 +70,19 @@ class MediaDriver
     }
 
     /**
-     * @return Media
+     * @return FileManager
      */
-    public function getMedia()
+    public function getFileManager()
     {
-        return $this->media;
+        return $this->file_manager;
     }
 
     /**
-     * @param Media $media
+     * @param FileManager $file_manager
      */
-    public function setMedia(Media $media)
+    public function setFileManager(FileManager $file_manager)
     {
-        $this->media = $media;
+        $this->file_manager = $file_manager;
     }
 
     /**
@@ -95,7 +93,7 @@ class MediaDriver
      */
     public function throwError($string, $code = 500, $e = null)
     {
-        if (!$this->getMedia()->isFullException() || is_null($e)) {
+        if (!$this->getFileManager()->isFullException() || is_null($e)) {
             throw new \Exception($string, $code);
         } else {
             throw new \Exception($string . ": " . $e->getMessage(), $code);
@@ -114,7 +112,7 @@ class MediaDriver
             $this->validateFile($fileInfo, $new_file_name);
             $fm = new Filesystem();
             $old_file = $fileInfo->getFilepath();
-            $new_file = $this->getMedia()->DirTrim($this->getMedia()->getDir(), $new_file_name, true);
+            $new_file = $this->getFileManager()->DirTrim($this->getFileManager()->getDir(), $new_file_name, true);
             $fm->rename($old_file, $new_file);
         } catch (\Exception $e) {
             $this->throwError("Cannot rename file or directory", 500, $e);
@@ -132,11 +130,11 @@ class MediaDriver
         if (!is_dir($file_path)) {
             $fm = new Filesystem();
             $tmp_dir = $this->createTmpDir($fm);
-            $fm->copy($file_path, $tmp_dir . Media::DS . $fileInfo->getFilename());
+            $fm->copy($file_path, $tmp_dir . FileManager::DS . $fileInfo->getFilename());
 
             if (!is_null($new_filename)) {
-                $fm->rename($tmp_dir . Media::DS . $fileInfo->getFilename(),
-                    $tmp_dir . Media::DS . $new_filename);
+                $fm->rename($tmp_dir . FileManager::DS . $fileInfo->getFilename(),
+                    $tmp_dir . FileManager::DS . $new_filename);
             }
             $this->checkFileType($fm, $tmp_dir);
         }
@@ -148,7 +146,7 @@ class MediaDriver
      */
     public function createTmpDir(Filesystem $fm)
     {
-        $tmp_dir = $this->getMedia()->getUploadPath() . Media::DS . "." . strtotime("now");
+        $tmp_dir = $this->getFileManager()->getUploadPath() . FileManager::DS . "." . strtotime("now");
         $fm->mkdir($tmp_dir);
 
         return $tmp_dir;
@@ -167,7 +165,7 @@ class MediaDriver
     {
         $di = new \RecursiveDirectoryIterator($tmp_dir);
         foreach (new \RecursiveIteratorIterator($di) as $filepath => $file) {
-            $fileInfo = new FileInfo($filepath, $this->getMedia());
+            $fileInfo = new FileInfo($filepath, $this->getFileManager());
             $mime_valid = $this->checkMimeType($fileInfo);
             if ($mime_valid !== true) {
                 $fm->remove($tmp_dir);
@@ -185,7 +183,7 @@ class MediaDriver
     {
         $mime = $fileInfo->getMimetype();
         if ($mime != 'directory') {
-            if (!in_array($mime, $this->getMedia()->getExtensionsAllowed())) {
+            if (!in_array($mime, $this->getFileManager()->getExtensionsAllowed())) {
                 return 'Mime type "' . $mime . '" not allowed for file "' . $fileInfo->getFilename() . '"';
             }
 
@@ -222,10 +220,10 @@ class MediaDriver
     public function pasteFile(FileInfo $fileInfo, $type)
     {
         try {
-            $target_dir = $this->getMedia()->getTargetFilepath();
-            $target_file = $this->getMedia()->getTargetFilename();
+            $target_dir = $this->getFileManager()->getTargetFilepath();
+            $target_file = $this->getFileManager()->getTargetFilename();
 
-            $target_file_path = $this->getMedia()->DirTrim($target_dir, $target_file, true);
+            $target_file_path = $this->getFileManager()->DirTrim($target_dir, $target_file, true);
             $source_file_path = $fileInfo->getFilepath();
             $this->validateFile($fileInfo);
 
@@ -284,7 +282,7 @@ class MediaDriver
         try {
             if ($chapterZip->open($fileInfo->getFilepath())) {
 
-                $chapterZip->extractTo($this->getMedia()->getDir());
+                $chapterZip->extractTo($this->getFileManager()->getDir());
                 $chapterZip->close();
             }
         } catch (\Exception $e) {

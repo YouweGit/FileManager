@@ -1,6 +1,6 @@
 <?php
 
-namespace Youwe\MediaBundle\Controller;
+namespace Youwe\FileManagerBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +22,7 @@ class SecurityController extends Controller
      */
     public function securityAction($name)
     {
-        $parameters = $this->container->getParameter('youwe_media');
+        $parameters = $this->container->getParameter('youwe_file_manager');
         $root = $parameters['upload_path'];
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);

@@ -1,8 +1,8 @@
 {
-    "name": "youwe/media-bundle",
+    "name": "youwe/file-manager-bundle",
     "type": "symfony-bundle",
-    "description": "A secure media/file manager bundle.",
-    "keywords": [ "file manager", "media manager"],
+    "description": "A secure file manager bundle.",
+    "keywords": [ "file manager", "media", "secure"],
     "license": "MIT",
     "authors": [
         {
@@ -20,10 +20,13 @@
         "symfony/filesystem": "2.3.*",
         "friendsofsymfony/jsrouting-bundle": "@stable"
     },
-    "autoload": {
-        "psr-0": { "Youwe\\MediaBundle": "" }
+    "suggest": {
+        "liip/imagine-bundle": "Liip Imagine Bundle makes the thumnail images faster"
     },
-    "target-dir": "Youwe/MediaBundle",
+    "autoload": {
+        "psr-0": { "Youwe\\FileManagerBundle": "" }
+    },
+    "target-dir": "Youwe/FileManagerBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0"

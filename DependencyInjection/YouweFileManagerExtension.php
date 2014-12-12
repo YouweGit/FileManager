@@ -1,6 +1,6 @@
 <?php
 
-namespace Youwe\MediaBundle\DependencyInjection;
+namespace Youwe\FileManagerBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class YouweMediaExtension extends Extension
+class YouweFileManagerExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -24,6 +24,6 @@ class YouweMediaExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-        $container->setParameter('youwe_media', $config);
+        $container->setParameter('youwe_file_manager', $config);
     }
 }

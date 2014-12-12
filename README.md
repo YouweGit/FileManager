@@ -1,5 +1,5 @@
 
-YouweMediaBundle
+YouweFileManagerBundle
 ==================
 
 Installation
@@ -12,7 +12,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```bash
-$ composer require youwe/media-bundle
+$ composer require youwe/file-manager-bundle
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -37,7 +37,7 @@ class AppKernel extends Kernel
         $bundles = array(
             // ...
 
-            new Youwe\MediaBundle\YouweMediaBundle(),
+            new Youwe\FileManagerBundle\YouweFileManagerBundle(),
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
         );
 
@@ -54,7 +54,7 @@ Add the bundle in the the assetic config:
 # Assetic Configuration
 assetic:
     #...
-    bundles:        [ YouweMediaBundle, ... ]
+    bundles:        [ YouweFileManagerBundle, ... ]
     #...
 
 ```
@@ -64,13 +64,13 @@ Step 3: Set the config
 
 ```yml
 Default Configuration:
-youwe_media:
+youwe_file_manager:
     upload_path: %kernel.root_dir%/../web/uploads
     usage_class: false
     full_exceptions: false
     theme:
-        css: "/bundles/youwemedia/css/simple/media.css"
-        template: "YouweMediaBundle:Media:media.html.twig"
+        css: "/bundles/youwefilemanager/css/simple/default.css"
+        template: "YouweFileManagerBundle:FileManager:file_manager.html.twig"
     mime_allowed:
         - 'image/png'
         - 'image/jpg'
@@ -108,8 +108,8 @@ Step 4: Add the route
 Add the route to the routing.yml
 
 ```yml
-youwe_media:
-    resource: "@YouweMediaBundle/Resources/config/routing.yml"
+youwe_file_manager:
+    resource: "@YouweFileManagerBundle/Resources/config/routing.yml"
     options:
         expose: true
 ```
