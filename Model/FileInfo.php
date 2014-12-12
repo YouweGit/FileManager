@@ -5,6 +5,8 @@ namespace Youwe\MediaBundle\Model;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ *
  * Class FileInfo
  * @package Youwe\MediaBundle\Model
  */
@@ -370,7 +372,6 @@ class FileInfo
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @return array
      */
     public function toArray()

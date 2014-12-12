@@ -12,6 +12,8 @@ use Youwe\MediaBundle\Model\FileInfo;
 use Youwe\MediaBundle\Model\Media;
 
 /**
+ * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ *         
  * Class MediaService
  * @package Youwe\MediaBundle\Services
  */
@@ -29,7 +31,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param $parameters
      * @param $dir_path
      * @param $driver
@@ -80,7 +81,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @return Media
      */
     public function getMedia()
@@ -131,7 +131,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param array $files
      * @return bool
      */
@@ -158,7 +157,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param Form $form
      */
     private function handleNewDir($form)
@@ -170,7 +168,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param Form $form
      * @throws \Exception
      */
@@ -202,7 +199,6 @@ class MediaService
     }
 
     /**
-     * @author   Jim Ouwerkerk
      * @param Form $form
      * @internal param Media $settings
      * @return array
@@ -248,7 +244,6 @@ class MediaService
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @return string
      */
     public function setDisplayType()

@@ -16,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ *
  * Class MediaController
  * @package Youwe\MediaBundle\Controller
  */
@@ -286,7 +288,6 @@ class MediaController extends Controller {
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @Route("/download/{token}/{path}", name="youwe_media_download", requirements={"path"=".+"}, options={"expose":true})
      *
      * @param Request $request

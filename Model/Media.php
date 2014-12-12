@@ -6,6 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Youwe\MediaBundle\Driver\MediaDriver;
 
 /**
+ * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ *
  * Class Media
  * @package Youwe\MediaBundle\Model
  */
@@ -232,7 +234,6 @@ class Media
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param null|string $dir_path
      * @param null|string $filename
      * @param bool        $full_path
@@ -255,8 +256,7 @@ class Media
     }
 
     /**
-     * @author Jim Ouwerkerk
-     * @param              $dir_path
+     * @param null|string $dir_path
      * @throws \Exception
      */
     public function setDirPaths($dir_path)
@@ -333,7 +333,6 @@ class Media
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param Request $request
      */
     public function resolveRequest(Request $request)
@@ -345,8 +344,8 @@ class Media
 
     /**
      * @param $path - Default is the media dir
-     * @throws \Exception
-     * @return bool|string
+     * @throws \Exception - when directory is not in the upload path
+     * @return bool
      */
     public function checkPath($path = null)
     {
@@ -365,7 +364,7 @@ class Media
     }
 
     /**
-     * @author Jim Ouwerkerk
+     * Extract the zip
      */
     public function extractZip()
     {
@@ -373,7 +372,6 @@ class Media
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param $type
      */
     public function pasteFile($type)

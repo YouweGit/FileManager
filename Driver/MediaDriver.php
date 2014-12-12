@@ -12,6 +12,8 @@ use Youwe\MediaBundle\Model\FileInfo;
 use Youwe\MediaBundle\Model\Media;
 
 /**
+ * @author Jim Ouwerkerk (j.ouwerkerk@youwe.nl)
+ *
  * Class MediaDriver
  * @package Youwe\MediaBundle\Driver
  */
@@ -86,7 +88,6 @@ class MediaDriver
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param string          $string - The displayed exception
      * @param int             $code
      * @param null|\Exception $e      - The actual exception

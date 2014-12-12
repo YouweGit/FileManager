@@ -8,4 +8,4 @@ youwe_uploads:
     requirements:
         name: .+
     defaults:
-        _controller: YouweMediaBundle:Security:uploads
+        _controller: YouweMediaBundle:Security:security
