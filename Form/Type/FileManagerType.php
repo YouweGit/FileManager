@@ -20,7 +20,7 @@ class FileManagerType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder->add('file', 'file', array(
             'required'    => FALSE,
-            'attr'        => array('class' => 'form-control media_url', 'multiple' => 'multiple'),
+            'attr'        => array('class' => 'form-control file_manager_url', 'multiple' => 'multiple'),
             'label'       => 'Files'
         ));
 

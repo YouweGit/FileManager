@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class SecurityController
- * @package Youwe\MediaBundle\Controller
+ * @package Youwe\FileManagerBundle\Controller
  */
 class SecurityController extends Controller
 {

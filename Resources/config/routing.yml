@@ -1,7 +1,7 @@
 youwe_file_manager_list:
     resource: "@YouweFileManagerBundle/Controller/"
     type:     annotation
-    prefix:   /media
+    prefix:   /filemanager
 
 youwe_uploads:
     pattern: /uploads/{name}
