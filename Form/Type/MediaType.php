@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ *
  * Class MediaType
  *
  * @package Youwe\MediaBundle\Form\Type

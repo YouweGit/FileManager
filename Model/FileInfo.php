@@ -5,6 +5,8 @@ namespace Youwe\MediaBundle\Model;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ *
  * Class FileInfo
  * @package Youwe\MediaBundle\Model
  */
@@ -99,7 +101,7 @@ class FileInfo
 
         $file_size = $this->calculateReadableSize(filesize($filepath));
         $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
-        $mimetype = mime_content_type($filepath);
+        $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filepath);
         $web_path = $media->DirTrim($media->getPath($media->getDirPath()), $filename, true);
 
         $this->setFilename($filename);
@@ -370,7 +372,6 @@ class FileInfo
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @return array
      */
     public function toArray()

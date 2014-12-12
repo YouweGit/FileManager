@@ -6,10 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class UploadsController
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ *
+ * Class SecurityController
  * @package Youwe\MediaBundle\Controller
  */
-class UploadsController extends Controller
+class SecurityController extends Controller
 {
     /**
      * @author Roelf Otten
@@ -18,7 +20,7 @@ class UploadsController extends Controller
      * @return int|Response
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function uploadsAction($name)
+    public function securityAction($name)
     {
         $parameters = $this->container->getParameter('youwe_media');
         $root = $parameters['upload_path'];
@@ -36,6 +38,5 @@ class UploadsController extends Controller
         }
 
         throw $this->createNotFoundException('Error');
-        return 0;
     }
 }

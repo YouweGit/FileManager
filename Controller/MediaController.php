@@ -16,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ *
  * Class MediaController
  * @package Youwe\MediaBundle\Controller
  */
@@ -116,7 +118,7 @@ class MediaController extends Controller {
             $dir = $service->getFilePath($media);
             $media->setDir($dir);
             $service->checkToken($request->get('token'));
-            $service->checkPath($dir);
+            $media->checkPath();
             $media->moveFile();
         } catch(\Exception $e){
             $response->setContent($e->getMessage());
@@ -286,16 +288,18 @@ class MediaController extends Controller {
     }
 
     /**
-     * @author Jim Ouwerkerk
-     * @Route("/download/{path}", name="youwe_media_download", requirements={"path"=".+"}, options={"expose":true})
+     * @Route("/download/{token}/{path}", name="youwe_media_download", requirements={"path"=".+"}, options={"expose":true})
      *
-     * @return Response
+     * @param Request $request
+     * @param         $path
      * @throws \Exception
+     * @return Response
      */
-    public function DownloadAction($path)
+    public function DownloadAction(Request $request, $path)
     {
         /** @var MediaService $service */
         $service = $this->get('youwe.media.service');
+        $service->checkToken($request->get('token'));
 
         /** @var MediaDriver $driver */
         $driver = $this->get('youwe.media.driver');
