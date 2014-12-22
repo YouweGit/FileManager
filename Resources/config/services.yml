@@ -1,10 +1,7 @@
-parameters:
-#    media.example.class: Youwe\MediaBundle\Example
-
 services:
-  youwe.media.service:
-    class: Youwe\MediaBundle\Services\MediaService
+  youwe.file_manager.service:
+    class: Youwe\FileManagerBundle\Services\FileManagerService
     arguments: ["@service_container"]
-  youwe.media.driver:
-    class: Youwe\MediaBundle\Driver\MediaDriver
+  youwe.file_manager.driver:
+    class: Youwe\FileManagerBundle\Driver\FileManagerDriver
     arguments: ["@service_container"]

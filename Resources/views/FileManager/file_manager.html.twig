@@ -1,19 +1,19 @@
 {% if app.request.isXmlHttpRequest() %}
-    {% set media_template = 'YouweMediaBundle:Media:empty_layout.html.twig' %}
+    {% set file_manager_template = 'YouweFileManagerBundle:FileManager:empty_layout.html.twig' %}
 {% else %}
-    {% set media_template = 'YouweMediaBundle:Media:media_layout.html.twig' %}
+    {% set file_manager_template = 'YouweFileManagerBundle:FileManager:file_manager_layout.html.twig' %}
 {% endif %}
 
-{% extends media_template %}
+{% extends file_manager_template %}
 
 {% block stylesheets %}
     {{ parent() }}
     {% stylesheets
-    '@YouweMediaBundle/Resources/public/css/jquery-ui.custom.min.css'
-    '@YouweMediaBundle/Resources/public/css/bootstrap.min.css'
-    '@YouweMediaBundle/Resources/public/css/font-awesome.min.css'
-    "@YouweMediaBundle/Resources/public/css/jquery.contextMenu.css"
-    "@YouweMediaBundle/Resources/public/css/media_list.css"
+    '@YouweFileManagerBundle/Resources/public/css/jquery-ui.custom.min.css'
+    '@YouweFileManagerBundle/Resources/public/css/bootstrap.min.css'
+    '@YouweFileManagerBundle/Resources/public/css/font-awesome.min.css'
+    "@YouweFileManagerBundle/Resources/public/css/jquery.contextMenu.css"
+    "@YouweFileManagerBundle/Resources/public/css/file_manager_list.css"
     %}
     <link rel="stylesheet" href="{{ asset_url }}">
     {% endstylesheets %}
@@ -22,12 +22,12 @@
 
 {% block javascripts %}
     {% javascripts
-    '@YouweMediaBundle/Resources/public/js/jquery.js'
-    '@YouweMediaBundle/Resources/public/js/jquery-ui.custom.min.js'
-    '@YouweMediaBundle/Resources/public/js/bootstrap.min.js'
-    '@YouweMediaBundle/Resources/public/js/dropzone.js'
-    '@YouweMediaBundle/Resources/public/js/jquery.contextMenu.js'
-    '@YouweMediaBundle/Resources/public/js/media_list.js'
+    '@YouweFileManagerBundle/Resources/public/js/jquery.js'
+    '@YouweFileManagerBundle/Resources/public/js/jquery-ui.custom.min.js'
+    '@YouweFileManagerBundle/Resources/public/js/bootstrap.min.js'
+    '@YouweFileManagerBundle/Resources/public/js/dropzone.js'
+    '@YouweFileManagerBundle/Resources/public/js/jquery.contextMenu.js'
+    '@YouweFileManagerBundle/Resources/public/js/file_manager_list.js'
     %}
     <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
@@ -41,21 +41,21 @@
     <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
 {% endblock %}
 
-{% block media_block %}
-    <div id="MediaContainer" {% if isPopup %}class="popup"{% endif %}>
-        <form action="" id="media_form" method="post" enctype="multipart/form-data">
-            <div class="MediaList">
-                <div class="MediaHead">File Manager</div>
-                {{ block('media_content') }}
+{% block file_manager_block %}
+    <div id="FileManagerContainer" {% if isPopup %}class="popup"{% endif %}>
+        <form action="" id="file_manager_form" method="post" enctype="multipart/form-data">
+            <div class="FileManagerList">
+                <div class="FileManagerHead">File Manager</div>
+                {{ block('file_manager_content') }}
             </div>
             {{ form_row(form._token) }}
-            {% include "YouweMediaBundle:Media:modals.html.twig" %}
+            {% include "YouweFileManagerBundle:FileManager:modals.html.twig" %}
         </form>
     </div>
 {%endblock%}
 
-{% block media_content %}
-<div class="MediaListDirs">
+{% block file_manager_content %}
+<div class="FileManagerListDirs">
     <div id="Dirs">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -64,12 +64,12 @@
             <div class="panel-body">
                 <ul>
                     <li {% if current_path is empty %}class="dir_active"{% endif %}>
-                        <span class="yw_media_directory_line">
+                        <span class="yw_file_manager_directory_line">
                             <span class="toggleIcon toggleDir"><i class="fa fa-caret-down"></i></span>
-                            <span class="yw_media_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>
+                            <span class="yw_file_manager_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>
                         </span>
                         <ul>
-                            {% include "YouweMediaBundle:Media:media_dir.html.twig" with {'dirs': dirs , 'inner': ''} %}
+                            {% include "YouweFileManagerBundle:FileManager:file_manager_dir.html.twig" with {'dirs': dirs , 'inner': ''} %}
                         </ul>
                     </li>
                 </ul>
@@ -77,14 +77,14 @@
         </div>
     </div>
 </div>
-<div class="MediaListItems">
+<div class="FileManagerListItems">
     <div id="Items">
-        <div id="LoadingScreen" class="MediaLoadingScreen">
+        <div id="LoadingScreen" class="FileManagerLoadingScreen">
         </div>
         <div class="panel panel-default panel-actions">
             <div class="panel-heading">
                 <div class="ToolBar">
-                    {% include "YouweMediaBundle:Media:media_toolbar.html.twig" %}
+                    {% include "YouweFileManagerBundle:FileManager:file_manager_toolbar.html.twig" %}
                     
                     <div class="ViewOption">
                         {% if file_body_display == 'file_body_block' %}
@@ -98,9 +98,9 @@
         </div>
         <div class="panel panel-default panel-items">
             {#Commented out for later#}
-            {#<div class="media-table-current-path">Current Directory: {{ root_folder }}{{ path_separator }}{{ current_path }}</div>#}
-            <div id="media-table-wrapper" class="{{ file_body_display }}">
-                {% include "YouweMediaBundle:Media:" ~file_body_display ~ ".html.twig" with {'files': files} %}
+            {#<div class="file-manager-table-current-path">Current Directory: {{ root_folder }}{{ path_separator }}{{ current_path }}</div>#}
+            <div id="file-manager-table-wrapper" class="{{ file_body_display }}">
+                {% include "YouweFileManagerBundle:FileManager:" ~file_body_display ~ ".html.twig" with {'files': files} %}
             </div>
         </div>
     </div>

@@ -1,9 +1,9 @@
-var Media = function () {
+var FileManager = function () {
     "use strict";
     var upload_modal,
         ItemsContainer,
-        mediaItemsElement,
-        mediaDirsElement,
+        fileManagerItemsElement,
+        fileManagerDirsElement,
         activePath,
         history_index = [],
         current_index = 0,
@@ -29,36 +29,36 @@ var Media = function () {
             },
             containers: {
                 modalParent: "body",
-                container: "#MediaContainer",
+                container: "#FileManagerContainer",
                 itemsContainer: "#Items",
                 dirsContainer: "#Dirs",
-                mediaItemsElement: ".MediaListItems",
-                mediaDirsElement: ".MediaListDirs",
+                fileManagerItemsElement: ".FileManagerListItems",
+                fileManagerDirsElement: ".FileManagerListDirs",
                 errorContent: "#errorContent",
                 previewContent: "#previewContent",
                 previewVideo: "#preview_vid",
                 uploadScreen: "#uploadLoadingScreen",
                 loadingScreen: "#loadingScreen",
-                mediaTable: "#media-table-wrapper",
-                mediaLoadingScreen: '.MedialoadingScreen'
+                fileManagerTable: "#file-manager-table-wrapper",
+                fileManagerLoadingScreen: '.FileManagerloadingScreen'
             },
             modals: {
                 error: "#errorModal",
-                upload: "#media-upload-dialog",
+                upload: "#file-manager-upload-dialog",
                 info: "#infoModal",
-                confirm: "#media-confirm-dialog",
+                confirm: "#file-manager-confirm-dialog",
                 preview: "#previewModal"
             },
             classes: {
                 activeDir: "dir_active",
-                mediaItemDir: "yw_media_item_dir",
-                mediaDir: "yw_media_dir",
-                mediaItem: "yw_media_item",
+                fileManagerItemDir: "yw_file_manager_item_dir",
+                fileManagerDir: "yw_file_manager_dir",
+                fileManagerItem: "yw_file_manager_item",
                 toggleDir: "toggleDir",
-                emptyMedia: "yw_media_empty",
+                emptyFileManager: "yw_file_manager_empty",
                 previewImage: "preview_img",
-                mediaDraggable: "yw_media_drag",
-                mediaDirectoryLine: "yw_media_directory_line",
+                fileManagerDraggable: "yw_file_manager_drag",
+                fileManagerDirectoryLine: "yw_file_manager_directory_line",
                 arrows: {
                     right: 'fa-caret-right',
                     left: 'fa-caret-left',
@@ -67,10 +67,10 @@ var Media = function () {
                 },
                 folder: 'folder',
                 datarow: 'datarow',
-                mediaType: 'yw_media_type',
-                mediaPage: 'yw_media_page',
+                fileManagerType: 'yw_file_manager_type',
+                fileManagerPage: 'yw_file_manager_page',
                 emptyRow: 'empty_row',
-                mediaDragging: 'yw_file_dragging',
+                fileManagerDragging: 'yw_file_dragging',
                 blockRow: 'block_row',
                 popOver: 'popover-dismiss',
                 video: "video",
@@ -81,24 +81,24 @@ var Media = function () {
             },
             ids: {
                 previewVideo: "preview_vid",
-                newDir: "media_newfolder",
-                renameItem: "media_rename_file",
-                originRenameItem: "media_origin_file_name",
-                originRenameExt: "media_origin_file_ext"
+                newDir: "file_manager_newfolder",
+                renameItem: "file_manager_rename_file",
+                originRenameItem: "file_manager_origin_file_name",
+                originRenameExt: "file_manager_origin_file_ext"
             },
             fields: {
-                form: "#media_form",
+                form: "#file_manager_form",
                 names: {
-                    newDir: "media[newfolder]",
-                    renameItem: "media[rename_file]",
-                    originRenameItem: "media[origin_file_name]",
-                    originRenameExt: "media[origin_file_ext]",
-                    file: "media[file]"
+                    newDir: "file_manager[newfolder]",
+                    renameItem: "file_manager[rename_file]",
+                    originRenameItem: "file_manager[origin_file_name]",
+                    originRenameExt: "file_manager[origin_file_ext]",
+                    file: "file_manager[file]"
                 },
                 dragAndDrop: "#dragandrophandler",
-                newDir: "#media_newfolder",
-                renameItem: "#media_rename_file",
-                token: "#media__token"
+                newDir: "#file_manager_newfolder",
+                renameItem: "#file_manager_rename_file",
+                token: "#file_manager__token"
             },
             buttons: {
                 select: "#select_btn",
@@ -158,14 +158,14 @@ var Media = function () {
             }
         },
         routes = {
-            delete: "youwe_media_delete",
-            list: "youwe_media_list",
-            extract: "youwe_media_extract",
-            fileInfo: "youwe_media_fileinfo",
-            move: "youwe_media_move",
-            download: "youwe_media_download",
-            paste: "youwe_media_paste",
-            copy: "youwe_media_copy"
+            delete: "youwe_file_manager_delete",
+            list: "youwe_file_manager_list",
+            extract: "youwe_file_manager_extract",
+            fileInfo: "youwe_file_manager_fileinfo",
+            move: "youwe_file_manager_move",
+            download: "youwe_file_manager_download",
+            paste: "youwe_file_manager_paste",
+            copy: "youwe_file_manager_copy"
         },
         messages = {
             errors: {
@@ -275,7 +275,7 @@ var Media = function () {
             var rename_name;
             rename_element = element.find("span");
             rename_origin_name = rename_element.html();
-            if (!rename_element.hasClass(selectors.classes.mediaItemDir)) {
+            if (!rename_element.hasClass(selectors.classes.fileManagerItemDir)) {
                 rename_origin_ext = getExt(rename_element.html());
                 rename_name = rename_origin_name.replace(/\.[^\/.]+$/, '');
             } else {
@@ -335,7 +335,7 @@ var Media = function () {
          * Display the folder input field
          */
         addFolder = function () {
-            var row = $("." + selectors.classes.emptyMedia);
+            var row = $("." + selectors.classes.emptyFileManager);
             row.removeClass("hidden");
             row.find('span').html(
                 '<input type="text" name="' + selectors.fields.names.newDir + '" id="' + selectors.ids.newDir + '">'
@@ -416,13 +416,13 @@ var Media = function () {
                 var data = $(selectors.fields.form).serialize(),
                     route = Routing.generate(routes.list, {"dir_path": activePath});
                 if (!ajaxRequest(route, data, "POST")) {
-                    $("." + selectors.classes.emptyMedia).addClass("hidden");
-                    ItemsContainer.find("." + selectors.classes.mediaDraggable).draggable('enable');
+                    $("." + selectors.classes.emptyFileManager).addClass("hidden");
+                    ItemsContainer.find("." + selectors.classes.fileManagerDraggable).draggable('enable');
                     active_input = false;
                 }
             } else {
-                $("." + selectors.classes.emptyMedia).addClass("hidden");
-                ItemsContainer.find("." + selectors.classes.mediaDraggable).draggable('enable');
+                $("." + selectors.classes.emptyFileManager).addClass("hidden");
+                ItemsContainer.find("." + selectors.classes.fileManagerDraggable).draggable('enable');
                 active_input = false;
             }
         },
@@ -433,7 +433,7 @@ var Media = function () {
         directoryListSetup = function () {
 
             // Prepare the directory list
-            $(selectors.containers.container).find(selectors.containers.mediaDirsElement + ' li > ul').each(function () {
+            $(selectors.containers.container).find(selectors.containers.fileManagerDirsElement + ' li > ul').each(function () {
                 var parent_li = $(this).parent('li'),
                     sub_ul = $(this).remove();
                 parent_li.addClass(selectors.classes.folder);
@@ -597,7 +597,7 @@ var Media = function () {
          * @param {string} key
          */
         contextCallback = function (element, key) {
-            var zip_name, file_name, path, preview_html, item_element = element.closest("." + selectors.classes.mediaType);
+            var zip_name, file_name, path, preview_html, item_element = element.closest("." + selectors.classes.fileManagerType);
             if (activePath !== null) {
                 path = "/" + root_dir + "/" + activePath + "/";
             } else {
@@ -606,7 +606,7 @@ var Media = function () {
             if (key === contextMenu.keys.new_dir) {
                 addFolder();
             } else if (key === contextMenu.keys.extract) {
-                zip_name = item_element.find("span." + selectors.classes.mediaPage + "." + contextMenu.extra_types.zip).html();
+                zip_name = item_element.find("span." + selectors.classes.fileManagerPage + "." + contextMenu.extra_types.zip).html();
                 extractZip(zip_name);
             } else if (key === contextMenu.keys.rename) {
                 renameFile(item_element);
@@ -655,7 +655,7 @@ var Media = function () {
          */
         setContextMenu = function (type) {
             ItemsContainer.contextMenu({
-                selector: '.' + selectors.classes.mediaType + '.' + type,
+                selector: '.' + selectors.classes.fileManagerType + '.' + type,
                 callback: function (key) {
                     contextCallback($(this), key);
                 },
@@ -663,7 +663,7 @@ var Media = function () {
             });
 
             ItemsContainer.contextMenu({
-                selector: '.' + selectors.classes.mediaDir + ":not('.hidden')",
+                selector: '.' + selectors.classes.fileManagerDir + ":not('.hidden')",
                 callback: function (key) {
                     contextCallback($(this), key);
                 },
@@ -671,7 +671,7 @@ var Media = function () {
             });
 
             ItemsContainer.contextMenu({
-                selector: selectors.containers.mediaTable,
+                selector: selectors.containers.fileManagerTable,
                 callback: function (key) {
                     contextCallback($(this), key);
                 },
@@ -697,7 +697,7 @@ var Media = function () {
          * Setup the drag and drop for moving files
          */
         setFileDrag = function () {
-            ItemsContainer.find("." + selectors.classes.mediaDraggable).draggable({
+            ItemsContainer.find("." + selectors.classes.fileManagerDraggable).draggable({
                 opacity: 0.9,
                 cursor: "move",
                 cursorAt: {
@@ -709,16 +709,16 @@ var Media = function () {
                 start: function (e, ui) {
                     if (e.originalEvent) {
                         $(ui.helper).addClass(selectors.classes.dragHelper);
-                        $(this).children().addClass(selectors.classes.mediaDragging);
+                        $(this).children().addClass(selectors.classes.fileManagerDragging);
                     }
                 },
                 stop: function () {
-                    $(this).children().removeClass(selectors.classes.mediaDragging);
+                    $(this).children().removeClass(selectors.classes.fileManagerDragging);
                 }
             });
 
             // The move to a dir in the item list
-            ItemsContainer.find("." + selectors.classes.mediaDir).droppable({
+            ItemsContainer.find("." + selectors.classes.fileManagerDir).droppable({
                 hoverClass: selectors.classes.dropHighlight,
                 tolerance: "pointer",
                 drop: function (event, ui) {
@@ -742,14 +742,14 @@ var Media = function () {
             });
 
             // The move to directory list
-            $(selectors.containers.mediaDirsElement + " ul li span." + selectors.classes.mediaDirectoryLine).droppable({
+            $(selectors.containers.fileManagerDirsElement + " ul li span." + selectors.classes.fileManagerDirectoryLine).droppable({
                 hoverClass: selectors.classes.dropHighlight,
                 tolerance: "pointer",
                 drop: function (event, ui) {
                     var file = ui.draggable,
                         filename = file.find("span").html(),
                         target = $(event.target),
-                        target_name = target.find("span." + selectors.classes.mediaDir).attr("id"),
+                        target_name = target.find("span." + selectors.classes.fileManagerDir).attr("id"),
                         target_dir,
                         route = Routing.generate(routes.move),
                         data;
@@ -842,7 +842,7 @@ var Media = function () {
             $(selectors.buttons.download).removeAttr("disabled", "disabled");
             $(selectors.buttons.info).removeAttr("disabled", "disabled");
 
-            if (selected_item.hasClass(selectors.classes.mediaDir)) {
+            if (selected_item.hasClass(selectors.classes.fileManagerDir)) {
                 $(selectors.buttons.download).attr("disabled", "disabled");
                 $(selectors.buttons.copy).attr("disabled", "disabled");
                 $(selectors.buttons.cut).attr("disabled", "disabled");
@@ -870,9 +870,9 @@ var Media = function () {
         events = function () {
             /**
              * When clicking on the dir in the directory list, open the directory in the list
-             * and display the files in the media file list.
+             * and display the files in the fileManager file list.
              */
-            $(document).on("click", "span." + selectors.classes.mediaDir, function () {
+            $(document).on("click", "span." + selectors.classes.fileManagerDir, function () {
 
                 var sub_ul = $(this).closest("ul").children("ul"),
                     parent_li = $(this).parent("span").parent("li"),
@@ -888,9 +888,9 @@ var Media = function () {
 
             /**
              * When clicking on a dir in the file list, open the directory in the list
-             * and display the files in the media file list.
+             * and display the files in the fileManager file list.
              */
-            $(document).on("dblclick", "div." + selectors.classes.blockRow + "." + selectors.classes.mediaDir + ",tr." + selectors.classes.mediaDir, function () {
+            $(document).on("dblclick", "div." + selectors.classes.blockRow + "." + selectors.classes.fileManagerDir + ",tr." + selectors.classes.fileManagerDir, function () {
                 if (!active_input) {
                     if ($(this).hasClass("disabled")) {
                         return false;
@@ -904,7 +904,7 @@ var Media = function () {
             /**
              * When the window is a popup, give the file back to its parent with the right path.
              */
-            $(document).on("dblclick", "span." + selectors.classes.mediaPage + ",." + selectors.classes.blockRow + "." + selectors.classes.mediaItem, function () {
+            $(document).on("dblclick", "span." + selectors.classes.fileManagerPage + ",." + selectors.classes.blockRow + "." + selectors.classes.fileManagerItem, function () {
                 if (isPopup) {
                     var path, url;
                     if (activePath !== null) {
@@ -924,17 +924,17 @@ var Media = function () {
             /**
              * When clicking on a empty row, remove the selected item and disable the actions
              */
-            $(document).on("click", selectors.containers.mediaTable + " tr." + selectors.classes.emptyRow, function () {
+            $(document).on("click", selectors.containers.fileManagerTable + " tr." + selectors.classes.emptyRow, function () {
                 selected_item = null;
                 $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
                 disableToolbarItems();
             });
 
             /**
-             * When clicking on a empty part of the media wrapper, remove the selected item and disable the actions
+             * When clicking on a empty part of the fileManager wrapper, remove the selected item and disable the actions
              */
-            $(document).on("click", selectors.containers.mediaTable, function (e) {
-                if($(e.target).is(selectors.containers.mediaTable) ) {
+            $(document).on("click", selectors.containers.fileManagerTable, function (e) {
+                if($(e.target).is(selectors.containers.fileManagerTable) ) {
                     selected_item = null;
                     $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
                     disableToolbarItems();
@@ -944,7 +944,7 @@ var Media = function () {
             /**
              * When clicking on a file or directory, check which actions should be enabled
              */
-            $(document).on("click", selectors.containers.mediaTable + " tr:not('." + selectors.classes.emptyRow + "'), div." + selectors.classes.blockRow, function () {
+            $(document).on("click", selectors.containers.fileManagerTable + " tr:not('." + selectors.classes.emptyRow + "'), div." + selectors.classes.blockRow, function () {
                 $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
                 $(this).addClass(selectors.classes.selectedItem);
                 selected_item = $(this);
@@ -1005,7 +1005,7 @@ var Media = function () {
             }).on("click", selectors.buttons.info, function () {
                 showInfo(selected_item);
             }).on("click", selectors.buttons.extract, function () {
-                var zip_name = selected_item.find("span." + selectors.classes.mediaPage + "." + contextMenu.extra_types.zip).html();
+                var zip_name = selected_item.find("span." + selectors.classes.fileManagerPage + "." + contextMenu.extra_types.zip).html();
                 extractZip(zip_name);
             }).on("click", selectors.buttons.preview, function () {
                 displayPreview();
@@ -1062,7 +1062,7 @@ var Media = function () {
             /**
              * Disable everything under the loading screen when the loading screen is visible
              */
-            $(document).on("click", selectors.containers.mediaLoadingScreen, function () {
+            $(document).on("click", selectors.containers.fileManagerLoadingScreen, function () {
                 return false;
             });
         },
@@ -1090,11 +1090,11 @@ var Media = function () {
          * Construct the object
          */
         construct = function () {
-            var media_container = $(selectors.containers.container);
-            sub_dirs = media_container.find(selectors.containers.mediaDirsElement + ' ul ul ul');
-            active_dir = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir);
-            active_ul = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir + '>ul');
-            active_span = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir + '>span');
+            var fileManager_container = $(selectors.containers.container);
+            sub_dirs = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' ul ul ul');
+            active_dir = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' li.' + selectors.classes.activeDir);
+            active_ul = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' li.' + selectors.classes.activeDir + '>ul');
+            active_span = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' li.' + selectors.classes.activeDir + '>span');
 
             /** these are defined in the twig file */
             activePath = current_path;
@@ -1106,8 +1106,8 @@ var Media = function () {
             }
 
             ItemsContainer = $(selectors.containers.itemsContainer);
-            mediaItemsElement = $(selectors.containers.mediaItemsElement);
-            mediaDirsElement = $(selectors.containers.mediaDirsElement);
+            fileManagerItemsElement = $(selectors.containers.fileManagerItemsElement);
+            fileManagerDirsElement = $(selectors.containers.fileManagerDirsElement);
 
             setup();
 
@@ -1115,7 +1115,7 @@ var Media = function () {
             preview_modal = $(selectors.modals.preview).modal({show: false});
             upload_modal = $(selectors.modals.upload).modal({show: false});
             info_modal = $(selectors.modals.info).modal({show: false});
-            mediaDirsElement.resizable({
+            fileManagerDirsElement.resizable({
                 maxWidth: 350,
                 minWidth: 125,
                 handles: 'e, w'
@@ -1127,7 +1127,7 @@ var Media = function () {
     this.reloadFileList = function () {
         loadingScreen();
         var new_dir_route = Routing.generate(routes.list, {"dir_path": activePath});
-        mediaItemsElement.load(new_dir_route + " " + selectors.containers.itemsContainer, function () {
+        fileManagerItemsElement.load(new_dir_route + " " + selectors.containers.itemsContainer, function () {
             ItemsContainer = $(selectors.containers.itemsContainer);
             var popOverElement = $('.' + selectors.classes.popOver);
             setPopover(popOverElement);
@@ -1146,23 +1146,23 @@ var Media = function () {
             new_dir_route = Routing.generate(routes.list, {"dir_path": activePath});
 
         $(selectors.containers.dirsContainer).find(selectors.classes.arrows.down).each(function () {
-            open_dirs_ids.push($(this).closest("." + selectors.classes.mediaDirectoryLine).find("span." + selectors.classes.mediaDir).attr("id"));
+            open_dirs_ids.push($(this).closest("." + selectors.classes.fileManagerDirectoryLine).find("span." + selectors.classes.fileManagerDir).attr("id"));
         });
 
-        mediaDirsElement.load(new_dir_route + " " + selectors.containers.dirsContainer, function () {
+        fileManagerDirsElement.load(new_dir_route + " " + selectors.containers.dirsContainer, function () {
 
             $(selectors.containers.dirsContainer).find("li").find("ul").hide();
 
-            var media_container = $(selectors.containers.container),
+            var fileManager_container = $(selectors.containers.container),
                 element,
                 sub_ul,
                 parent_li,
                 dir_path;
 
-            sub_dirs = media_container.find(selectors.containers.mediaDirsElement + ' ul ul ul');
-            active_dir = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir);
-            active_ul = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir + '>ul');
-            active_span = media_container.find(selectors.containers.mediaDirsElement + ' li.' + selectors.classes.activeDir + '>span');
+            sub_dirs = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' ul ul ul');
+            active_dir = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' li.' + selectors.classes.activeDir);
+            active_ul = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' li.' + selectors.classes.activeDir + '>ul');
+            active_span = fileManager_container.find(selectors.containers.fileManagerDirsElement + ' li.' + selectors.classes.activeDir + '>span');
             directoryListSetup();
             for (array_index = 0; array_index < open_dirs_ids.length; array_index += 1) {
                 element = $("span[id='" + open_dirs_ids[array_index] + "']");
@@ -1184,7 +1184,7 @@ var Media = function () {
 
 $(function () {
     'use strict';
-    var MediaObject;
-    MediaObject = new Media();
-    MediaObject.reloadDirList();
+    var FileManagerObject;
+    FileManagerObject = new FileManager();
+    FileManagerObject.reloadDirList();
 });

@@ -1,6 +1,6 @@
 <?php
 
-namespace Youwe\MediaBundle\DependencyInjection;
+namespace Youwe\FileManagerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -39,7 +39,7 @@ class Configuration implements ConfigurationInterface
             'application/octet-stream'
         );
 
-        $rootNode = $treeBuilder->root('youwe_media');
+        $rootNode = $treeBuilder->root('youwe_file_manager');
         $rootNode
             ->children()
                 ->arrayNode('mime_allowed')
@@ -54,10 +54,10 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('theme')
                     ->children()
                         ->scalarNode('css')
-                            ->defaultValue("/bundles/youwemedia/css/simple/media.css")->cannotBeEmpty()
+                            ->defaultValue("/bundles/youwefilemanager/css/simple/default.css")->cannotBeEmpty()
                         ->end()
                         ->scalarNode('template')
-                            ->defaultValue('YouweMediaBundle:Media:media.html.twig')->cannotBeEmpty()
+                            ->defaultValue('YouweFileManagerBundle:FileManager:file_manager.html.twig')->cannotBeEmpty()
                         ->end()
                     ->end()
                     ->addDefaultsIfNotSet()

@@ -10,9 +10,9 @@
     <tbody>
     {% for file in files %}
         {% if file.mimetype == 'directory' %}
-            <tr class="yw_media_dir">
-                <td class="yw_media_type default yw_media_drag">
-                    <span class="yw_media_item_dir">{{ file.filename }}</span>
+            <tr class="yw_file_manager_dir">
+                <td class="yw_file_manager_type default yw_file_manager_drag">
+                    <span class="yw_file_manager_item_dir">{{ file.filename }}</span>
                 </td>
                 <td>{{ file.readableType }}</td>
                 <td>{{ file.filesize }}</td>
@@ -21,8 +21,8 @@
             </tr>
         {% endif %}
     {% endfor %}
-    <tr class="yw_media_empty hidden">
-        <td><span class="yw_media_item_dir disabled"></span></td>
+    <tr class="yw_file_manager_empty hidden">
+        <td><span class="yw_file_manager_item_dir disabled"></span></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
@@ -30,9 +30,9 @@
     </tr>
     {% for file in files %}
         {% if file.mimetype != 'directory' %}
-            <tr class="yw_media_drag yw_media_type {{ file.fileclass }}">
+            <tr class="yw_file_manager_drag yw_file_manager_type {{ file.fileclass }}">
                 <td class="">
-                    <span class="yw_media_page {{ file.fileclass }}">{{ file.filename }}</span>
+                    <span class="yw_file_manager_page {{ file.fileclass }}">{{ file.filename }}</span>
                 </td>
                 <td>{{ file.readableType }}</td>
                 <td>{{ file.filesize }}</td>

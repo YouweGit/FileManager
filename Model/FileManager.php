@@ -1,17 +1,17 @@
 <?php
 
-namespace Youwe\MediaBundle\Model;
+namespace Youwe\FileManagerBundle\Model;
 
 use Symfony\Component\HttpFoundation\Request;
-use Youwe\MediaBundle\Driver\MediaDriver;
+use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 
 /**
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
- * Class Media
- * @package Youwe\MediaBundle\Model
+ * Class FileManager
+ * @package Youwe\FileManagerBundle\Model
  */
-class Media
+class FileManager
 {
     //Directory Separator
     const DS = "/";
@@ -49,7 +49,7 @@ class Media
     /** @var  string */
     private $target_filepath = null;
 
-    /** @var  MediaDriver */
+    /** @var  FileManagerDriver */
     private $driver;
 
     /** @var  bool */
@@ -80,7 +80,7 @@ class Media
     }
 
     /**
-     * @return mixed|MediaDriver
+     * @return mixed|FileManagerDriver
      */
     public function getDriver()
     {
@@ -88,12 +88,12 @@ class Media
     }
 
     /**
-     * @param mixed|MediaDriver $driver
+     * @param mixed|FileManagerDriver $driver
      */
     public function setDriver($driver)
     {
         $this->driver = $driver;
-        $driver->setMedia($this);
+        $driver->setFileManager($this);
     }
 
     /**
@@ -343,7 +343,7 @@ class Media
     }
 
     /**
-     * @param $path - Default is the media dir
+     * @param $path - Default is the file dir
      * @throws \Exception - when directory is not in the upload path
      * @return bool
      */

@@ -1,4 +1,4 @@
-<div id="media-upload-dialog" class="modal fade">
+<div id="file-manager-upload-dialog" class="modal fade">
     <div class="modal-dialog">
 
         <div class="modal-content">
@@ -7,7 +7,7 @@
                 <h4 class="modal-title">Upload</h4>
             </div>
             <div class="modal-body" id="UploadContent">
-                <div id="UploadLoadingScreen" class="MediaLoadingScreen">
+                <div id="UploadLoadingScreen" class="FileManagerLoadingScreen">
                 </div>
                 {{ form_label(form.file) }}
                 {{ form_widget(form.file, {'attr':{'class':'hidden', 'accept':upload_allow|join(',')} } ) }}
@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<div id="media-confirm-dialog">
+<div id="file-manager-confirm-dialog">
     <div class="confirmation-modal modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">

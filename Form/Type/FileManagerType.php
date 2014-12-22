@@ -1,6 +1,6 @@
 <?php
 
-namespace Youwe\MediaBundle\Form\Type;
+namespace Youwe\FileManagerBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -8,11 +8,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 /**
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
- * Class MediaType
- *
- * @package Youwe\MediaBundle\Form\Type
+ * Class FileManager
+ * @package Youwe\FileManagerBundle\Form\Type
  */
-class MediaType extends AbstractType {
+class FileManagerType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -21,8 +20,8 @@ class MediaType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder->add('file', 'file', array(
             'required'    => FALSE,
-            'attr'        => array('class' => 'form-control media_url', 'multiple' => 'multiple'),
-            'label'       => 'Media'
+            'attr'        => array('class' => 'form-control file_manager_url', 'multiple' => 'multiple'),
+            'label'       => 'Files'
         ));
 
         $builder->add('newfolder');
@@ -35,6 +34,6 @@ class MediaType extends AbstractType {
      * @return string
      */
     public function getName() {
-        return 'media';
+        return 'file_manager';
     }
 }
