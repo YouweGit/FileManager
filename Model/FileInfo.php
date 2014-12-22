@@ -100,7 +100,7 @@ class FileInfo
 
         $file_size = $this->calculateReadableSize(filesize($filepath));
         $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
-        $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filepath);
+        $mimetype = $file_manager->getMimeType($filepath);
         $web_path = $file_manager->DirTrim($file_manager->getPath($file_manager->getDirPath()), $filename, true);
 
         $this->setFilename($filename);

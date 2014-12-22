@@ -61,6 +61,9 @@ class FileManager
     /** @var string */
     private $display_type;
 
+    /** @var string */
+    private $magic_file;
+
 
     /**
      * @param array $parameters
@@ -74,6 +77,7 @@ class FileManager
         $this->setUsagesClass($parameters['usage_class']);
         $this->setFullException($parameters['full_exception']);
         $this->setThemeCss($parameters['theme']['css']);
+        $this->setMagicFile($parameters['magic_file']);
         $this->setWebPath();
 
         $this->setDriver($driver);
@@ -454,5 +458,40 @@ class FileManager
     public function setDisplayType($display_type)
     {
         $this->display_type = $display_type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMagicFile()
+    {
+        return $this->magic_file;
+    }
+
+    /**
+     * @param string $magic_file
+     */
+    public function setMagicFile($magic_file)
+    {
+        $this->magic_file = $magic_file;
+    }
+
+    /**
+     * Try to guess the mimetypes first with a custom magic file.
+     * This fix the problems with wrong mime type detection.
+     *
+     * @author Jim Ouwerkerk
+     * @param $filename
+     * @return mixed
+     */
+    public function getMimeType($filename){
+        $magic_file = $this->getMagicFile();
+        $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE, $magic_file), $filename);
+
+        //Use default mimetype guesser if it is not found
+        if($mimetype == "application/octet-stream"){
+            $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
+        }
+        return $mimetype;
     }
 }
