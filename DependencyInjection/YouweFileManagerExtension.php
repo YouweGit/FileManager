@@ -21,7 +21,8 @@ class YouweFileManagerExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-
+        $config['magic_file'] = __DIR__.'/../Resources/magic/programming.magic';
+        var_dump($config);
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         $container->setParameter('youwe_file_manager', $config);
