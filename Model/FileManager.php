@@ -511,7 +511,6 @@ class FileManager
                 }
 
             }
-            $this->createFilter();
             $imageCacheManager->remove($this->getFileInfo()->getWebPath(), $this->getFilter());
         }
     }
