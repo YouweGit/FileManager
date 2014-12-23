@@ -24,9 +24,9 @@
         "liip/imagine-bundle": "Liip Imagine Bundle provides easy image manipulation support for Symfony2."
     },
     "autoload": {
-        "psr-0": { "Youwe\\Bundle\\FileManagerBundle": "" }
+        "psr-0": { "Youwe\\FileManagerBundle": "" }
     },
-    "target-dir": "Youwe/Bundle/FileManagerBundle",
+    "target-dir": "Youwe/FileManagerBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0"
