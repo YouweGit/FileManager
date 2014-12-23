@@ -37,7 +37,7 @@ class FileManagerService
      */
     public function createFileManager($parameters, $driver, $dir_path = null)
     {
-        $file_manager = new FileManager($parameters, $driver);
+        $file_manager = new FileManager($parameters, $driver, $this->container);
         $this->file_manager = $file_manager;
         $file_manager->setDirPaths($dir_path);
         $this->setDisplayType();
@@ -295,27 +295,4 @@ class FileManagerService
         }
         return $dirs;
     }
-
-
-//
-//    /**
-//     * @author Jim Ouwerkerk
-//     * @param $filepath
-//     * @param $filename
-//     */
-//    public function resolveImage($filepath, $filename)
-//    {
-//        $filepath = rtrim($filepath,"/") . "/" . $filename;
-//
-//        /** @var FilterManager $imagineFilterManager */
-//        $imagineFilterManager = $this->container->get('liip_imagine.filter.manager');
-//        $filters = $imagineFilterManager->getFilterConfiguration()->all();
-//
-//        /** @var CacheManager $imageManager */
-//        $imageManager = $this->container->get('liip_imagine.cache.manager');
-//
-//        foreach($filters as $filter => $options){
-//            $imageManager->remove(basename($this->upload_path)."/".$filepath, $filter);
-//        }
-//    }
 }

@@ -5,3 +5,8 @@ services:
   youwe.file_manager.driver:
     class: Youwe\FileManagerBundle\Driver\FileManagerDriver
     arguments: ["@service_container"]
+  youwe.twig.extension:
+    class: Youwe\FileManagerBundle\Twig\FileManagerExtension
+    arguments: ["@service_container"]
+    tags:
+      - { name: twig.extension }

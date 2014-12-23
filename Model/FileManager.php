@@ -2,6 +2,10 @@
 
 namespace Youwe\FileManagerBundle\Model;
 
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Liip\ImagineBundle\Imagine\Data\DataManager;
+use Liip\ImagineBundle\Imagine\Filter\FilterManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 
@@ -15,6 +19,7 @@ class FileManager
 {
     //Directory Separator
     const DS = "/";
+    const FILTER_NAME = 'YouweFileManager';
 
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
@@ -64,12 +69,20 @@ class FileManager
     /** @var string */
     private $magic_file;
 
+    /** @var bool */
+    private $filter_images;
+
+    /** @var  ContainerInterface */
+    private $container;
+
+    /** @var  string */
+    private $filter;
 
     /**
      * @param array $parameters
      * @param       $driver
      */
-    public function __construct(array $parameters, $driver)
+    public function __construct(array $parameters, $driver, ContainerInterface $container)
     {
         $this->setExtensionsAllowed($parameters['mime_allowed']);
         $this->setThemeTemplate($parameters['theme']['template']);
@@ -78,7 +91,10 @@ class FileManager
         $this->setFullException($parameters['full_exception']);
         $this->setThemeCss($parameters['theme']['css']);
         $this->setMagicFile($parameters['magic_file']);
+        $this->setFilterImages($parameters['filter_images']);
+        $this->setFilter(self::FILTER_NAME);
         $this->setWebPath();
+        $this->container = $container;
 
         $this->setDriver($driver);
     }
@@ -380,6 +396,7 @@ class FileManager
      */
     public function pasteFile($type)
     {
+        $this->resolveImage();
         $this->getDriver()->pasteFile($this->getFileInfo(), $type);
     }
 
@@ -390,6 +407,7 @@ class FileManager
     {
         $target_full_path = $this->getTargetFilepath();
         $this->getDriver()->moveFile($this->getFileInfo(), $target_full_path);
+        $this->resolveImage();
     }
 
     /**
@@ -397,11 +415,11 @@ class FileManager
      */
     public function deleteFile()
     {
+        $this->resolveImage();
         $this->getDriver()->deleteFile($this->getFileInfo());
     }
 
     /**
-     * @author Jim Ouwerkerk
      * @param string $path
      * @param string $file
      * @param bool   $rTrim
@@ -474,5 +492,83 @@ class FileManager
     public function setMagicFile($magic_file)
     {
         $this->magic_file = $magic_file;
+    }
+
+    /**
+     * @throws \Exception - If Liip Imagine Bundle is not installed
+     */
+    public function resolveImage()
+    {
+        if($this->FilterImages() && $this->getFileInfo()->isImage()){
+            try{
+                $imageCacheManager = $this->getCacheManager();
+            } catch(\Exception $e){
+                $exception = 'Cannot resolve the image. Please make sure that LiipImagineBundle is installed';
+                if (!$this->isFullException() || is_null($e)) {
+                    Throw new \Exception($exception);
+                } else {
+                    throw new \Exception($exception . ": " . $e->getMessage());
+                }
+
+            }
+            $this->createFilter();
+            $imageCacheManager->remove($this->getFileInfo()->getWebPath(), $this->getFilter());
+        }
+    }
+
+    /**
+     * @return CacheManager
+     */
+    public function getCacheManager()
+    {
+        return $this->container->get('liip_imagine.cache.manager');
+    }
+
+    /**
+     * @return DataManager
+     */
+    public function getDataManager()
+    {
+        return $this->container->get('liip_imagine.data.manager');
+    }
+
+    /**
+     * @return FilterManager
+     */
+    public function getFilterManager()
+    {
+        return $this->container->get('liip_imagine.filter.manager');
+    }
+
+    /**
+     * @return bool
+     */
+    public function FilterImages()
+    {
+        return $this->filter_images;
+    }
+
+    /**
+     * @param bool $filter_images
+     */
+    public function setFilterImages($filter_images)
+    {
+        $this->filter_images = $filter_images;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilter()
+    {
+        return $this->filter;
+    }
+
+    /**
+     * @param string $filter
+     */
+    public function setFilter($filter)
+    {
+        $this->filter = $filter;
     }
 }
