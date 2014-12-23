@@ -241,7 +241,7 @@ html, body {
     cursor: default;
 }
 
-#FileManagerContainer .FileManagerListItems div.block_row {
+div.block_row {
     float:left;
     width:120px;
     height:95px;
@@ -250,7 +250,7 @@ html, body {
     cursor: pointer;
 }
 
-#FileManagerContainer .FileManagerListItems div.block_row:hover {
+div.block_row:hover {
     border-radius: 8px;
     background-color: rgb(238, 238, 238);
     -webkit-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
@@ -259,7 +259,7 @@ html, body {
 }
 
 #FileManagerContainer .FileManagerListItems .item_selected:hover,
-#FileManagerContainer .FileManagerListItems div.block_row.item_selected:hover {
+div.block_row.item_selected:hover {
     background-color: rgb(238, 238, 238);
     -webkit-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
        -moz-box-shadow: 0 0 8px 0 rgba(60,56,63,0.6) inset;
@@ -275,22 +275,25 @@ html, body {
             box-shadow: 0 0 15px 0 rgba(60,56,63,0.6) inset;
 }
 
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder {
+div.block_row>div.block_holder {
     text-align:center;
     overflow: hidden;
+    padding-left:2px;
+    padding-right:2px;
+    white-space: nowrap;
 /*    width:120px;
     padding:0 7px;*/
     text-overflow: ellipsis;
     padding-top: 15px;
 }
 .preview_img,
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div {
+div.block_row>div.block_holder>div {
     margin:0 auto;
     width:48px;
     height:48px;
 }
 
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div>img{
+div.block_row>div.block_holder>div>img{
     background-size: 48px;
     border-radius: 5px;
 }
@@ -388,6 +391,7 @@ html, body {
     padding: 6px;
     background: #fff;
     font-size: 1.2em;
+    z-index:10;
 }
 #cut_btn[disabled].active,
 #copy_btn[disabled].active{
@@ -481,16 +485,16 @@ html, body {
 }
 
 /*#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div              {background-image: url(/bundles/youwefilemanager/images/icons/48x48/unknow_file.png);}*/
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.pdf          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/pdf.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.zip          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/zip.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.video        {background-image: url(/bundles/youwefilemanager/images/icons/48x48/video.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.folder_image {background-image: url(/bundles/youwefilemanager/images/icons/48x48/folder.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.shellscript  {background-image: url(/bundles/youwefilemanager/images/icons/48x48/shellscript.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.php          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/php.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.code         {background-image: url(/bundles/youwefilemanager/images/icons/48x48/code.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.svg          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/svg.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.swf          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/swf.png);}
-#FileManagerContainer .FileManagerListItems div.block_row>div.block_holder>div.default      {background-image: url(/bundles/youwefilemanager/images/icons/48x48/txt.png);}
+div.block_row>div.block_holder>div.pdf          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/pdf.png);}
+div.block_row>div.block_holder>div.zip          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/zip.png);}
+div.block_row>div.block_holder>div.video        {background-image: url(/bundles/youwefilemanager/images/icons/48x48/video.png);}
+div.block_row>div.block_holder>div.folder_image {background-image: url(/bundles/youwefilemanager/images/icons/48x48/folder.png);}
+div.block_row>div.block_holder>div.shellscript  {background-image: url(/bundles/youwefilemanager/images/icons/48x48/shellscript.png);}
+div.block_row>div.block_holder>div.php          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/php.png);}
+div.block_row>div.block_holder>div.code         {background-image: url(/bundles/youwefilemanager/images/icons/48x48/code.png);}
+div.block_row>div.block_holder>div.svg          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/svg.png);}
+div.block_row>div.block_holder>div.swf          {background-image: url(/bundles/youwefilemanager/images/icons/48x48/swf.png);}
+div.block_row>div.block_holder>div.default      {background-image: url(/bundles/youwefilemanager/images/icons/48x48/txt.png);}
 
 /*#FileManagerContainer .FileManagerList ul span.yw_file_manager_dir,*/
 #FileManagerContainer .FileManagerList table td span.yw_file_manager_item_dir          { background-image: url(/bundles/youwefilemanager/images/icons/16x16/folder.png);}
