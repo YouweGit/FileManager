@@ -107,7 +107,7 @@ class FileInfo
         $web_path = $file_manager->DirTrim($file_manager->getPath($file_manager->getDirPath()), $filename, true);
 
         $this->setFilename($filename);
-        $this->setMimetype($filepath);
+        $this->guessMimeType($filepath);
         $this->setModified($file_modification);
         $this->setFileSize($file_size);
         $this->setFilepath($filepath);
@@ -353,13 +353,21 @@ class FileInfo
     }
 
     /**
+     * @param string $mimetype
+     */
+    public function setMimetype($mimetype)
+    {
+        $this->mimetype = $mimetype;
+    }
+
+    /**
      * Try to guess the mimetypes first with a custom magic file.
      * This fix the problems with wrong mime type detection.
      *
      * @param $filepath
      * @return mixed
      */
-    public function setMimeType($filepath){
+    public function guessMimeType($filepath){
         $magic_file = $this->getFileManager()->getMagicFile();
         $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE, $magic_file), $filepath);
 
@@ -371,7 +379,7 @@ class FileInfo
             $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filepath);
         }
 
-        $this->mimetype = $mimetype;
+        $this->setMimetype($mimetype);
 
         if (isset(self::$humanReadableTypes[$mimetype])) {
             $this->setReadableType(self::$humanReadableTypes[$mimetype]);
