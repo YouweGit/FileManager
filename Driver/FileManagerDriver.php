@@ -63,7 +63,7 @@ class FileManagerDriver
         $fm = new Filesystem();
         $dir_path = $this->getFileManager()->getPath($this->getFileManager()->getDirPath(), $dir_name, true);
         if (!file_exists($dir_path)) {
-            $fm->mkdir($dir_path, 0700);
+            $fm->mkdir($dir_path, 0755);
         } else {
             $this->throwError("Cannot create directory '" . $dir_name . "': Directory already exists", 500);
         }

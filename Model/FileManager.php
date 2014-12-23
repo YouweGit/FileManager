@@ -475,23 +475,4 @@ class FileManager
     {
         $this->magic_file = $magic_file;
     }
-
-    /**
-     * Try to guess the mimetypes first with a custom magic file.
-     * This fix the problems with wrong mime type detection.
-     *
-     * @author Jim Ouwerkerk
-     * @param $filename
-     * @return mixed
-     */
-    public function getMimeType($filename){
-        $magic_file = $this->getMagicFile();
-        $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE, $magic_file), $filename);
-
-        //Use default mimetype guesser if it is not found
-        if($mimetype == "application/octet-stream"){
-            $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
-        }
-        return $mimetype;
-    }
 }
