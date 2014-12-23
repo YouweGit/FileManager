@@ -705,6 +705,7 @@ var FileManager = function () {
                     top: 0
                 },
                 revert: true,
+                appendTo: 'body',
                 helper: 'clone',
                 start: function (e, ui) {
                     if (e.originalEvent) {

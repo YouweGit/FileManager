@@ -69,10 +69,10 @@
     opacity: 0.35;
 }
 
-#FileManagerContainer .FileManagerListItems div.block_row:hover,
+div.block_row:hover,
 #FileManagerContainer .FileManagerListItems .item_selected,
 #FileManagerContainer .FileManagerListItems .item_selected:hover,
-#FileManagerContainer .FileManagerListItems div.block_row.item_selected:hover
+div.block_row.item_selected:hover
 {
     -webkit-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
        -moz-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
