@@ -57,6 +57,7 @@ class FileInfo
     /**
      * This array is used for getting the readable file type
      * with a mimetype
+     *
      * @var array
      */
     public static $humanReadableTypes = array(
@@ -94,6 +95,10 @@ class FileInfo
     );
 
     /**
+     * Constructor
+     *
+     * Set all known file properties to the class
+     *
      * @param       $filepath
      * @param FileManager $file_manager
      */
@@ -116,6 +121,11 @@ class FileInfo
     }
 
     /**
+     * Returns the fileclass
+     *
+     * Javascript uses the fileclass to check which actions the file should have.
+     * CSS uses the file class to check which icon belongs to the file.
+     *
      * @return string
      */
     public function getFileclass()
@@ -124,6 +134,11 @@ class FileInfo
     }
 
     /**
+     * Set the file class
+     *
+     * Javascript uses the fileclass to check which actions the file should have.
+     * CSS uses the file class to check which icon belongs to the file.
+     *
      * @param string $mimetype
      */
     public function setFileclass($mimetype)
@@ -192,6 +207,8 @@ class FileInfo
     }
 
     /**
+     * Check if the mimetype match with the extension
+     *
      * @param $mimetype
      * @param $extension
      * @return bool
@@ -313,6 +330,8 @@ class FileInfo
     }
 
     /**
+     * Returns the file name
+     *
      * @return string
      */
     public function getFilename()
@@ -321,6 +340,8 @@ class FileInfo
     }
 
     /**
+     * Set the filename
+     *
      * @param string $filename
      */
     public function setFilename($filename)
@@ -329,6 +350,8 @@ class FileInfo
     }
 
     /**
+     * Returns the full path to the file
+     *
      * @return string
      */
     public function getFilepath()
@@ -337,6 +360,8 @@ class FileInfo
     }
 
     /**
+     * Set the full path to the file
+     *
      * @param string $filepath
      */
     public function setFilepath($filepath)
@@ -345,6 +370,8 @@ class FileInfo
     }
 
     /**
+     * Returns the mimetype of the file
+     *
      * @return string
      */
     public function getMimetype()
@@ -353,6 +380,8 @@ class FileInfo
     }
 
     /**
+     * Sets the mimetype of the file
+     *
      * @param string $mimetype
      */
     public function setMimetype($mimetype)
@@ -390,6 +419,8 @@ class FileInfo
     }
 
     /**
+     * Returns the modified datetime
+     *
      * @return string
      */
     public function getModified()
@@ -398,6 +429,8 @@ class FileInfo
     }
 
     /**
+     * Set the modified datetime
+     *
      * @param string $modified
      */
     public function setModified($modified)
@@ -406,6 +439,8 @@ class FileInfo
     }
 
     /**
+     * Returns the readable type for users of the file
+     *
      * @return string
      */
     public function getReadableType()
@@ -414,6 +449,8 @@ class FileInfo
     }
 
     /**
+     * Sets the readable mime type
+     *
      * @param string $readableType
      */
     public function setReadableType($readableType)
@@ -422,6 +459,8 @@ class FileInfo
     }
 
     /**
+     * Returns the size of the file
+     *
      * @return string
      */
     public function getFileSize()
@@ -430,6 +469,8 @@ class FileInfo
     }
 
     /**
+     * Set the size of the file
+     *
      * @param string $file_size
      */
     public function setFileSize($file_size)
@@ -438,6 +479,8 @@ class FileInfo
     }
 
     /**
+     * Returns the locations where the file is used.
+     *
      * @return int
      */
     public function getUsages()
@@ -446,6 +489,10 @@ class FileInfo
     }
 
     /**
+     * Set the locations where the file is used in an array.
+     *
+     * This function requires a class that is set in the config with the function returnUsages.
+     *
      * @param FileManager $file_manager
      */
     private function setUsages(FileManager $file_manager)
@@ -464,6 +511,8 @@ class FileInfo
     }
 
     /**
+     * Returns the web path of the file
+     *
      * @param bool $trim
      * @return string
      */
@@ -477,6 +526,8 @@ class FileInfo
     }
 
     /**
+     * Set the web path of the file
+     *
      * @param string $web_path
      */
     public function setWebPath($web_path)
@@ -485,6 +536,8 @@ class FileInfo
     }
 
     /**
+     * Check if the file is a directory
+     *
      * @return bool
      */
     public function isDir()
@@ -493,6 +546,8 @@ class FileInfo
     }
 
     /**
+     * Check if the file is a image
+     *
      * @return boolean
      */
     public function isImage()
@@ -501,6 +556,8 @@ class FileInfo
     }
 
     /**
+     * Check if the file is a video
+     *
      * @return boolean
      */
     public function isVideo()
@@ -509,6 +566,8 @@ class FileInfo
     }
 
     /**
+     * Check if the file is a audio
+     *
      * @return boolean
      */
     public function isAudio()
@@ -517,6 +576,8 @@ class FileInfo
     }
 
     /**
+     * Return all information in an array
+     *
      * @return array
      */
     public function toArray()
@@ -545,6 +606,8 @@ class FileInfo
     }
 
     /**
+     * Returns the file manager object
+     *
      * @return FileManager
      */
     public function getFileManager()
@@ -553,6 +616,8 @@ class FileInfo
     }
 
     /**
+     * Sets the file manager object
+     * 
      * @param FileManager $file_manager
      */
     public function setFileManager($file_manager)
