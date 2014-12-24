@@ -22,6 +22,8 @@ class FileManagerService
     private $file_manager;
 
     /**
+     * Constructor
+     *
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
@@ -30,12 +32,14 @@ class FileManagerService
     }
 
     /**
-     * @param $parameters
-     * @param $dir_path
-     * @param $driver
+     * Create the file manager object
+     *
+     * @param array  $parameters
+     * @param string $dir_path
+     * @param mixed  $driver
      * @return FileManager
      */
-    public function createFileManager($parameters, $driver, $dir_path = null)
+    public function createFileManager(array $parameters, $driver, $dir_path = null)
     {
         $file_manager = new FileManager($parameters, $driver, $this->container);
         $this->file_manager = $file_manager;
@@ -45,13 +49,18 @@ class FileManagerService
     }
 
     /**
+     * Get and check the current file path
+     *
      * @param FileManager $file_manager
-     * @throws \Exception
+     * @throws \Exception When the file name is empty while there is a target file or when the file is invalid
      * @return bool|string
      */
     public function getFilePath(FileManager $file_manager)
     {
-        if (($file_manager->getFilename() == "" && !is_null($file_manager->getTargetFilepath()))) {
+        $current_file = $file_manager->getCurrentFile();
+        $target_file = $file_manager->getTargetFile();
+
+        if (($current_file->getFilename() == "" && !is_null($target_file->getFilename()))) {
             throw new \Exception("Filename cannot be empty when there is a target file");
         }
 
@@ -69,8 +78,8 @@ class FileManagerService
 
         try {
             $file_manager->checkPath($dir);
-            if (!is_null($file_manager->getTargetFilepath())) {
-                $file_manager->checkPath($file_manager->getTargetFilepath());
+            if (!is_null($target_file)) {
+                $file_manager->checkPath($target_file->getFilepath());
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
@@ -80,6 +89,8 @@ class FileManagerService
     }
 
     /**
+     * Returns the file manager object
+     *
      * @return FileManager
      */
     public function getFileManager()
@@ -88,7 +99,9 @@ class FileManagerService
     }
 
     /**
-     * @param $token
+     * Check if the form token is valid
+     *
+     * @param string $token
      * @throws \Exception
      */
     public function checkToken($token)
@@ -101,8 +114,15 @@ class FileManagerService
     }
 
     /**
+     * Handle the form submit
+     *
+     * This handles the submit for the following form requests:
+     *  - File upload
+     *  - New directory
+     *  - Renaming file
+     *
      * @param Form $form
-     * @throws \Exception
+     * @throws \Exception - When the form is invalid or the action is not defined
      * @return null|string
      */
     public function handleFormSubmit(Form $form)
@@ -124,12 +144,14 @@ class FileManagerService
                     throw new \Exception("Undefined action", 500);
                 }
             } else {
-                throw new \Exception($form->getErrorsAsString(), 500);
+                throw new \Exception("Form is invalid", 500);
             }
         }
     }
 
     /**
+     * Handle the uploaded file(s)
+     *
      * @param array $files
      * @return bool
      */
@@ -156,6 +178,8 @@ class FileManagerService
     }
 
     /**
+     * Handle the new directory request
+     *
      * @param Form $form
      */
     private function handleNewDir($form)
@@ -167,6 +191,8 @@ class FileManagerService
     }
 
     /**
+     * Handle the file rename request
+     *
      * @param Form $form
      * @throws \Exception
      */
@@ -198,8 +224,22 @@ class FileManagerService
     }
 
     /**
+     * Returns an array with all the rendered options
+     *
+     * Current options are:
+     *  files             - All files in the current directory
+     *  file_body_display - The display type of the filemanager (block or list)
+     *  dirs              - The directories in the upload directory
+     *  isPopup           - Boolean that is true when the window is a popup
+     *  copy_file         - The copied file that is in the session
+     *  form              - The form object
+     *  root_folder       - The root directory path
+     *  current_path      - The current path
+     *  upload_allow      - Array with all allowed mimetypes
+     *  usages            - The usages class
+     *  theme_css         - The css filepath
+     *
      * @param Form $form
-     * @internal param FileManager $settings
      * @return array
      */
     public function getRenderOptions(Form $form)
@@ -225,6 +265,8 @@ class FileManagerService
     }
 
     /**
+     * Returns all files in the current directory
+     *
      * @param array $dir_files - Files
      * @param array $files
      * @return array
@@ -243,6 +285,8 @@ class FileManagerService
     }
 
     /**
+     * Set the display type
+     *
      * @return string
      */
     public function setDisplayType()
@@ -267,10 +311,12 @@ class FileManagerService
     }
 
     /**
-     * @param       $dir_files - Files
-     * @param       $dir       - Current Directory
-     * @param       $dir_path  - Current Directory Path
-     * @param array $dirs      - Directories
+     * Returns the directory tree of the given path. This will loop itself untill it has all directories
+     *
+     * @param string $dir_files - Files
+     * @param string $dir       - Current Directory
+     * @param string $dir_path  - Current Directory Path
+     * @param array  $dirs      - Directories
      * @return array|null
      */
     public function getDirectoryTree($dir_files, $dir, $dir_path, $dirs = array())

@@ -617,7 +617,7 @@ class FileInfo
 
     /**
      * Sets the file manager object
-     * 
+     *
      * @param FileManager $file_manager
      */
     public function setFileManager($file_manager)
