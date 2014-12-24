@@ -406,6 +406,7 @@ class FileManager
 
     /**
      * Trim the directory separators from the file(path)
+     *
      * @param string $path
      * @param string $file
      * @param bool   $rTrim
@@ -623,5 +624,23 @@ class FileManager
     public function setTargetFile($target_filepath)
     {
         $this->target_file = new FileInfo($target_filepath, $this);
+    }
+
+
+    /**
+     * Throw the error based on the full exception config
+     *
+     * @param string          $string - The displayed exception
+     * @param int             $code
+     * @param null|\Exception $e      - The actual exception
+     * @throws \Exception
+     */
+    public function throwError($string, $code = 500, $e = null)
+    {
+        if (!$this->isFullException() || is_null($e)) {
+            throw new \Exception($string, $code);
+        } else {
+            throw new \Exception($string . ": " . $e->getMessage(), $code);
+        }
     }
 }

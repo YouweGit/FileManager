@@ -6,6 +6,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Youwe\FileManagerBundle\Model\FileManager;
 
 /**
+ * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ *
  * Class FileManagerExtension
  * @package Youwe\FileManagerBundle\Twig
  */
