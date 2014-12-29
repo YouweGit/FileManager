@@ -66,8 +66,8 @@ assetic:
 Step 3: Set the config
 -------------------------
 
-```yml
 Default Configuration:
+```yml
 youwe_file_manager:
     upload_path: %kernel.root_dir%/../web/uploads
     full_exceptions: false
