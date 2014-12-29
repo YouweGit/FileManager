@@ -69,7 +69,7 @@ Default Configuration:
 ```yml
 youwe_file_manager:
     upload_path: %kernel.root_dir%/../web/uploads
-    full_exceptions: false
+    full_exception: false
     theme:
         css: "/bundles/youwefilemanager/css/simple/default.css"
         template: "YouweFileManagerBundle:FileManager:file_manager.html.twig"
