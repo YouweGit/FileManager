@@ -198,7 +198,7 @@ class FileManagerDriver
 
         $fm = new Filesystem();
         $tmp_dir = $this->createTmpDir($fm);
-        
+
         if ($chapterZip->open($fileInfo->getFilepath())) {
 
             $chapterZip->extractTo($tmp_dir);
@@ -256,8 +256,6 @@ class FileManagerDriver
 
     /**
      * Check if the filetype is an valid filetype by extracting the zip inside a temporary directory
-     *
-     * todo: check if there is a zip in the folder, and check that zip too
      *
      * @param Filesystem $fm
      * @param string     $tmp_dir
