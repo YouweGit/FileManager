@@ -42,7 +42,6 @@ class AppKernel extends Kernel
             // ...
 
             new Youwe\FileManagerBundle\YouweFileManagerBundle(),
-            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
         );
 
         // ...
