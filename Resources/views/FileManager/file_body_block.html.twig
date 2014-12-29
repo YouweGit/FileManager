@@ -22,7 +22,7 @@
             <div class="block_holder">
                 <div class="{{ file.fileclass }}">
                     {% if file.fileclass == 'image' %}
-                        <img src="{{ file.webPath }}" class="preview_img" title="{{ file.filename }}"/>
+                        <img src="{{ file.webPath|thumb() }}" class="preview_img" title="{{ file.filename }}"/>
                     {% endif %}
                 </div>
                 <span class="yw_file_manager_page {{ file.fileclass }}" title="{{ file.filename }}">{{ file.filename }}</span>

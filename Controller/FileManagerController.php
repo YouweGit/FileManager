@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 use Youwe\FileManagerBundle\Form\Type\FileManagerType;
-use Youwe\FileManagerBundle\Model\FileInfo;
+use Youwe\FileManagerBundle\Model\FileManager;
 use Youwe\FileManagerBundle\Services\FileManagerService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -162,7 +162,7 @@ class FileManagerController extends Controller {
             $sources = array(
                 'display_dir' => $fileManager->getDirPath(),
                 'source_dir' => $dir,
-                'source_file' => $fileManager->getFilename(),
+                'source_file' => $fileManager->getCurrentFile()->getFilename(),
                 'cut' => $cut
             );
             $this->get('session')->set('copy', $sources);
@@ -205,10 +205,8 @@ class FileManagerController extends Controller {
             $sources = $this->get('session')->get('copy');
             $fileManager->setDir($sources['source_dir']);
             $fileManager->setDirPath($sources['display_dir']);
-            $fileManager->setFilename($sources['source_file']);
-            $fileManager->setFilepath($sources['source_dir']);
-            $fileManager->setTargetFilepath($dir);
-            $fileManager->setTargetFilename($sources['source_file']);
+            $fileManager->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
+            $fileManager->setTargetFilepath($dir . FileManager::DS . $sources['source_file']);
             $type = $sources['cut'];
             $fileManager->pasteFile($type);
             $this->get('session')->remove('copy');
@@ -275,10 +273,7 @@ class FileManagerController extends Controller {
 
         try{
             $response = new JsonResponse();
-
-            $filepath = $fileManager->getPath($fileManager->getDirPath(), $fileManager->getFilename(), true);
-            $fileInfo = new FileInfo($filepath, $fileManager);
-            $response->setData(json_encode($fileInfo->toArray()));
+            $response->setData(json_encode($fileManager->getCurrentFile()->toArray()));
         } catch(\Exception $e){
             $response = new Response();
             $response->setContent($e->getMessage());
@@ -288,7 +283,12 @@ class FileManagerController extends Controller {
     }
 
     /**
-     * @Route("/download/{token}/{path}", name="youwe_file_manager_download", requirements={"path"=".+"}, options={"expose":true})
+     * @Route(
+     *      "/download/{token}/{path}",
+     *      name="youwe_file_manager_download",
+     *      requirements={"path"=".+"},
+     *      options={"expose":true}
+     * )
      *
      * @param Request $request
      * @param         $path
