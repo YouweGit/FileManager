@@ -104,7 +104,7 @@ class FileManagerDriver
         try {
             $this->validateFile($fileInfo, $new_file_name);
             $fm = new Filesystem();
-            $old_file = $fileInfo->getFilepath();
+            $old_file = $fileInfo->getFilepath(true);
             $new_file = $this->getFileManager()->DirTrim($this->getFileManager()->getDir(), $new_file_name, true);
             $fm->rename($old_file, $new_file);
         } catch (\Exception $e) {
@@ -125,7 +125,7 @@ class FileManagerDriver
     {
         try {
             $this->validateFile($fileInfo);
-            $file_path = $fileInfo->getFilepath();
+            $file_path = $fileInfo->getFilepath(true);
             $file = new File($file_path, false);
             $file->move($new_file_name);
         } catch (\Exception $e) {
@@ -178,7 +178,7 @@ class FileManagerDriver
     {
         try {
             $fm = new Filesystem();
-            $file = $fileInfo->getFilepath();
+            $file = $fileInfo->getFilepath(true);
             $fm->remove($file);
         } catch (\Exception $e) {
             $this->getFileManager()->throwError("Cannot delete file or directory", 500, $e);
@@ -198,7 +198,7 @@ class FileManagerDriver
 
         $fm = new Filesystem();
         $tmp_dir = $this->createTmpDir($fm);
-        var_dump($fileInfo->getFilepath());
+        
         if ($chapterZip->open($fileInfo->getFilepath())) {
 
             $chapterZip->extractTo($tmp_dir);
