@@ -79,7 +79,7 @@ class FileManagerService
         try {
             $file_manager->checkPath($dir);
             if (!is_null($target_file)) {
-                $file_manager->checkPath($target_file->getFilepath());
+                $file_manager->checkPath($target_file->getFilepath(true));
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());

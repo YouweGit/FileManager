@@ -144,11 +144,11 @@ class FileManagerDriver
     public function pasteFile(FileInfo $fileInfo, $type)
     {
         try {
-            $target_dir = $this->getFileManager()->getTargetFile()->getFilepath();
-            $target_file = $this->getFileManager()->getTargetFile()->getFilename();
+            $target_dir = $this->getFileManager()->getTargetFileName();
+            $target_file = $this->getFileManager()->getTargetFilepath();
 
             $target_file_path = $this->getFileManager()->DirTrim($target_dir, $target_file, true);
-            $source_file_path = $fileInfo->getFilepath();
+            $source_file_path = $fileInfo->getFilepath(true);
             $this->validateFile($fileInfo);
 
             $fileSystem = new Filesystem();

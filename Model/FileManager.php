@@ -71,6 +71,12 @@ class FileManager
     /** @var  FileInfo */
     private $target_file = null;
 
+    /** @var  string */
+    private $target_file_path = null;
+
+    /** @var  string */
+    private $target_file_name = null;
+
     /**
      * Constructor
      *
@@ -339,8 +345,11 @@ class FileManager
     public function resolveRequest(Request $request)
     {
         $this->setDirPath($request->get('dir_path'));
-        $this->setCurrentFile($this->getDir() . self::DS . $request->get('filename'));
-        $this->setTargetFile($request->get('target_file'));
+        $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
+        $target_file = $request->get('target_file');
+        if(isset($target_file)){
+            $this->setTargetFile($request->get('target_file'));
+        }
     }
 
     /**
@@ -390,7 +399,7 @@ class FileManager
      */
     public function moveFile()
     {
-        $target_full_path = $this->getTargetFile()->getFilepath();
+        $target_full_path = $this->getTargetFile()->getFilepath(true);
         $this->getDriver()->moveFile($this->getCurrentFile(), $target_full_path);
         $this->resolveImage();
     }
@@ -642,5 +651,45 @@ class FileManager
         } else {
             throw new \Exception($string . ": " . $e->getMessage(), $code);
         }
+    }
+
+    /**
+     * Set the target file path
+     *
+     * @param $string
+     */
+    public function setTargetFilepath($string)
+    {
+        $this->target_file_path = $string;
+    }
+
+    /**
+     * Returns the target file path
+     *
+     * @return string
+     */
+    public function getTargetFilepath()
+    {
+        return $this->target_file_path;
+    }
+
+    /**
+     * Returns the target file name
+     *
+     * @return string
+     */
+    public function getTargetFileName()
+    {
+        return $this->target_file_name;
+    }
+
+    /**
+     * Set the target file name
+     *
+     * @param string $target_file_name
+     */
+    public function setTargetFileName($target_file_name)
+    {
+        $this->target_file_name = $target_file_name;
     }
 }

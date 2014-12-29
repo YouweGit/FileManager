@@ -207,7 +207,7 @@ class FileInfo
      *
      * Set all known file properties to the class
      *
-     * @param       $filepath
+     * @param       $filepath - Filepath with file name
      * @param FileManager $file_manager
      */
     public function __construct($filepath, FileManager $file_manager)
@@ -223,7 +223,7 @@ class FileInfo
         $this->guessMimeType($filepath);
         $this->setModified($file_modification);
         $this->setFileSize($file_size);
-        $this->setFilepath($filepath);
+        $this->setFilepath(dirname($filepath));
         $this->setWebPath($web_path);
         $this->setUsages($file_manager);
     }
@@ -353,11 +353,16 @@ class FileInfo
     /**
      * Returns the full path to the file
      *
+     * @param bool $include_filename
      * @return string
      */
-    public function getFilepath()
+    public function getFilepath($include_filename = false)
     {
-        return $this->filepath;
+        $filepath = $this->filepath;
+        if($include_filename){
+            $filepath .= FileManager::DS . $this->getFIlename();
+        }
+        return $filepath;
     }
 
     /**
@@ -503,7 +508,7 @@ class FileInfo
         if ($usage_class != false) {
             /** @var mixed $usage_object */
             $usage_object = new $usage_class;
-            $usages_result = $usage_object->returnUsages($this->getFilepath());
+            $usages_result = $usage_object->returnUsages($this->getFilepath(true));
             if (!empty($usages_result)) {
                 $usages = $usages_result;
             }

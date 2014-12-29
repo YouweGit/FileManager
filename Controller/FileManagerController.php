@@ -206,7 +206,7 @@ class FileManagerController extends Controller {
             $fileManager->setDir($sources['source_dir']);
             $fileManager->setDirPath($sources['display_dir']);
             $fileManager->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
-            $fileManager->setTargetFile($dir . FileManager::DS . $sources['source_file']);
+            $fileManager->setTargetFilepath($dir . FileManager::DS . $sources['source_file']);
             $type = $sources['cut'];
             $fileManager->pasteFile($type);
             $this->get('session')->remove('copy');
