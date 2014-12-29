@@ -312,7 +312,7 @@ class FileManagerController extends Controller {
         $response = new Response();
 
         $response->headers->set('Content-Type', 'mime/type');
-        $response->headers->set('Content-Disposition', 'attachment;filename="'.$filename);
+        $response->headers->set('Content-Disposition', 'attachment;filename="'.$filename . '"');
         $response->setContent($content);
         return $response;
     }
