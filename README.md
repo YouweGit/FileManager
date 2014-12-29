@@ -2,6 +2,10 @@
 YouweFileManagerBundle
 ==================
 
+Requirements
+============
+This bundle requires the [FOS Routing Bundle](https://github.com/FriendsOfSymfony/FOSJsRoutingBundle)
+
 Installation
 ============
 
