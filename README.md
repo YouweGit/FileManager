@@ -70,7 +70,6 @@ Step 3: Set the config
 Default Configuration:
 youwe_file_manager:
     upload_path: %kernel.root_dir%/../web/uploads
-    usage_class: false
     full_exceptions: false
     theme:
         css: "/bundles/youwefilemanager/css/simple/default.css"
@@ -96,9 +95,6 @@ youwe_file_manager:
 ```
 Optional config:
 
-* <b>usage_class</b> <br>
-  This is where the usage class is defined. <br>
-  It requires the function 'returnUsages' that returns a array with strings of the usage locations.
 * <b>theme</b><br>
   You can define your own css and template here.
 * <b>full_exceptions</b><br>
