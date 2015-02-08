@@ -32,6 +32,24 @@ class FileManagerService
     }
 
     /**
+     * @param FileManager $file_manager
+     */
+    public function setFileManager($file_manager)
+    {
+        $this->file_manager = $file_manager;
+    }
+
+    /**
+     * Returns the file manager object
+     *
+     * @return FileManager
+     */
+    public function getFileManager()
+    {
+        return $this->file_manager;
+    }
+
+    /**
      * Create the file manager object
      *
      * @param array  $parameters
@@ -88,21 +106,14 @@ class FileManagerService
         return $dir;
     }
 
-    /**
-     * Returns the file manager object
-     *
-     * @return FileManager
-     */
-    public function getFileManager()
-    {
-        return $this->file_manager;
-    }
 
     /**
      * Check if the form token is valid
      *
      * @param string $token
      * @throws \Exception
+     *
+     * @todo Fix the Deprecated function
      */
     public function checkToken($token)
     {
@@ -155,7 +166,7 @@ class FileManagerService
      * @param array $files
      * @return bool
      */
-    private function handleUploadFiles($files)
+    public function handleUploadFiles($files)
     {
         $dir = $this->getFileManager()->getDir();
 
@@ -172,7 +183,7 @@ class FileManagerService
             if (in_array($file->getClientMimeType(), $this->getFileManager()->getExtensionsAllowed())) {
                 $driver->handleUploadedFiles($file, $extension, $dir);
             } else {
-                $driver->throwError("Mimetype is not allowed", 500);
+                $this->getFileManager()->throwError("Mimetype is not allowed", 500);
             }
         }
     }
@@ -182,7 +193,7 @@ class FileManagerService
      *
      * @param Form $form
      */
-    private function handleNewDir($form)
+    public function handleNewDir($form)
     {
         $new_dir = $form->get("newfolder")->getData();
         $new_dir = str_replace("../", "", $new_dir);
@@ -196,31 +207,36 @@ class FileManagerService
      * @param Form $form
      * @throws \Exception
      */
-    private function handleRenameFile($form)
+    public function handleRenameFile($form)
     {
         $dir = $this->getFileManager()->getDir();
+
         /** @var FileManagerDriver $driver */
         $driver = $this->container->get('youwe.file_manager.driver');
 
         $new_file = $form->get('rename_file')->getData();
         $new_file = str_replace("../", "", $new_file);
 
+        $filemanager = $this->getFileManager();
+
         $org_filename = $form->get('origin_file_name')->getData();
-        $path = $this->getFileManager()->DirTrim($dir, $org_filename);
+        $path = $filemanager->DirTrim($dir, $org_filename);
         $org_extension = pathinfo($path, PATHINFO_EXTENSION);
 
         if ($org_extension != "") {
             $new_filename = $new_file . "." . $org_extension;
         } else {
-            $path = $this->getFileManager()->DirTrim($dir, $org_filename, true);
+            $path = $filemanager->DirTrim($dir, $org_filename, true);
             if (is_dir($path)) {
                 $new_filename = $new_file;
             } else {
                 throw new \Exception("Extension is empty", 500);
             }
         }
-        $fileInfo = new FileInfo($this->getFileManager()->DirTrim($dir, $org_filename, true), $this->getFileManager());
-        $driver->renameFile($fileInfo, $new_filename);
+
+        $filepath = $filemanager->DirTrim($dir, $org_filename, true);
+        $filemanager->setCurrentFile($filepath);
+        $driver->renameFile($filemanager->getCurrentFile(), $new_filename);
     }
 
     /**
@@ -313,7 +329,7 @@ class FileManagerService
     /**
      * Returns the directory tree of the given path. This will loop itself untill it has all directories
      *
-     * @param string $dir_files - Files
+     * @param array  $dir_files - Files
      * @param string $dir       - Current Directory
      * @param string $dir_path  - Current Directory Path
      * @param array  $dirs      - Directories

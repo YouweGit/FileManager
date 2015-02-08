@@ -10,7 +10,7 @@ use Youwe\FileManagerBundle\Model\FileInfo;
 use Youwe\FileManagerBundle\Model\FileManager;
 
 /**
- * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ * @author  Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class FileManagerDriver
  * @package Youwe\FileManagerBundle\Driver
@@ -28,26 +28,6 @@ class FileManagerDriver
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-    }
-
-    /**
-     * Returns the file manager
-     *
-     * @return FileManager
-     */
-    public function getFileManager()
-    {
-        return $this->file_manager;
-    }
-
-    /**
-     * Set the file manager
-     *
-     * @param FileManager $file_manager
-     */
-    public function setFileManager(FileManager $file_manager)
-    {
-        $this->file_manager = $file_manager;
     }
 
     /**
@@ -86,10 +66,30 @@ class FileManagerDriver
         if (!file_exists($dir_path)) {
             $fm->mkdir($dir_path, 0755);
         } else {
-            $this->getFileManager()->throwError("Cannot create directory '" . $dir_name . "': Directory already exists", 500);
+            $this->getFileManager()
+                ->throwError("Cannot create directory '" . $dir_name . "': Directory already exists", 500);
         }
     }
 
+    /**
+     * Returns the file manager
+     *
+     * @return FileManager
+     */
+    public function getFileManager()
+    {
+        return $this->file_manager;
+    }
+
+    /**
+     * Set the file manager
+     *
+     * @param FileManager $file_manager
+     */
+    public function setFileManager(FileManager $file_manager)
+    {
+        $this->file_manager = $file_manager;
+    }
 
     /**
      * Renames the file
@@ -112,6 +112,78 @@ class FileManagerDriver
         }
     }
 
+    /**
+     * Validate the files to check if they have a valid file type
+     *
+     * @param FileInfo    $fileInfo
+     * @param null|string $new_filename
+     */
+    public function validateFile(FileInfo $fileInfo, $new_filename = null)
+    {
+        $file_path = $fileInfo->getWebPath(true);
+        if (!is_dir($file_path)) {
+            $fm = new Filesystem();
+            $tmp_dir = $this->createTmpDir($fm);
+            $fm->copy($file_path, $tmp_dir . FileManager::DS . $fileInfo->getFilename());
+
+            if (!is_null($new_filename)) {
+                $fm->rename($tmp_dir . FileManager::DS . $fileInfo->getFilename(),
+                    $tmp_dir . FileManager::DS . $new_filename);
+            }
+            $this->checkFileType($fm, $tmp_dir);
+        }
+    }
+
+    /**
+     * Create a temporary directory
+     *
+     * @param Filesystem $fm
+     * @return string
+     */
+    public function createTmpDir(Filesystem $fm)
+    {
+        $tmp_dir = $this->getFileManager()->getUploadPath() . FileManager::DS . "." . strtotime("now");
+        $fm->mkdir($tmp_dir);
+
+        return $tmp_dir;
+    }
+
+    /**
+     * Check if the file type is an valid file type by extracting the zip inside a temporary directory
+     *
+     * @param Filesystem $fm
+     * @param string     $tmp_dir
+     * @throws \Exception - when mimetype is not valid
+     */
+    public function checkFileType(Filesystem $fm, $tmp_dir)
+    {
+        $di = new \RecursiveDirectoryIterator($tmp_dir);
+        foreach (new \RecursiveIteratorIterator($di) as $filepath => $file) {
+            $fileInfo = new FileInfo($filepath, $this->getFileManager());
+            $mime_valid = $this->checkMimeType($fileInfo);
+            if ($mime_valid !== true) {
+                $fm->remove($tmp_dir);
+                $this->getFileManager()->throwError($mime_valid, 500);
+            }
+        }
+        $fm->remove($tmp_dir);
+    }
+
+    /**
+     * Check the mimetype
+     *
+     * @param FileInfo $fileInfo
+     * @return true
+     */
+    public function checkMimeType($fileInfo)
+    {
+        $mime = $fileInfo->getMimetype();
+        if ($mime != 'directory' && !in_array($mime, $this->getFileManager()->getExtensionsAllowed())) {
+            return 'Mime type "' . $mime . '" not allowed for file "' . $fileInfo->getFilename() . '"';
+        }
+
+        return true;
+    }
 
     /**
      * Move the file
@@ -194,101 +266,33 @@ class FileManagerDriver
      */
     public function extractZip(FileInfo $fileInfo)
     {
-        $chapterZip = new \ZipArchive ();
 
         $fm = new Filesystem();
         $tmp_dir = $this->createTmpDir($fm);
-
-        if ($chapterZip->open($fileInfo->getFilepath())) {
-
-            $chapterZip->extractTo($tmp_dir);
-            $chapterZip->close();
-        }
+        $this->extractZipTo($fileInfo->getFilepath(), $tmp_dir);
 
         $this->checkFileType($fm, $tmp_dir);
 
         try {
-            if ($chapterZip->open($fileInfo->getFilepath())) {
-
-                $chapterZip->extractTo($this->getFileManager()->getDir());
-                $chapterZip->close();
-            }
+            $this->extractZipTo($fileInfo->getFilepath(), $this->getFileManager()->getDir());
         } catch (\Exception $e) {
             $this->getFileManager()->throwError("Cannot extract zip", 500, $e);
         }
     }
 
     /**
-     * Validate the files to check if they have a valid file type
+     * Extract the zip to the given location
      *
-     * @param FileInfo      $fileInfo
-     * @param null|string   $new_filename
+     * @param string $filepath
+     * @param string $destination
      */
-    public function validateFile(FileInfo $fileInfo, $new_filename = null)
+    private function extractZipTo($filepath, $destination)
     {
-        $file_path = $fileInfo->getWebPath(true);
-        if (!is_dir($file_path)) {
-            $fm = new Filesystem();
-            $tmp_dir = $this->createTmpDir($fm);
-            $fm->copy($file_path, $tmp_dir . FileManager::DS . $fileInfo->getFilename());
+        $chapterZip = new \ZipArchive ();
 
-            if (!is_null($new_filename)) {
-                $fm->rename($tmp_dir . FileManager::DS . $fileInfo->getFilename(),
-                    $tmp_dir . FileManager::DS . $new_filename);
-            }
-            $this->checkFileType($fm, $tmp_dir);
+        if ($chapterZip->open($filepath)) {
+            $chapterZip->extractTo($destination);
+            $chapterZip->close();
         }
-    }
-
-    /**
-     * Create a temporary directory
-     *
-     * @param Filesystem $fm
-     * @return string
-     */
-    public function createTmpDir(Filesystem $fm)
-    {
-        $tmp_dir = $this->getFileManager()->getUploadPath() . FileManager::DS . "." . strtotime("now");
-        $fm->mkdir($tmp_dir);
-
-        return $tmp_dir;
-    }
-
-    /**
-     * Check if the filetype is an valid filetype by extracting the zip inside a temporary directory
-     *
-     * @param Filesystem $fm
-     * @param string     $tmp_dir
-     * @throws \Exception - when mimetype is not valid
-     */
-    public function checkFileType(Filesystem $fm, $tmp_dir)
-    {
-        $di = new \RecursiveDirectoryIterator($tmp_dir);
-        foreach (new \RecursiveIteratorIterator($di) as $filepath => $file) {
-            $fileInfo = new FileInfo($filepath, $this->getFileManager());
-            $mime_valid = $this->checkMimeType($fileInfo);
-            if ($mime_valid !== true) {
-                $fm->remove($tmp_dir);
-                $this->getFileManager()->throwError($mime_valid, 500);
-            }
-        }
-        $fm->remove($tmp_dir);
-    }
-
-    /**
-     * Check the mimetype
-     *
-     * @param FileInfo $fileInfo
-     * @return true
-     */
-    public function checkMimeType($fileInfo)
-    {
-        $mime = $fileInfo->getMimetype();
-        if ($mime != 'directory') {
-            if (!in_array($mime, $this->getFileManager()->getExtensionsAllowed())) {
-                return 'Mime type "' . $mime . '" not allowed for file "' . $fileInfo->getFilename() . '"';
-            }
-        }
-        return true;
     }
 }
