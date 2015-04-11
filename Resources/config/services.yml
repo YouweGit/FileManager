@@ -1,24 +1,18 @@
-parameters:
-  youwe_file_manager_service_class: Youwe\FileManagerBundle\Services\FileManagerService
-  youwe_file_manager_driver_class: Youwe\FileManagerBundle\Driver\FileManagerDriver
-  youwe_file_manager_manager_class: Youwe\FileManagerBundle\Model\FileManager
-  youwe_file_manager_twig_class: Youwe\FileManagerBundle\Twig\FileManagerExtension
-
 services:
   youwe.file_manager.service:
-    class: %youwe_file_manager_service_class%
+    class: Youwe\FileManagerBundle\Services\FileManagerService
     arguments: ["@service_container"]
 
   youwe.file_manager.driver:
-    class: %youwe_file_manager_driver_class%
+    class: Youwe\FileManagerBundle\Driver\FileManagerDriver
     arguments: ["@service_container"]
 
   youwe.file_manager.manager:
-    class: %youwe_file_manager_manager_class%
+    class: Youwe\FileManagerBundle\Model\FileManager
     arguments: ["@service_container"]
 
   youwe.twig.extension:
-    class: %youwe_file_manager_twig_class%
+    class: Youwe\FileManagerBundle\Twig\FileManagerExtension
     arguments: ["@service_container"]
     tags:
       - { name: twig.extension }
