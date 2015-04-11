@@ -16,6 +16,10 @@
     background: #EDF4FF;
 }
 
+.panel-info > .panel-heading,
+.panel-info > .panel-heading > button,
+.modal-dialog .modal-header,
+.modal-dialog .modal-header > button,
 .panel-default > .panel-heading {
     background: #93B9FF;
     color: #ffffff;

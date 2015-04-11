@@ -13,7 +13,16 @@
     color: #333333;
 }
 
+.modal-dialog .modal-header,
+.panel-info > .panel-heading{
+    border:0;
+}
+.panel-info > .panel-heading,
+.panel-info > .panel-heading > button,
+.modal-dialog .modal-header,
+.modal-dialog .modal-header > button,
 .panel-default > .panel-heading {
+    color:#333;
     background: #e5e5e5;
 }
 

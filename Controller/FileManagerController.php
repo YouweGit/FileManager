@@ -60,14 +60,18 @@ class FileManagerController extends Controller {
     }
 
     /**
-     * @Route("/delete", name="youwe_file_manager_delete", options={"expose":true})
+     * @Route("/delete", name="youwe_file_manager_delete", defaults={"action":1}, options={"expose":true})
+     * @Route("/move", name="youwe_file_manager_move", defaults={"action":2}, options={"expose":true})
+     * @Route("/extract", name="youwe_file_manager_extract", defaults={"action":6}, options={"expose":true})
+     *
      * @Method("POST")
      *
      * @param Request $request
-     * @throws \Exception
+     * @param int     $action
+     *
      * @return bool
      */
-    public function deleteFileAction(Request $request)
+    public function requestsPostsFileActions(Request $request, $action)
     {
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
@@ -77,30 +81,21 @@ class FileManagerController extends Controller {
         $parameters = $this->container->getParameter('youwe_file_manager');
         $fileManager = $service->createFileManager($parameters, $driver);
 
-        $response = new Response();
-
         $fileManager->resolveRequest($request);
-        try{
-            $dir = $service->getFilePath($fileManager);
-            $fileManager->setDir($dir);
-            $service->checkToken($request->get('token'));
-            $fileManager->deleteFile();
-        } catch(\Exception $e){
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-        }
-        return $response;
+        return $service->handleAction($fileManager, $request, $action, true);
     }
+
 
     /**
-     * @Route("/move", name="youwe_file_manager_move", options={"expose":true})
-     * @Method("POST")
+     * @Route("/fileinfo", name="youwe_file_manager_fileinfo", defaults={"action":7}, options={"expose":true})
      *
      * @param Request $request
+     * @param int     $action
+     *
      * @throws \Exception
      * @return bool
      */
-    public function moveFileAction(Request $request)
+    public function requestsGetFileActions(Request $request, $action)
     {
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
@@ -110,24 +105,9 @@ class FileManagerController extends Controller {
         $parameters = $this->container->getParameter('youwe_file_manager');
         $fileManager = $service->createFileManager($parameters, $driver);
 
-        $response = new Response();
-
         $fileManager->resolveRequest($request);
-
-        try{
-            $dir = $service->getFilePath($fileManager);
-            $fileManager->setDir($dir);
-            $service->checkToken($request->get('token'));
-            $fileManager->checkPath();
-            $fileManager->moveFile();
-        } catch(\Exception $e){
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-        }
-
-        return $response;
+        return $service->handleAction($fileManager, $request, $action, false);
     }
-
 
     /**
      * @Route("/copy/{type}", name="youwe_file_manager_copy", options={"expose":true})
@@ -215,70 +195,6 @@ class FileManagerController extends Controller {
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
         }
 
-        return $response;
-    }
-
-    /**
-     * @Route("/extract", name="youwe_file_manager_extract", options={"expose":true})
-     * @Method("POST")
-     *
-     * @param Request $request
-     * @throws \Exception
-     * @return bool
-     */
-    public function extractZipAction(Request $request)
-    {
-        /** @var FileManagerService $service */
-        $service = $this->get('youwe.file_manager.service');
-
-        /** @var FileManagerDriver $driver */
-        $driver = $this->get('youwe.file_manager.driver');
-        $parameters = $this->container->getParameter('youwe_file_manager');
-        $fileManager = $service->createFileManager($parameters, $driver);
-
-        $response = new Response();
-
-        $fileManager->resolveRequest($request);
-
-        try{
-            $dir = $service->getFilePath($fileManager);
-            $fileManager->setDir($dir);
-            $service->checkToken($request->get('token'));
-            $fileManager->extractZip();
-        } catch(\Exception $e){
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-        }
-        return $response;
-    }
-
-    /**
-     * @Route("/fileinfo", name="youwe_file_manager_fileinfo", options={"expose":true})
-     *
-     * @param Request $request
-     * @throws \Exception
-     * @return bool
-     */
-    public function FileInfoAction(Request $request)
-    {
-        /** @var FileManagerService $service */
-        $service = $this->get('youwe.file_manager.service');
-
-        /** @var FileManagerDriver $driver */
-        $driver = $this->get('youwe.file_manager.driver');
-        $parameters = $this->container->getParameter('youwe_file_manager');
-        $fileManager = $service->createFileManager($parameters, $driver);
-
-        $fileManager->resolveRequest($request);
-
-        try{
-            $response = new JsonResponse();
-            $response->setData(json_encode($fileManager->getCurrentFile()->toArray()));
-        } catch(\Exception $e){
-            $response = new Response();
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-        }
         return $response;
     }
 

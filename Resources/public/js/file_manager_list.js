@@ -316,7 +316,7 @@ var FileManager = function () {
                     dir_path: activePath,
                     filename: file_name
                 };
-            ajaxRequest(route, data, "POST", false, false);
+            ajaxRequest(route, data, "POST", false);
         },
 
         /**
@@ -328,7 +328,7 @@ var FileManager = function () {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath
                 };
-            ajaxRequest(route, data, "POST", false, false);
+            ajaxRequest(route, data, "POST", false);
         },
 
         /**

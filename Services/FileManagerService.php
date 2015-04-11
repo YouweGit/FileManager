@@ -5,6 +5,9 @@ namespace Youwe\FileManagerBundle\Services;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 use Youwe\FileManagerBundle\Model\FileInfo;
@@ -356,5 +359,43 @@ class FileManagerService
             }
         }
         return $dirs;
+    }
+
+    /**
+     * @param FileManager $fileManager
+     * @param Request     $request
+     * @param             $action
+     * @return Response
+     */
+    public function handleAction(FileManager $fileManager, Request $request, $action, $check_token)
+    {
+        $response = new Response();
+        try{
+            $dir = $this->getFilePath($fileManager);
+            $fileManager->setDir($dir);
+            $fileManager->checkPath();
+            if($check_token) {
+                $this->checkToken($request->get('token'));
+            }
+            switch($action){
+                case FileManager::FILE_DELETE:
+                    $fileManager->deleteFile();
+                    break;
+                case FileManager::FILE_MOVE:
+                    $fileManager->moveFile();
+                    break;
+                case FileManager::FILE_EXTRACT:
+                    $fileManager->extractZip();
+                    break;
+                case FileManager::FILE_INFO:
+                    $response = new JsonResponse();
+                    $response->setData(json_encode($fileManager->getCurrentFile()->toArray()));
+                    break;
+            }
+        } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+        return $response;
     }
 }

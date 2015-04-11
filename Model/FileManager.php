@@ -19,6 +19,13 @@ class FileManager
 {
     const DS = "/";
     const FILTER_NAME = 'YouweFileManager';
+    const FILE_DELETE = 1;
+    const FILE_MOVE = 2;
+    const FILE_COPY= 3;
+    const FILE_CUT = 4;
+    const FILE_PASTE = 5;
+    const FILE_EXTRACT = 6;
+    const FILE_INFO = 7;
 
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
