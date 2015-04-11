@@ -1,1 +1,72 @@
-/** default style is defined in file_manager_list.css **/
+#FileManagerContainer .FileManagerList .FileManagerHead {
+    background: #829BC8;
+    color: #ffffff;
+}
+
+#FileManagerContainer .FileManagerHead svg path.svg-text,
+#FileManagerContainer .FileManagerHead svg path.svg-logo {
+    fill: #ffffff;
+}
+
+/**
+ * Directory List Colors
+ */
+#FileManagerContainer .FileManagerListDirs,
+#Dirs .panel {
+    background: #EDF4FF;
+}
+
+.panel-default > .panel-heading {
+    background: #93B9FF;
+    color: #ffffff;
+}
+
+#FileManagerContainer .FileManagerListDirs a,
+#FileManagerContainer .FileManagerListDirs .panel-body > ul {
+    color: #333333;
+}
+
+/**
+ * Directory List Border Colors
+ */
+#Dirs .space-fill,
+#FileManagerContainer .FileManagerListDirs li:not(.dir_active) > span > span.yw_file_manager_dir,
+#FileManagerContainer .FileManagerListDirs li.dir_active > span > span.yw_file_manager_dir {
+    border-color: #93B9FF;
+}
+
+/**
+ * Button colors
+ */
+.ToolBar .btn {
+    background-color: inherit;
+    color: inherit;
+    border-color: inherit;
+}
+
+.ToolBar .btn:hover,
+.ToolBar .btn:active,
+.ToolBar .btn:focus {
+    background-color: #86a8e8;
+    color: inherit;
+    border-color: inherit;
+}
+
+/**
+* Files action colors
+*/
+div.block_row:hover,
+#FileManagerContainer .FileManagerListItems .item_selected #FileManagerContainer .FileManagerListItems .item_selected:hover,
+div.block_row.item_selected:hover,
+{
+    background-color: #c9ddff;
+}
+
+#FileManagerContainer .FileManagerListItems .item_selected {
+    background-color: #a8c2ff;
+}
+
+#FileManagerContainer .FileManagerListItems .item_selected:hover,
+div.block_row.item_selected:hover {
+    background-color: #99b0e8;
+}

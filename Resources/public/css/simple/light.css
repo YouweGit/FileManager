@@ -1,12 +1,7 @@
 #FileManagerContainer .FileManagerList .FileManagerHead {
-    background: #5d5d5d;
-    border-bottom: 1px solid #555555;
-    color: #ffffff;
-}
-
-
-#FileManagerContainer .FileManagerHead svg path.svg-text{
-    fill: #ffffff;
+    background: #e0e0e0;
+    border-bottom: 1px solid #bbbbbb;
+    color: #333333;
 }
 
 /**
@@ -14,15 +9,18 @@
  */
 #Dirs .panel,
 #FileManagerContainer .FileManagerListDirs {
-    background: #747474;
-    color: #ffffff;
+    background: #f5f5f5;
+    color: #333333;
 }
 
 .panel-default > .panel-heading {
-    background: #6b6b6b;
-    color: #ffffff;
+    background: #e5e5e5;
 }
 
+#FileManagerContainer .FileManagerListDirs a,
+#FileManagerContainer .FileManagerListDirs .panel-body > ul {
+    color: #333333;
+}
 
 /**
  * Directory List Border Colors

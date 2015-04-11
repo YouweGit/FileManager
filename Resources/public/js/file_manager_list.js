@@ -431,10 +431,9 @@ var FileManager = function () {
          * Setup the directory list by opening the current directory and the parents.
          */
         directoryListSetup = function () {
-            var el = $(this);
             // Prepare the directory list
             $(selectors.containers.container).find(selectors.containers.fileManagerDirsElement + ' li > ul').each(function () {
-                setListItems(el);
+                setListItems($(this));
             });
 
             // Display or hide the directory's
@@ -465,12 +464,12 @@ var FileManager = function () {
          * @param {jQuery} el
          */
         setListItems = function (el) {
-            var pl = el.parent('li'),
+            var pl = el.closest('li'),
                 su = el.remove();
             pl.addClass(selectors.classes.folder);
 
-            pl.find('.' + selectors.classes.toggleDir).wrapInner('<a>').find('a').click(function () {
-                el.find('i').toggleClass(selectors.classes.arrows.down + " " + selectors.classes.arrows.right);
+            pl.find('.' + selectors.classes.toggleDir).click(function () {
+                $(this).find('i').toggleClass(selectors.classes.arrows.down + " " + selectors.classes.arrows.right);
 
                 su.slideToggle();
                 if (el.find('i').hasClass(selectors.classes.arrows.right)) {
@@ -590,6 +589,7 @@ var FileManager = function () {
                     info_table = info_modal.find("table");
                     info_table.find("td." + selectors.classes.datarow).each(function () {
                         $(this).html(json_data[$(this).attr("data-category")]);
+                        $(this).attr('title', json_data[$(this).attr("data-category")]);
                     });
                     info_modal.modal({show: true});
                     return true;
