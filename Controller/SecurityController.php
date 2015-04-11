@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ * @author  Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class SecurityController
  * @package Youwe\FileManagerBundle\Controller
@@ -30,10 +30,10 @@ class SecurityController extends Controller
         $upath = realpath($root);
         $ufiledir = $upath . '/' . $name;
         $ufilepath = realpath($ufiledir);
-        if(substr($ufilepath, 0, strlen($upath)) == $upath)
-        {
+        if (substr($ufilepath, 0, strlen($upath)) == $upath) {
             $r = new Response(file_get_contents($ufilepath));
             $r->headers->set('Content-Type', finfo_file($finfo, $ufilepath));
+
             return $r;
         }
 

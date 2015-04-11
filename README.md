@@ -1,114 +1,37 @@
 
-YouweFileManagerBundle
-==================
+Documentation
+-------------
 
-Requirements
-============
-This bundle requires the [FOS Routing Bundle](https://github.com/FriendsOfSymfony/FOSJsRoutingBundle)
+[Read the Documentation for master](Resources/doc/index.md)
 
 Installation
-============
+------------
 
-Step 1: Download the Bundle
----------------------------
+All the installation instructions are located in the documentation.
 
-Open a command console, enter your project directory and execute the
-following command to download the latest stable version of this bundle:
+About
+------------
 
-```bash
-$ composer require youwe/file-manager-bundle
-```
+The YouweFileManagerBundle is a secure open-source filemanager build with Symfony2.
+File Managers are mostly a security leak in a web-application, that is why the security is the main focus of this bundle.
 
-This command requires you to have Composer installed globally, as explained
-in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
-of the Composer documentation.
+This bundle also supports CKEditor.
 
-Step 2: Enable the Bundle
--------------------------
+Available Interfaces
+------------
 
-Then, enable the bundle by adding the following line in the `app/AppKernel.php`
-file of your project:
+Default
 
-```php
-<?php
-// app/AppKernel.php
+![File Manager Interface](Resources/doc/images/default-style.png?raw "Default")
 
-// ...
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
+Light
 
-            new Youwe\FileManagerBundle\YouweFileManagerBundle(),
-        );
+![File Manager Interface](Resources/doc/images/light-style.png?raw "Light")
 
-        // ...
-    }
+Dark
 
-    // ...
-}
-```
+![File Manager Interface](Resources/doc/images/dark-style.png?raw "Dark")
 
-Add the bundle in the the assetic config:
+Youwe
 
-```yml
-# Assetic Configuration
-assetic:
-    #...
-    bundles:        [ YouweFileManagerBundle, ... ]
-    #...
-
-```
-
-Step 3: Set the config
--------------------------
-
-Default Configuration:
-```yml
-youwe_file_manager:
-    upload_path: %kernel.root_dir%/../web/uploads
-    full_exception: false
-    theme:
-        css: "/bundles/youwefilemanager/css/simple/default.css"
-        template: "YouweFileManagerBundle:FileManager:file_manager.html.twig"
-    mime_allowed:
-        - 'image/png'
-        - 'image/jpg'
-        - 'image/jpeg'
-        - 'image/gif'
-        - 'application/pdf'
-        - 'application/ogg'
-        - 'video/mp4'
-        - 'application/zip'
-        - 'multipart/x-zip'
-        - 'application/rar'
-        - 'application/x-rar-compressed'
-        - 'application/x-zip-compressed'
-        - 'application/tar'
-        - 'application/x-tar'
-        - 'text/plain'
-        - 'text/x-asm'
-        - 'application/octet-stream'
-```
-Optional config:
-
-* <b>theme</b><br>
-  You can define your own css and template here.
-* <b>full_exceptions</b><br>
-  If true, display the exception in the error modal.<br>
-  When you leave it false, it will not show the full error for security reasons.<br>
-  You don't want to give an user all the information, like the full upload path, when something went wrong.
-
-Step 4: Add the route
--------------------------
-
-Add the route to the routing.yml
-
-```yml
-youwe_file_manager:
-    resource: "@YouweFileManagerBundle/Resources/config/routing.yml"
-    options:
-        expose: true
-```
+![File Manager Interface](Resources/doc/images/youwe-style.png?raw "Youwe")

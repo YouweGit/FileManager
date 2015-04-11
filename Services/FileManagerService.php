@@ -21,6 +21,10 @@ use Youwe\FileManagerBundle\Model\FileManager;
  */
 class FileManagerService
 {
+    const DISPLAY_TYPE_BLOCK = 'file_body_block';
+    const DISPLAY_TYPE_LIST = 'file_body_list';
+    const DISPLAY_TYPE_SESSION = 'display_file_manager_type';
+
     /** @var  FileManager */
     private $file_manager;
 
@@ -313,18 +317,18 @@ class FileManagerService
         $file_manager = $this->getFileManager();
         /** @var Session $session */
         $session = $this->container->get('session');
-        $display_type = $session->get('display_file_manager_type');
+        $display_type = $session->get(self::DISPLAY_TYPE_SESSION);
 
         if ($this->container->get('request')->get('display_type') != null) {
             $display_type = $this->container->get('request')->get('display_type');
-            $session->set('display_file_manager_type', $display_type);
+            $session->set(self::DISPLAY_TYPE_SESSION, $display_type);
         } else {
             if (is_null($display_type)) {
-                $display_type = "file_body_block";
+                $display_type = self::DISPLAY_TYPE_BLOCK;
             }
         }
 
-        $file_body_display = $display_type !== null ? $display_type : "file_body_block";
+        $file_body_display = $display_type !== null ? $display_type : self::DISPLAY_TYPE_BLOCK;
 
         $file_manager->setDisplayType($file_body_display);
     }
