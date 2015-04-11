@@ -66,6 +66,7 @@ Step 3: Set the config
 -------------------------
 
 Default Configuration:
+
 ```yml
 youwe_file_manager:
     upload_path: %kernel.root_dir%/../web/uploads
@@ -92,6 +93,7 @@ youwe_file_manager:
         - 'text/x-asm'
         - 'application/octet-stream'
 ```
+
 Optional config:
 
 * <b>theme</b><br>
