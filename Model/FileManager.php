@@ -163,7 +163,7 @@ class FileManager
      *
      * @param string $root
      */
-    private function setUploadPath($root)
+    public function setUploadPath($root)
     {
         $this->upload_path = $root;
     }
@@ -187,7 +187,7 @@ class FileManager
      *
      * @param string $theme_template
      */
-    private function setThemeTemplate($theme_template)
+    public function setThemeTemplate($theme_template)
     {
         $this->theme_template = $theme_template;
     }
@@ -261,7 +261,7 @@ class FileManager
     /**
      * Set the correct web path
      */
-    private function setWebPath()
+    public function setWebPath()
     {
         $folder_array = explode(self::DS, $this->getUploadPath());
         $this->web_path = array_pop($folder_array);
@@ -457,7 +457,7 @@ class FileManager
      *
      * @param string $theme_css
      */
-    private function setThemeCss($theme_css)
+    public function setThemeCss($theme_css)
     {
         $this->theme_css = $theme_css;
     }
