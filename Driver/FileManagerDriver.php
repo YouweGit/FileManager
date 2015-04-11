@@ -269,12 +269,11 @@ class FileManagerDriver
 
         $fm = new Filesystem();
         $tmp_dir = $this->createTmpDir($fm);
-        $this->extractZipTo($fileInfo->getFilepath(), $tmp_dir);
-
+        $this->extractZipTo($fileInfo->getFilepath(true), $tmp_dir);
         $this->checkFileType($fm, $tmp_dir);
 
         try {
-            $this->extractZipTo($fileInfo->getFilepath(), $this->getFileManager()->getDir());
+            $this->extractZipTo($fileInfo->getFilepath(true), $this->getFileManager()->getDir());
         } catch (\Exception $e) {
             $this->getFileManager()->throwError("Cannot extract zip", 500, $e);
         }

@@ -353,6 +353,7 @@ class FileManager
     {
         $this->setDirPath($request->get('dir_path'));
         $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
+
         $target_file = $request->get('target_file');
         if(isset($target_file)){
             $this->setTargetFile($request->get('target_file'));
