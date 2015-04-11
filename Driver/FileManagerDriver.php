@@ -286,7 +286,7 @@ class FileManagerDriver
      * @param string $filepath
      * @param string $destination
      */
-    private function extractZipTo($filepath, $destination)
+    public function extractZipTo($filepath, $destination)
     {
         $chapterZip = new \ZipArchive ();
 
