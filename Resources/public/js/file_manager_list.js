@@ -316,7 +316,7 @@ var FileManager = function () {
                     dir_path: activePath,
                     filename: file_name
                 };
-            ajaxRequest(route, data, "POST");
+            ajaxRequest(route, data, "POST", false, false);
         },
 
         /**
@@ -328,7 +328,7 @@ var FileManager = function () {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath
                 };
-            ajaxRequest(route, data, "POST");
+            ajaxRequest(route, data, "POST", false, false);
         },
 
         /**
@@ -1075,7 +1075,7 @@ var FileManager = function () {
                 }
             }).keyup(function(e) {
                 var is_disabled = $(selectors.buttons.delete).attr("disabled");
-                if (e.keyCode === 46 && is_disabled !== "disabled") {
+                if (e.keyCode === 46 && is_disabled !== "disabled" && !active_input) {
                     var file_name = selected_item.find("span:first").html();
                     deleteConfirm(file_name);
                 }
