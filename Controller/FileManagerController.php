@@ -96,9 +96,12 @@ class FileManagerController extends Controller {
      */
     public function requestsGetFileActions(Request $request, $action)
     {
+
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
-
+        if(!$service->isAllowedGetAction($action)){
+            throw new \Exception("Method Not Allowed", 405);
+        }
         /** @var FileManagerDriver $driver */
         $driver = $this->get('youwe.file_manager.driver');
         $parameters = $this->container->getParameter('youwe_file_manager');

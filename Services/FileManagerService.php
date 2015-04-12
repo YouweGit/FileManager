@@ -369,6 +369,7 @@ class FileManagerService
      * @param FileManager $fileManager
      * @param Request     $request
      * @param             $action
+     * @param             $check_token
      * @return Response
      */
     public function handleAction(FileManager $fileManager, Request $request, $action, $check_token)
@@ -401,5 +402,17 @@ class FileManagerService
             $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
         }
         return $response;
+    }
+
+    /**
+     * @param $action
+     * @return bool
+     */
+    public function isAllowedGetAction($action)
+    {
+        $allowed_get = array(
+            FileManager::FILE_INFO
+        );
+        return in_array($action, $allowed_get);
     }
 }
