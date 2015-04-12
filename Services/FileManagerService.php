@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use Symfony\Component\Security\Csrf\CsrfToken;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 use Youwe\FileManagerBundle\Model\FileInfo;
 use Youwe\FileManagerBundle\Model\FileManager;
@@ -117,17 +119,17 @@ class FileManagerService
     /**
      * Check if the form token is valid
      *
-     * @param string $token
-     * @throws \Exception
-     *
-     * @todo Fix the Deprecated function
+     * @param string $request_token
+     * @throws InvalidCsrfTokenException when the token is not valid
      */
-    public function checkToken($token)
+    public function checkToken($request_token)
     {
-        $valid = $this->container->get('form.csrf_provider')->isCsrfTokenValid('file_manager', $token);
+        $token_manager = $this->container->get('security.csrf.token_manager');
+        $token = new CsrfToken('file_manager', $request_token);
+        $valid = $token_manager->isTokenValid($token);
 
         if (!$valid) {
-            throw new \Exception("Invalid token", 500);
+            throw new InvalidCsrfTokenException();
         }
     }
 
@@ -366,6 +368,8 @@ class FileManagerService
     }
 
     /**
+     * Validates the request and handles the action
+     *
      * @param FileManager $fileManager
      * @param Request     $request
      * @param             $action
@@ -405,6 +409,7 @@ class FileManagerService
     }
 
     /**
+     * Check if the requested action is allowed in a get method
      * @param $action
      * @return bool
      */
