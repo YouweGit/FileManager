@@ -8,6 +8,8 @@ use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
+use Youwe\FileManagerBundle\Events\FileEvent;
+use Youwe\FileManagerBundle\YouweFileManagerEvents;
 
 /**
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
@@ -388,7 +390,9 @@ class FileManager
      */
     public function extractZip()
     {
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_EXTRACTED);
         $this->getDriver()->extractZip($this->getCurrentFile());
+        $this->event(YouweFileManagerEvents::AFTER_FILE_EXTRACTED);
     }
 
     /**
@@ -398,8 +402,10 @@ class FileManager
      */
     public function pasteFile($type)
     {
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_PASTED);
         $this->resolveImage();
         $this->getDriver()->pasteFile($this->getCurrentFile(), $type);
+        $this->event(YouweFileManagerEvents::AFTER_FILE_PASTED);
     }
 
     /**
@@ -407,9 +413,12 @@ class FileManager
      */
     public function moveFile()
     {
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_MOVED);
         $target_full_path = $this->getTargetFile()->getFilepath(true);
         $this->getDriver()->moveFile($this->getCurrentFile(), $target_full_path);
         $this->resolveImage();
+        $this->getCurrentFile()->setFilepath($target_full_path);
+        $this->event(YouweFileManagerEvents::AFTER_FILE_MOVED);
     }
 
     /**
@@ -417,8 +426,19 @@ class FileManager
      */
     public function deleteFile()
     {
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_DELETED);
         $this->resolveImage();
         $this->getDriver()->deleteFile($this->getCurrentFile());
+        $this->event(YouweFileManagerEvents::AFTER_FILE_DELETED);
+    }
+
+    /**
+     * @param string $event_key
+     */
+    public function event($event_key){
+        $dispatcher = $this->container->get('event_dispatcher');
+        $event = new FileEvent($this->getCurrentFile());
+        $dispatcher->dispatch($event_key, $event);
     }
 
     /**

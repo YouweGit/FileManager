@@ -12,8 +12,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
+use Youwe\FileManagerBundle\Events\DirectoryEvent;
 use Youwe\FileManagerBundle\Model\FileInfo;
 use Youwe\FileManagerBundle\Model\FileManager;
+use Youwe\FileManagerBundle\YouweFileManagerEvents;
 
 /**
  * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
@@ -182,6 +184,9 @@ class FileManagerService
         /** @var FileManagerDriver $driver */
         $driver = $this->container->get('youwe.file_manager.driver');
 
+        $this->getFileManager()->event(YouweFileManagerEvents::BEFORE_FILE_UPLOADED);
+        var_dump('no before?');
+        die;
         /** @var UploadedFile $file */
         foreach ($files as $file) {
             $extension = $file->guessExtension();
@@ -195,6 +200,8 @@ class FileManagerService
                 $this->getFileManager()->throwError("Mimetype is not allowed", 500);
             }
         }
+
+        $this->getFileManager()->event(YouweFileManagerEvents::AFTER_FILE_UPLOADED);
     }
 
     /**
@@ -207,7 +214,9 @@ class FileManagerService
         $new_dir = $form->get("newfolder")->getData();
         $new_dir = str_replace("../", "", $new_dir);
 
+        $this->getFileManager()->event(YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED);
         $this->getFileManager()->getDriver()->makeDir($new_dir);
+        $this->getFileManager()->event(YouweFileManagerEvents::AFTER_FILE_DIR_CREATED);
     }
 
     /**
@@ -245,7 +254,9 @@ class FileManagerService
 
         $filepath = $filemanager->DirTrim($dir, $org_filename, true);
         $filemanager->setCurrentFile($filepath);
+        $filemanager->event(YouweFileManagerEvents::BEFORE_FILE_RENAMED);
         $driver->renameFile($filemanager->getCurrentFile(), $new_filename);
+        $filemanager->event(YouweFileManagerEvents::AFTER_FILE_RENAMED);
     }
 
     /**
@@ -410,6 +421,7 @@ class FileManagerService
 
     /**
      * Check if the requested action is allowed in a get method
+     *
      * @param $action
      * @return bool
      */

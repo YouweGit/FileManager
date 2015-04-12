@@ -16,3 +16,38 @@ services:
     arguments: ["@service_container"]
     tags:
       - { name: twig.extension }
+
+  file.event.upload:
+     class: Youwe\FileManagerBundle\EventListener\FileUploaded
+     tags:
+        - {name:kernel.event_subscriber}
+
+  file.event.rename:
+     class: Youwe\FileManagerBundle\EventListener\FileRenamed
+     tags:
+        - {name:kernel.event_subscriber}
+
+  file.event.move:
+     class: Youwe\FileManagerBundle\EventListener\FileMoved
+     tags:
+        - {name:kernel.event_subscriber}
+
+  file.event.deleted:
+     class: Youwe\FileManagerBundle\EventListener\FileDeleted
+     tags:
+        - {name:kernel.event_subscriber}
+
+  file.event.extract:
+     class: Youwe\FileManagerBundle\EventListener\FileExtracted
+     tags:
+        - {name:kernel.event_subscriber}
+
+  file.event.pasted:
+     class: Youwe\FileManagerBundle\EventListener\FilePasted
+     tags:
+        - {name:kernel.event_subscriber}
+
+  file.event.directory.created:
+     class: Youwe\FileManagerBundle\EventListener\FileDirCreated
+     tags:
+        - {name:kernel.event_subscriber}
