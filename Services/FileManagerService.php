@@ -185,8 +185,7 @@ class FileManagerService
         $driver = $this->container->get('youwe.file_manager.driver');
 
         $this->getFileManager()->event(YouweFileManagerEvents::BEFORE_FILE_UPLOADED);
-        var_dump('no before?');
-        die;
+        
         /** @var UploadedFile $file */
         foreach ($files as $file) {
             $extension = $file->guessExtension();
