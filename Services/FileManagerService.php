@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
-use Youwe\FileManagerBundle\Events\DirectoryEvent;
 use Youwe\FileManagerBundle\Model\FileInfo;
 use Youwe\FileManagerBundle\Model\FileManager;
 use Youwe\FileManagerBundle\YouweFileManagerEvents;
