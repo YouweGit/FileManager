@@ -62,6 +62,7 @@ class FileManagerController extends Controller {
      * @Route("/delete", name="youwe_file_manager_delete", defaults={"action":1}, options={"expose":true})
      * @Route("/move", name="youwe_file_manager_move", defaults={"action":2}, options={"expose":true})
      * @Route("/extract", name="youwe_file_manager_extract", defaults={"action":6}, options={"expose":true})
+     * @Route("/rename", name="youwe_file_manager_rename", defaults={"action":8}, options={"expose":true})
      *
      * @Method("POST")
      *
@@ -80,7 +81,7 @@ class FileManagerController extends Controller {
         $parameters = $this->container->getParameter('youwe_file_manager');
         $fileManager = $service->createFileManager($parameters, $driver);
 
-        $fileManager->resolveRequest($request);
+        $fileManager->resolveRequest($request, $action);
         return $service->handleAction($fileManager, $request, $action, true);
     }
 

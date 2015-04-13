@@ -13,31 +13,31 @@ use Symfony\Component\HttpFoundation\Request;
 class FileInfo
 {
     /** @var  string */
-    private $filename;
+    private $filename = null;
 
     /** @var  string */
-    private $filepath;
+    private $filepath = null;
 
     /** @var  string */
-    private $mimetype;
+    private $mimetype = null;
 
     /** @var  string */
-    private $readableType;
+    private $readableType = null;
 
     /** @var  string */
-    private $file_size;
+    private $file_size = null;
 
     /** @var  string */
-    private $modified;
+    private $modified = null;
 
     /** @var  int */
-    private $usages;
+    private $usages = null;
 
     /** @var  string */
-    private $fileclass;
+    private $fileclass = null;
 
     /** @var  string */
-    private $web_path;
+    private $web_path = null;
 
     /** @var bool */
     private $is_dir = false;
@@ -53,6 +53,10 @@ class FileInfo
 
     /** @var FileManager */
     private $file_manager;
+
+    /** @var string */
+    private $extension = null;
+
 
     /**
      * This array is used for getting the readable file type
@@ -212,20 +216,25 @@ class FileInfo
      */
     public function __construct($filepath, FileManager $file_manager)
     {
-        $filename = basename($filepath);
-
-        $file_size = $this->calculateReadableSize(filesize($filepath));
-        $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
         $this->setFileManager($file_manager);
+        $filename = basename($filepath);
+        $this->setFilename($filename);
+
+        if(file_exists($filepath)){
+            $file_size = $this->calculateReadableSize(filesize($filepath));
+            $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
+            $extension = $org_extension = pathinfo($filepath, PATHINFO_EXTENSION);
+            $this->guessMimeType($filepath);
+            $this->setExtension($extension);
+            $this->setModified($file_modification);
+            $this->setFileSize($file_size);
+            $this->setUsages($file_manager);
+        }
+
         $web_path = $file_manager->DirTrim($file_manager->getPath($file_manager->getDirPath()), $filename, true);
 
-        $this->setFilename($filename);
-        $this->guessMimeType($filepath);
-        $this->setModified($file_modification);
-        $this->setFileSize($file_size);
         $this->setFilepath(dirname($filepath));
         $this->setWebPath($web_path);
-        $this->setUsages($file_manager);
     }
 
     /**
@@ -373,6 +382,26 @@ class FileInfo
     public function setFilepath($filepath)
     {
         $this->filepath = $filepath;
+    }
+
+    /**
+     * Returns the extension of the file
+     *
+     * @return string
+     */
+    public function getExtension()
+    {
+        return $this->extension;
+    }
+
+    /**
+     * Sets the extension of the file
+     *
+     * @param string $extension
+     */
+    public function setExtension($extension)
+    {
+        $this->extension = $extension;
     }
 
     /**

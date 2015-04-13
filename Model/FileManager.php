@@ -28,6 +28,9 @@ class FileManager
     const FILE_PASTE = 5;
     const FILE_EXTRACT = 6;
     const FILE_INFO = 7;
+    const FILE_RENAME = 8;
+    const FILE_UPLOAD = 9;
+    const FILE_NEW_DIR = 10;
 
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
@@ -349,16 +352,24 @@ class FileManager
     /**
      * Set the required request parameters to the object
      *
-     * @param Request $request
+     * @param Request  $request
+     * @param int|null $action
      */
-    public function resolveRequest(Request $request)
+    public function resolveRequest(Request $request, $action = null)
     {
         $this->setDirPath($request->get('dir_path'));
+
         $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
 
-        $target_file = $request->get('target_file');
+        if($action === self::FILE_RENAME){
+            $extension = $this->getCurrentFile()->getExtension();
+            $target_file = $request->get('target_file') . "." . $extension;
+        } else {
+            $target_file = $request->get('target_file');
+        }
+
         if(isset($target_file)){
-            $this->setTargetFile($request->get('target_file'));
+            $this->setTargetFile($target_file);
         }
     }
 
@@ -376,6 +387,9 @@ class FileManager
         }
 
         $real_path = realpath($path);
+        if(!$real_path){
+            $real_path = realpath(dirname($path));
+        }
         $upload_path = realpath($this->getUploadPath());
 
         if (strcasecmp($real_path, $upload_path > 0)) {
@@ -430,6 +444,18 @@ class FileManager
         $this->resolveImage();
         $this->getDriver()->deleteFile($this->getCurrentFile());
         $this->event(YouweFileManagerEvents::AFTER_FILE_DELETED);
+    }
+
+    /**
+     * Rename the file
+     */
+    public function renameFile()
+    {
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_RENAMED); $target_full_path = $this->getTargetFile()->getFilepath(true);
+        $this->getDriver()->renameFile($this->getCurrentFile(), $target_full_path);
+        $this->resolveImage();
+        $this->getCurrentFile()->setFilepath($target_full_path);
+        $this->event(YouweFileManagerEvents::AFTER_FILE_RENAMED);
     }
 
     /**

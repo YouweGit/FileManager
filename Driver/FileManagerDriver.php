@@ -105,7 +105,7 @@ class FileManagerDriver
             $this->validateFile($fileInfo, $new_file_name);
             $fm = new Filesystem();
             $old_file = $fileInfo->getFilepath(true);
-            $new_file = $this->getFileManager()->DirTrim($this->getFileManager()->getDir(), $new_file_name, true);
+            $new_file = $new_file_name;
             $fm->rename($old_file, $new_file);
         } catch (\Exception $e) {
             $this->getFileManager()->throwError("Cannot rename file or directory", 500, $e);
@@ -127,6 +127,7 @@ class FileManagerDriver
             $fm->copy($file_path, $tmp_dir . FileManager::DS . $fileInfo->getFilename());
 
             if (!is_null($new_filename)) {
+                $new_filename = basename($new_filename);
                 $fm->rename($tmp_dir . FileManager::DS . $fileInfo->getFilename(),
                     $tmp_dir . FileManager::DS . $new_filename);
             }
