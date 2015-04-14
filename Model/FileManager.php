@@ -21,16 +21,16 @@ class FileManager
 {
     const DS = "/";
     const FILTER_NAME = 'YouweFileManager';
-    const FILE_DELETE = 1;
-    const FILE_MOVE = 2;
-    const FILE_COPY= 3;
-    const FILE_CUT = 4;
-    const FILE_PASTE = 5;
-    const FILE_EXTRACT = 6;
-    const FILE_INFO = 7;
-    const FILE_RENAME = 8;
-    const FILE_UPLOAD = 9;
-    const FILE_NEW_DIR = 10;
+    const FILE_DELETE = 'action-file-delete';
+    const FILE_MOVE = 'action-file-move';
+    const FILE_COPY= 'action-file-copy';
+    const FILE_CUT = 'action-file-cut';
+    const FILE_PASTE = 'action-file-paste';
+    const FILE_EXTRACT = 'action-file-extract';
+    const FILE_INFO = 'action-file-info';
+    const FILE_RENAME = 'action-file-rename';
+    const FILE_UPLOAD = 'action-file-upload';
+    const FILE_NEW_DIR = 'action-file-new-dir';
 
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
