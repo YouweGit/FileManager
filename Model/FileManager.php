@@ -19,6 +19,13 @@ class FileManager
 {
     const DS = "/";
     const FILTER_NAME = 'YouweFileManager';
+    const FILE_DELETE = 1;
+    const FILE_MOVE = 2;
+    const FILE_COPY= 3;
+    const FILE_CUT = 4;
+    const FILE_PASTE = 5;
+    const FILE_EXTRACT = 6;
+    const FILE_INFO = 7;
 
     /** @var  array - All allowed extensions */
     private $extensions_allowed;
@@ -163,7 +170,7 @@ class FileManager
      *
      * @param string $root
      */
-    private function setUploadPath($root)
+    public function setUploadPath($root)
     {
         $this->upload_path = $root;
     }
@@ -187,7 +194,7 @@ class FileManager
      *
      * @param string $theme_template
      */
-    private function setThemeTemplate($theme_template)
+    public function setThemeTemplate($theme_template)
     {
         $this->theme_template = $theme_template;
     }
@@ -261,7 +268,7 @@ class FileManager
     /**
      * Set the correct web path
      */
-    private function setWebPath()
+    public function setWebPath()
     {
         $folder_array = explode(self::DS, $this->getUploadPath());
         $this->web_path = array_pop($folder_array);
@@ -346,6 +353,7 @@ class FileManager
     {
         $this->setDirPath($request->get('dir_path'));
         $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
+
         $target_file = $request->get('target_file');
         if(isset($target_file)){
             $this->setTargetFile($request->get('target_file'));
@@ -457,7 +465,7 @@ class FileManager
      *
      * @param string $theme_css
      */
-    private function setThemeCss($theme_css)
+    public function setThemeCss($theme_css)
     {
         $this->theme_css = $theme_css;
     }

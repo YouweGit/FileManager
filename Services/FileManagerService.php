@@ -5,6 +5,9 @@ namespace Youwe\FileManagerBundle\Services;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 use Youwe\FileManagerBundle\Model\FileInfo;
@@ -18,6 +21,10 @@ use Youwe\FileManagerBundle\Model\FileManager;
  */
 class FileManagerService
 {
+    const DISPLAY_TYPE_BLOCK = 'file_body_block';
+    const DISPLAY_TYPE_LIST = 'file_body_list';
+    const DISPLAY_TYPE_SESSION = 'display_file_manager_type';
+
     /** @var  FileManager */
     private $file_manager;
 
@@ -29,6 +36,24 @@ class FileManagerService
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * @param FileManager $file_manager
+     */
+    public function setFileManager($file_manager)
+    {
+        $this->file_manager = $file_manager;
+    }
+
+    /**
+     * Returns the file manager object
+     *
+     * @return FileManager
+     */
+    public function getFileManager()
+    {
+        return $this->file_manager;
     }
 
     /**
@@ -88,21 +113,14 @@ class FileManagerService
         return $dir;
     }
 
-    /**
-     * Returns the file manager object
-     *
-     * @return FileManager
-     */
-    public function getFileManager()
-    {
-        return $this->file_manager;
-    }
 
     /**
      * Check if the form token is valid
      *
      * @param string $token
      * @throws \Exception
+     *
+     * @todo Fix the Deprecated function
      */
     public function checkToken($token)
     {
@@ -155,7 +173,7 @@ class FileManagerService
      * @param array $files
      * @return bool
      */
-    private function handleUploadFiles($files)
+    public function handleUploadFiles($files)
     {
         $dir = $this->getFileManager()->getDir();
 
@@ -172,7 +190,7 @@ class FileManagerService
             if (in_array($file->getClientMimeType(), $this->getFileManager()->getExtensionsAllowed())) {
                 $driver->handleUploadedFiles($file, $extension, $dir);
             } else {
-                $driver->throwError("Mimetype is not allowed", 500);
+                $this->getFileManager()->throwError("Mimetype is not allowed", 500);
             }
         }
     }
@@ -182,7 +200,7 @@ class FileManagerService
      *
      * @param Form $form
      */
-    private function handleNewDir($form)
+    public function handleNewDir($form)
     {
         $new_dir = $form->get("newfolder")->getData();
         $new_dir = str_replace("../", "", $new_dir);
@@ -196,31 +214,36 @@ class FileManagerService
      * @param Form $form
      * @throws \Exception
      */
-    private function handleRenameFile($form)
+    public function handleRenameFile($form)
     {
         $dir = $this->getFileManager()->getDir();
+
         /** @var FileManagerDriver $driver */
         $driver = $this->container->get('youwe.file_manager.driver');
 
         $new_file = $form->get('rename_file')->getData();
         $new_file = str_replace("../", "", $new_file);
 
+        $filemanager = $this->getFileManager();
+
         $org_filename = $form->get('origin_file_name')->getData();
-        $path = $this->getFileManager()->DirTrim($dir, $org_filename);
+        $path = $filemanager->DirTrim($dir, $org_filename);
         $org_extension = pathinfo($path, PATHINFO_EXTENSION);
 
         if ($org_extension != "") {
             $new_filename = $new_file . "." . $org_extension;
         } else {
-            $path = $this->getFileManager()->DirTrim($dir, $org_filename, true);
+            $path = $filemanager->DirTrim($dir, $org_filename, true);
             if (is_dir($path)) {
                 $new_filename = $new_file;
             } else {
                 throw new \Exception("Extension is empty", 500);
             }
         }
-        $fileInfo = new FileInfo($this->getFileManager()->DirTrim($dir, $org_filename, true), $this->getFileManager());
-        $driver->renameFile($fileInfo, $new_filename);
+
+        $filepath = $filemanager->DirTrim($dir, $org_filename, true);
+        $filemanager->setCurrentFile($filepath);
+        $driver->renameFile($filemanager->getCurrentFile(), $new_filename);
     }
 
     /**
@@ -294,18 +317,18 @@ class FileManagerService
         $file_manager = $this->getFileManager();
         /** @var Session $session */
         $session = $this->container->get('session');
-        $display_type = $session->get('display_file_manager_type');
+        $display_type = $session->get(self::DISPLAY_TYPE_SESSION);
 
         if ($this->container->get('request')->get('display_type') != null) {
             $display_type = $this->container->get('request')->get('display_type');
-            $session->set('display_file_manager_type', $display_type);
+            $session->set(self::DISPLAY_TYPE_SESSION, $display_type);
         } else {
             if (is_null($display_type)) {
-                $display_type = "file_body_block";
+                $display_type = self::DISPLAY_TYPE_BLOCK;
             }
         }
 
-        $file_body_display = $display_type !== null ? $display_type : "file_body_block";
+        $file_body_display = $display_type !== null ? $display_type : self::DISPLAY_TYPE_BLOCK;
 
         $file_manager->setDisplayType($file_body_display);
     }
@@ -313,7 +336,7 @@ class FileManagerService
     /**
      * Returns the directory tree of the given path. This will loop itself untill it has all directories
      *
-     * @param string $dir_files - Files
+     * @param array  $dir_files - Files
      * @param string $dir       - Current Directory
      * @param string $dir_path  - Current Directory Path
      * @param array  $dirs      - Directories
@@ -340,5 +363,56 @@ class FileManagerService
             }
         }
         return $dirs;
+    }
+
+    /**
+     * @param FileManager $fileManager
+     * @param Request     $request
+     * @param             $action
+     * @param             $check_token
+     * @return Response
+     */
+    public function handleAction(FileManager $fileManager, Request $request, $action, $check_token)
+    {
+        $response = new Response();
+        try{
+            $dir = $this->getFilePath($fileManager);
+            $fileManager->setDir($dir);
+            $fileManager->checkPath();
+            if($check_token) {
+                $this->checkToken($request->get('token'));
+            }
+            switch($action){
+                case FileManager::FILE_DELETE:
+                    $fileManager->deleteFile();
+                    break;
+                case FileManager::FILE_MOVE:
+                    $fileManager->moveFile();
+                    break;
+                case FileManager::FILE_EXTRACT:
+                    $fileManager->extractZip();
+                    break;
+                case FileManager::FILE_INFO:
+                    $response = new JsonResponse();
+                    $response->setData(json_encode($fileManager->getCurrentFile()->toArray()));
+                    break;
+            }
+        } catch(\Exception $e){
+            $response->setContent($e->getMessage());
+            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
+        }
+        return $response;
+    }
+
+    /**
+     * @param $action
+     * @return bool
+     */
+    public function isAllowedGetAction($action)
+    {
+        $allowed_get = array(
+            FileManager::FILE_INFO
+        );
+        return in_array($action, $allowed_get);
     }
 }

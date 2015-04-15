@@ -262,8 +262,7 @@ var FileManager = function () {
         getUrlParam = function (paramName) {
             var reParam = new RegExp('(?:[?&]|&amp;)' + paramName + '=([^&]+)', 'i'),
                 match = window.location.search.match(reParam);
-            return (match && match.length > 1
-            ) ? match[1] : '';
+            return (match && match.length > 1) ? match[1] : '';
         },
 
         /**
@@ -299,7 +298,8 @@ var FileManager = function () {
         downloadFile = function (file_element) {
             var file_name = file_element.find("span").html(),
                 dir_path = (activePath !== null ? activePath : ""),
-                route = Routing.generate(routes.download, {"token": $(selectors.fields.token).val(), "path": dir_path+"/"+file_name});
+                route_params = {"token": $(selectors.fields.token).val(), "path": dir_path+"/"+file_name},
+                route = Routing.generate(routes.download, route_params);
             window.open(route, '_blank');
         },
 
@@ -316,7 +316,7 @@ var FileManager = function () {
                     dir_path: activePath,
                     filename: file_name
                 };
-            ajaxRequest(route, data, "POST");
+            ajaxRequest(route, data, "POST", false);
         },
 
         /**
@@ -328,7 +328,7 @@ var FileManager = function () {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath
                 };
-            ajaxRequest(route, data, "POST");
+            ajaxRequest(route, data, "POST", false);
         },
 
         /**
@@ -391,13 +391,13 @@ var FileManager = function () {
          * Check if the form should be submitted for renaming the file or directory
          */
         submitRenameFile = function () {
-            var element = $(selectors.fields.renameItem),
+            var el = $(selectors.fields.renameItem),
                 data = $(selectors.fields.form).serialize(),
                 route = Routing.generate(routes.list, {"dir_path": activePath});
             if (rename_origin_ext !== "") {
                 rename_origin_ext = "." + rename_origin_ext;
             }
-            if (element.val() !== "" && element.val() + rename_origin_ext !== rename_origin_name) {
+            if (el.val() !== "" && el.val() + rename_origin_ext !== rename_origin_name) {
                 if (!ajaxRequest(route, data, "POST")) {
                     rename_element.html(rename_origin_name);
                     active_input = false;
@@ -431,29 +431,9 @@ var FileManager = function () {
          * Setup the directory list by opening the current directory and the parents.
          */
         directoryListSetup = function () {
-
             // Prepare the directory list
             $(selectors.containers.container).find(selectors.containers.fileManagerDirsElement + ' li > ul').each(function () {
-                var parent_li = $(this).parent('li'),
-                    sub_ul = $(this).remove();
-                parent_li.addClass(selectors.classes.folder);
-
-                parent_li.find('.' + selectors.classes.toggleDir).wrapInner('<a>').find('a').click(function () {
-                    $(this).find('i').toggleClass(selectors.classes.arrows.down + " " + selectors.classes.arrows.right);
-                    //addActiveClass(parent_li);
-                    sub_ul.slideToggle();
-                    if ($(this).find('i').hasClass(selectors.classes.arrows.right)) {
-                        sub_ul.each(function () {
-                            $(this).find("ul").slideUp();
-                            if ($(this).find("i").hasClass(selectors.classes.arrows.down)) {
-                                $(this).find("i").removeClass(selectors.classes.arrows.down);
-                                $(this).find("i").addClass(selectors.classes.arrows.right);
-                            }
-                        });
-                    }
-                });
-
-                parent_li.append(sub_ul);
+                setListItems($(this));
             });
 
             // Display or hide the directory's
@@ -461,13 +441,58 @@ var FileManager = function () {
             active_ul.show();
 
             active_dir.parents("ul").show();
-            active_dir.parents("li").each(function () {
-                $(this).find("span." + selectors.classes.toggleDir + " i:first").removeClass(selectors.classes.arrows.right);
-                $(this).find("span." + selectors.classes.toggleDir + " i:first").addClass(selectors.classes.arrows.down);
+
+            active_dir.parents("li").each(setFirstListItemsArrowsDown);
+
+            var si = active_span.find("span." + selectors.classes.toggleDir + " i");
+            si.removeClass(selectors.classes.arrows.right);
+            si.addClass(selectors.classes.arrows.down);
+        },
+
+        /**
+         * Set the element arrows down
+         */
+        setFirstListItemsArrowsDown = function () {
+            var c_el = $(this);
+            var fi = c_el.find("span." + selectors.classes.toggleDir + " i:first");
+            fi.removeClass(selectors.classes.arrows.right);
+            fi.addClass(selectors.classes.arrows.down);
+        },
+
+        /**
+         * Set the list items and arrows
+         * @param {jQuery} el
+         */
+        setListItems = function (el) {
+            var pl = el.closest('li'),
+                su = el.remove();
+            pl.addClass(selectors.classes.folder);
+
+            pl.find('.' + selectors.classes.toggleDir).click(function () {
+                $(this).find('i').toggleClass(selectors.classes.arrows.down + " " + selectors.classes.arrows.right);
+
+                su.slideToggle();
+                if (el.find('i').hasClass(selectors.classes.arrows.right)) {
+                    updateListArrows(el, su);
+                }
             });
 
-            active_span.find("span." + selectors.classes.toggleDir + " i").removeClass(selectors.classes.arrows.right);
-            active_span.find("span." + selectors.classes.toggleDir + " i").addClass(selectors.classes.arrows.down);
+            pl.append(su);
+        },
+
+        /**
+         * Set the arrows of the list items
+         * @param {jQuery} el
+         * @param {jQuery} sub_ul
+         */
+        updateListArrows = function(el, sub_ul){
+            sub_ul.each(function () {
+                el.find("ul").slideUp();
+                if (el.find("i").hasClass(selectors.classes.arrows.down)) {
+                    el.find("i").removeClass(selectors.classes.arrows.down);
+                    el.find("i").addClass(selectors.classes.arrows.right);
+                }
+            });
         },
 
         /**
@@ -564,6 +589,7 @@ var FileManager = function () {
                     info_table = info_modal.find("table");
                     info_table.find("td." + selectors.classes.datarow).each(function () {
                         $(this).html(json_data[$(this).attr("data-category")]);
+                        $(this).attr('title', json_data[$(this).attr("data-category")]);
                     });
                     info_modal.modal({show: true});
                     return true;
@@ -1049,7 +1075,7 @@ var FileManager = function () {
                 }
             }).keyup(function(e) {
                 var is_disabled = $(selectors.buttons.delete).attr("disabled");
-                if (e.keyCode === 46 && is_disabled !== "disabled") {
+                if (e.keyCode === 46 && is_disabled !== "disabled" && !active_input) {
                     var file_name = selected_item.find("span:first").html();
                     deleteConfirm(file_name);
                 }

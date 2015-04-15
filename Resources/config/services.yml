@@ -2,9 +2,15 @@ services:
   youwe.file_manager.service:
     class: Youwe\FileManagerBundle\Services\FileManagerService
     arguments: ["@service_container"]
+
   youwe.file_manager.driver:
     class: Youwe\FileManagerBundle\Driver\FileManagerDriver
     arguments: ["@service_container"]
+
+  youwe.file_manager.manager:
+    class: Youwe\FileManagerBundle\Model\FileManager
+    arguments: ["@service_container"]
+
   youwe.twig.extension:
     class: Youwe\FileManagerBundle\Twig\FileManagerExtension
     arguments: ["@service_container"]

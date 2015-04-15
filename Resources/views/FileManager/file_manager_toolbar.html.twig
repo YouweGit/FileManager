@@ -16,7 +16,7 @@
     <button id="rename_btn" type="button" title="Rename" class="btn btn-default">
         <span class="fa fa-pencil"></span>
     </button>
-    <button id="copy_btn" type="button" class="btn btn-default {% if copy_file and not copy_file['cut'] %}active{% endif %}" title="{% spaceless %}
+    <button id="copy_btn" type="button" class="btn btn-default" title="{% spaceless %}
                 {% if copy_file and not copy_file['cut'] %}
                     Copy file. Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}
                 {% else %}
@@ -25,7 +25,7 @@
             {% endspaceless %}">
         <span class="fa fa-copy"></span>
     </button>
-    <button id="cut_btn" type="button" class="btn btn-default {% if copy_file and copy_file['cut'] %}active{% endif %}"  title="{% spaceless %}
+    <button id="cut_btn" type="button" class="btn btn-default"  title="{% spaceless %}
                 {% if copy_file and copy_file['cut'] %}
                    Cut file. Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}
                 {% else %}

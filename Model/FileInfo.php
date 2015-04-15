@@ -501,7 +501,7 @@ class FileInfo
      *
      * @param FileManager $file_manager
      */
-    private function setUsages(FileManager $file_manager)
+    public function setUsages(FileManager $file_manager)
     {
         $usages = array();
         $usage_class = $file_manager->getUsagesClass();

@@ -1,74 +1,67 @@
-/*
- *  dark
+#FileManagerContainer .FileManagerList .FileManagerHead {
+    background: #5d5d5d;
+    border-bottom: 1px solid #555555;
+    color: #ffffff;
+}
+
+
+#FileManagerContainer .FileManagerHead svg path.svg-text{
+    fill: #ffffff;
+}
+
+/**
+ * Directory List Colors
  */
-
-#FileManagerContainer .FileManagerList .FileManagerHead
-{
-    background: #333;
-    color: #fefefe;
-    
-    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.9);
-       -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.9);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.9);
-}
-
-#FileManagerContainer .FileManagerListDirs,
 #Dirs .panel,
-#Dirs .panel-default>.panel-heading
-{
-    background: #3f3f3f;
-    border-radius: 0;
-    color: #fefefe;
+#FileManagerContainer .FileManagerListDirs {
+    background: #747474;
+    color: #ffffff;
 }
 
-#Dirs .panel-default>.panel-heading
-{
-    background: #333;
+.modal-dialog .modal-header,
+.panel-info > .panel-heading {
+    border:0;
 }
 
-#FileManagerContainer .FileManagerListDirs a,
-#FileManagerContainer .FileManagerListDirs .panel-body > ul
-{
-    color: #fefefe;
+.panel-info > .panel-heading,
+.panel-info > .panel-heading > button,
+.modal-dialog .modal-header,
+.modal-dialog .modal-header > button,
+.panel-default > .panel-heading {
+    background: #6b6b6b;
+    color: #ffffff;
 }
 
-#FileManagerContainer .FileManagerListDirs li.dir_active > span > span.yw_file_manager_dir
-{
-    background: #333;
-    
-    -webkit-box-shadow: 0 0 20px 0 rgba(211,211,211,0.9) inset;
-       -moz-box-shadow: 0 0 20px 0 rgba(211,211,211,0.9) inset;
-            box-shadow: 0 0 20px 0 rgba(211,211,211,0.9) inset;
+
+/**
+ * Directory List Border Colors
+ */
+#Dirs .space-fill,
+#FileManagerContainer .FileManagerListDirs li:not(.dir_active) > span > span.yw_file_manager_dir,
+#FileManagerContainer .FileManagerListDirs li.dir_active > span > span.yw_file_manager_dir {
+    border-color: #bdbdbd;
 }
 
-#FileManagerContainer .FileManagerListItems
-{
-    -webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
-       -moz-box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
-            box-shadow: 0 0 15px 5px rgba(0,0,0,0.9);
-}
-
-.ToolBar .btn:hover,
-.ToolBar .btn:active,
-.ToolBar .btn:focus,
-#paste_btn.hasFile
-{
-    -webkit-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
-       -moz-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
-            box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
-}
-
-#paste_btn.disabled
-{
-    opacity: 0.35;
+/**
+* Files action colors
+*/
+div.block_row:hover {
+    background-color: #f2f2f2;
 }
 
 div.block_row:hover,
-#FileManagerContainer .FileManagerListItems .item_selected 
+#FileManagerContainer .FileManagerListItems .item_selected
 #FileManagerContainer .FileManagerListItems .item_selected:hover,
-div.block_row.item_selected:hover
+div.block_row.item_selected:hover,
 {
-    -webkit-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
-       -moz-box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
-            box-shadow: 0 0 10px 0 rgba(51,51,51,0.8) inset;
+    background-color: #e0e0e0;
+}
+
+#FileManagerContainer .FileManagerListItems .item_selected {
+    background-color: #e3e3e3;
+}
+
+#FileManagerContainer .FileManagerListItems .item_selected:hover,
+div.block_row.item_selected:hover {
+    background-color: #dcdcdc;
 }
