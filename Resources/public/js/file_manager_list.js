@@ -160,6 +160,7 @@ var FileManager = function () {
         routes = {
             delete: "youwe_file_manager_delete",
             list: "youwe_file_manager_list",
+            rename: "youwe_file_manager_rename",
             extract: "youwe_file_manager_extract",
             fileInfo: "youwe_file_manager_fileinfo",
             move: "youwe_file_manager_move",
@@ -392,11 +393,18 @@ var FileManager = function () {
          */
         submitRenameFile = function () {
             var el = $(selectors.fields.renameItem),
-                data = $(selectors.fields.form).serialize(),
-                route = Routing.generate(routes.list, {"dir_path": activePath});
+                route = Routing.generate(routes.rename, {"dir_path": activePath});
             if (rename_origin_ext !== "") {
                 rename_origin_ext = "." + rename_origin_ext;
             }
+            var target_name = $(selectors.fields.form).find("#"+selectors.ids.renameItem).val(),
+                target_path =  root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
+                data = {
+                    token: $(selectors.fields.token).val(),
+                    dir_path: activePath,
+                    filename: rename_origin_name,
+                    target_file: target_path
+                };
             if (el.val() !== "" && el.val() + rename_origin_ext !== rename_origin_name) {
                 if (!ajaxRequest(route, data, "POST")) {
                     rename_element.html(rename_origin_name);

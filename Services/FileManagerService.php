@@ -108,6 +108,7 @@ class FileManagerService
             $file_manager->checkPath($dir);
             if (!is_null($target_file)) {
                 $file_manager->checkPath($target_file->getFilepath(true));
+
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
@@ -159,8 +160,6 @@ class FileManagerService
                     $this->handleUploadFiles($files);
                 } elseif (!is_null($form->get("newfolder")->getData())) {
                     $this->handleNewDir($form);
-                } elseif (!is_null($form->get('rename_file')->getData())) {
-                    $this->handleRenameFile($form);
                 } else {
                     throw new \Exception("Undefined action", 500);
                 }
@@ -215,46 +214,6 @@ class FileManagerService
         $this->getFileManager()->event(YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED);
         $this->getFileManager()->getDriver()->makeDir($new_dir);
         $this->getFileManager()->event(YouweFileManagerEvents::AFTER_FILE_DIR_CREATED);
-    }
-
-    /**
-     * Handle the file rename request
-     *
-     * @param Form $form
-     * @throws \Exception
-     */
-    public function handleRenameFile($form)
-    {
-        $dir = $this->getFileManager()->getDir();
-
-        /** @var FileManagerDriver $driver */
-        $driver = $this->container->get('youwe.file_manager.driver');
-
-        $new_file = $form->get('rename_file')->getData();
-        $new_file = str_replace("../", "", $new_file);
-
-        $filemanager = $this->getFileManager();
-
-        $org_filename = $form->get('origin_file_name')->getData();
-        $path = $filemanager->DirTrim($dir, $org_filename);
-        $org_extension = pathinfo($path, PATHINFO_EXTENSION);
-
-        if ($org_extension != "") {
-            $new_filename = $new_file . "." . $org_extension;
-        } else {
-            $path = $filemanager->DirTrim($dir, $org_filename, true);
-            if (is_dir($path)) {
-                $new_filename = $new_file;
-            } else {
-                throw new \Exception("Extension is empty", 500);
-            }
-        }
-
-        $filepath = $filemanager->DirTrim($dir, $org_filename, true);
-        $filemanager->setCurrentFile($filepath);
-        $filemanager->event(YouweFileManagerEvents::BEFORE_FILE_RENAMED);
-        $driver->renameFile($filemanager->getCurrentFile(), $new_filename);
-        $filemanager->event(YouweFileManagerEvents::AFTER_FILE_RENAMED);
     }
 
     /**
@@ -404,6 +363,9 @@ class FileManagerService
                     break;
                 case FileManager::FILE_EXTRACT:
                     $fileManager->extractZip();
+                    break;
+                case FileManager::FILE_RENAME:
+                    $fileManager->renameFile();
                     break;
                 case FileManager::FILE_INFO:
                     $response = new JsonResponse();
