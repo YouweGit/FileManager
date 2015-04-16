@@ -3,7 +3,9 @@
 namespace Youwe\FileManagerBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,16 +13,15 @@ use Youwe\FileManagerBundle\Driver\FileManagerDriver;
 use Youwe\FileManagerBundle\Form\Type\FileManagerType;
 use Youwe\FileManagerBundle\Model\FileManager;
 use Youwe\FileManagerBundle\Services\FileManagerService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ * @author  Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class FileManagerController
  * @package Youwe\FileManager\Controller
  */
-class FileManagerController extends Controller {
+class FileManagerController extends Controller
+{
 
     /**
      * @Route(
@@ -60,7 +61,7 @@ class FileManagerController extends Controller {
      * @param Request $request
      * @param string  $dir_path
      * @return Response
-     * @throws \Exception
+     * @throws \Exception when form is not valid
      */
     public function uploadFileAction(Request $request, $dir_path)
     {
@@ -87,6 +88,7 @@ class FileManagerController extends Controller {
                 throw new \Exception("Form is invalid", 500);
             }
         }
+
         return new Response();
     }
 
@@ -98,6 +100,7 @@ class FileManagerController extends Controller {
      * @Route("/new-dir", name="youwe_file_manager_new_dir", defaults={"action":FileManager::FILE_NEW_DIR}, options={"expose":true})
      * @Route("/copy", name="youwe_file_manager_copy", defaults={"action":FileManager::FILE_COPY}, options={"expose":true})
      * @Route("/cut", name="youwe_file_manager_cut", defaults={"action":FileManager::FILE_CUT}, options={"expose":true})
+     * @Route("/paste", name="youwe_file_manager_paste", defaults={"action":FileManager::FILE_PASTE}, options={"expose":true})
      *
      * @Method("POST")
      *
@@ -108,6 +111,10 @@ class FileManagerController extends Controller {
      */
     public function requestsPostsFileActions(Request $request, $action)
     {
+        if ($action === FileManager::FILE_PASTE && !$this->get('session')->has('copy')) {
+            return new Response();
+        }
+
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
 
@@ -117,6 +124,7 @@ class FileManagerController extends Controller {
         $fileManager = $service->createFileManager($parameters, $driver);
 
         $fileManager->resolveRequest($request, $action);
+
         return $service->handleAction($fileManager, $request, $action, true);
     }
 
@@ -135,7 +143,7 @@ class FileManagerController extends Controller {
 
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
-        if(!$service->isAllowedGetAction($action)){
+        if (!$service->isAllowedGetAction($action)) {
             throw new \Exception("Method Not Allowed", 405);
         }
         /** @var FileManagerDriver $driver */
@@ -145,49 +153,6 @@ class FileManagerController extends Controller {
 
         $fileManager->resolveRequest($request);
         return $service->handleAction($fileManager, $request, $action, false);
-    }
-
-    /**
-     * @Route("/paste", name="youwe_file_manager_paste", options={"expose":true})
-     * @Method("POST")
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function pasteFileAction(Request $request)
-    {
-        $response = new Response();
-        $copy_session = $this->get('session')->get('copy');
-        if(is_null($copy_session)){
-            return $response;
-        }
-
-        /** @var FileManagerService $service */
-        $service = $this->get('youwe.file_manager.service');
-
-        /** @var FileManagerDriver $driver */
-        $driver = $this->get('youwe.file_manager.driver');
-        $parameters = $this->container->getParameter('youwe_file_manager');
-        $fileManager = $service->createFileManager($parameters, $driver);
-
-        $fileManager->resolveRequest($request);
-        try{
-            $dir = $service->getFilePath($fileManager);
-            $service->checkToken($request->get('token'));
-            $sources = $this->get('session')->get('copy');
-            $fileManager->setDir($sources['source_dir']);
-            $fileManager->setDirPath($sources['display_dir']);
-            $fileManager->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
-            $fileManager->setTargetFilepath($dir . FileManager::DS . $sources['source_file']);
-            $type = $sources['type'];
-            $fileManager->pasteFile($type);
-            $this->get('session')->remove('copy');
-        } catch(\Exception $e){
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-        }
-
-        return $response;
     }
 
     /**
@@ -219,8 +184,9 @@ class FileManagerController extends Controller {
         $response = new Response();
 
         $response->headers->set('Content-Type', 'mime/type');
-        $response->headers->set('Content-Disposition', 'attachment;filename="'.$filename . '"');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $filename . '"');
         $response->setContent($content);
+
         return $response;
     }
 }

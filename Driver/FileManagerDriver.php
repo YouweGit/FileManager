@@ -119,7 +119,8 @@ class FileManagerDriver
      */
     public function validateFile(FileInfo $fileInfo, $new_filename = null)
     {
-        $file_path = $fileInfo->getWebPath(true);
+        $file_path = $fileInfo->getFilePath(true);
+
         if (!is_dir($file_path)) {
             $fm = new Filesystem();
             $tmp_dir = $this->createTmpDir($fm);
@@ -130,6 +131,7 @@ class FileManagerDriver
                 $fm->rename($tmp_dir . FileManager::DS . $fileInfo->getFilename(),
                     $tmp_dir . FileManager::DS . $new_filename);
             }
+
             $this->checkFileType($fm, $tmp_dir);
         }
     }
@@ -166,6 +168,7 @@ class FileManagerDriver
                 $this->getFileManager()->throwError($mime_valid, 500);
             }
         }
+
         $fm->remove($tmp_dir);
     }
 
@@ -216,21 +219,20 @@ class FileManagerDriver
     public function pasteFile(FileInfo $fileInfo, $type)
     {
         try {
-            $target_dir = $this->getFileManager()->getTargetFileName();
-            $target_file = $this->getFileManager()->getTargetFilepath();
-
-            $target_file_path = $this->getFileManager()->DirTrim($target_dir, $target_file, true);
+            $target_file_path = $this->getFileManager()->getTargetFile()->getFilepath(true);
             $source_file_path = $fileInfo->getFilepath(true);
+            
             $this->validateFile($fileInfo);
-
             $fileSystem = new Filesystem();
             if (!file_exists($target_file_path)) {
                 $fileSystem->copy($source_file_path, $target_file_path);
 
+                var_dump($type);
                 if ($type == FileManager::FILE_CUT) {
                     $fileSystem->remove($source_file_path);
                 }
             } else {
+                $target_file = $this->getFileManager()->getTargetFile()->getFilename();
                 throw new \Exception(sprintf("File '%s' already exists", $target_file));
             }
         } catch (\Exception $e) {
