@@ -44,18 +44,50 @@ class FileManagerController extends Controller {
         $fileManager = $service->createFileManager($parameters, $driver, $dir_path);
 
         $form = $this->createForm(new FileManagerType);
-        try{
-            $service->handleFormSubmit($form);
-        } catch(\Exception $e){
-            $response = new Response();
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-            return $response;
-        }
-
         $renderParameters = $service->getRenderOptions($form);
 
         return $this->render($fileManager->getThemeTemplate(), $renderParameters);
+    }
+
+    /**
+     * @Route(
+     *      "/upload/{dir_path}",
+     *      name="youwe_file_manager_upload",
+     *      options={"expose":true},
+     *      requirements={"dir_path":".+"}
+     * )
+     *
+     * @param Request $request
+     * @param string  $dir_path
+     * @return Response
+     * @throws \Exception
+     */
+    public function uploadFileAction(Request $request, $dir_path)
+    {
+        /** @var FileManagerService $service */
+        $service = $this->get('youwe.file_manager.service');
+
+        /** @var FileManagerDriver $driver */
+        $driver = $this->get('youwe.file_manager.driver');
+        $parameters = $this->container->getParameter('youwe_file_manager');
+        $fileManager = $service->createFileManager($parameters, $driver, $dir_path);
+
+        $form = $this->createForm(new FileManagerType);
+
+        if ('POST' === $request->getMethod()) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $fileManager->checkPath();
+
+                $files = $form->get("file")->getData();
+                if (!is_null($files)) {
+                    $service->handleUploadFiles($files);
+                }
+            } else {
+                throw new \Exception("Form is invalid", 500);
+            }
+        }
+        return new Response();
     }
 
     /**
@@ -63,6 +95,9 @@ class FileManagerController extends Controller {
      * @Route("/move", name="youwe_file_manager_move", defaults={"action":FileManager::FILE_MOVE}, options={"expose":true})
      * @Route("/extract", name="youwe_file_manager_extract", defaults={"action":FileManager::FILE_EXTRACT}, options={"expose":true})
      * @Route("/rename", name="youwe_file_manager_rename", defaults={"action":FileManager::FILE_RENAME}, options={"expose":true})
+     * @Route("/new-dir", name="youwe_file_manager_new_dir", defaults={"action":FileManager::FILE_NEW_DIR}, options={"expose":true})
+     * @Route("/copy", name="youwe_file_manager_copy", defaults={"action":FileManager::FILE_COPY}, options={"expose":true})
+     * @Route("/cut", name="youwe_file_manager_cut", defaults={"action":FileManager::FILE_CUT}, options={"expose":true})
      *
      * @Method("POST")
      *
@@ -113,50 +148,6 @@ class FileManagerController extends Controller {
     }
 
     /**
-     * @Route("/copy/{type}", name="youwe_file_manager_copy", options={"expose":true})
-     * @Method("POST")
-     *
-     * @param Request $request
-     * @param string  $type copy or cut
-     * @return Response
-     */
-    public function copyFileAction(Request $request, $type)
-    {
-        /** @var FileManagerService $service */
-        $service = $this->get('youwe.file_manager.service');
-
-        /** @var FileManagerDriver $driver */
-        $driver = $this->get('youwe.file_manager.driver');
-        $parameters = $this->container->getParameter('youwe_file_manager');
-        $fileManager = $service->createFileManager($parameters, $driver);
-
-        $response = new Response();
-
-        $fileManager->resolveRequest($request);
-        $cut = false;
-        if($type === 'cut'){
-            $cut = true;
-        }
-
-        try{
-            $dir = $service->getFilePath($fileManager);
-            $service->checkToken($request->get('token'));
-            $sources = array(
-                'display_dir' => $fileManager->getDirPath(),
-                'source_dir' => $dir,
-                'source_file' => $fileManager->getCurrentFile()->getFilename(),
-                'cut' => $cut
-            );
-            $this->get('session')->set('copy', $sources);
-        } catch(\Exception $e){
-            $response->setContent($e->getMessage());
-            $response->setStatusCode($e->getCode() == null ? 500 : $e->getCode());
-        }
-
-        return $response;
-    }
-
-    /**
      * @Route("/paste", name="youwe_file_manager_paste", options={"expose":true})
      * @Method("POST")
      *
@@ -188,7 +179,7 @@ class FileManagerController extends Controller {
             $fileManager->setDirPath($sources['display_dir']);
             $fileManager->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
             $fileManager->setTargetFilepath($dir . FileManager::DS . $sources['source_file']);
-            $type = $sources['cut'];
+            $type = $sources['type'];
             $fileManager->pasteFile($type);
             $this->get('session')->remove('copy');
         } catch(\Exception $e){

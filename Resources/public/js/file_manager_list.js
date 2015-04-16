@@ -166,7 +166,10 @@ var FileManager = function () {
             move: "youwe_file_manager_move",
             download: "youwe_file_manager_download",
             paste: "youwe_file_manager_paste",
-            copy: "youwe_file_manager_copy"
+            copy: "youwe_file_manager_copy",
+            cut: "youwe_file_manager_cut",
+            upload: "youwe_file_manager_upload",
+            new_dir: "youwe_file_manager_new_dir"
         },
         messages = {
             errors: {
@@ -307,11 +310,19 @@ var FileManager = function () {
         /**
          * Set the copied file in the session
          * @param {jQuery} file_element
-         * @param {string} type - copy or paste
+         * @param {string} type - copy or cut
          */
         copyFile = function (file_element, type) {
+            var route_name;
+
+            if(type === 'cut') {
+                route_name = routes.cut;
+            } else if (type === 'copy') {
+                route_name = routes.copy;
+            }
+
             var file_name = file_element.find("span").html(),
-                route = Routing.generate(routes.copy, {'type': type}),
+                route = Routing.generate(route_name),
                 data = {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath,
@@ -393,7 +404,7 @@ var FileManager = function () {
          */
         submitRenameFile = function () {
             var el = $(selectors.fields.renameItem),
-                route = Routing.generate(routes.rename, {"dir_path": activePath});
+                route = Routing.generate(routes.rename);
             if (rename_origin_ext !== "") {
                 rename_origin_ext = "." + rename_origin_ext;
             }
@@ -421,8 +432,14 @@ var FileManager = function () {
          */
         submitNewFolder = function () {
             if ($(selectors.fields.newDir).val() !== "") {
-                var data = $(selectors.fields.form).serialize(),
-                    route = Routing.generate(routes.list, {"dir_path": activePath});
+                var target_name = $(selectors.fields.form).find("#"+selectors.ids.newDir).val(),
+                    target_path =  root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
+                    data = {
+                        token: $(selectors.fields.token).val(),
+                        filename: null,
+                        target_file: target_path
+                    },
+                    route = Routing.generate(routes.new_dir);
                 if (!ajaxRequest(route, data, "POST")) {
                     $("." + selectors.classes.emptyFileManager).addClass("hidden");
                     ItemsContainer.find("." + selectors.classes.fileManagerDraggable).draggable('enable');
@@ -827,7 +844,7 @@ var FileManager = function () {
             obj.on("processing", function () {
                 uploadloadingScreen();
                 var new_dir_route;
-                new_dir_route = Routing.generate(routes.list, {"dir_path": activePath});
+                new_dir_route = Routing.generate(routes.upload, {"dir_path": activePath});
                 obj.options.url = new_dir_route;
             });
         },
