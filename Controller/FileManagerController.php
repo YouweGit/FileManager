@@ -30,7 +30,7 @@ class FileManagerController extends Controller {
      *      options={"expose":true},
      *      requirements={"dir_path":".+"}
      * )
-     * @param string $dir_path
+     * @param string $dir_path the path to the current directory
      * @return Response
      */
     public function listFilesAction($dir_path = null)
@@ -59,17 +59,17 @@ class FileManagerController extends Controller {
     }
 
     /**
-     * @Route("/delete", name="youwe_file_manager_delete", defaults={"action":"action-file-delete"}, options={"expose":true})
-     * @Route("/move", name="youwe_file_manager_move", defaults={"action":"action-file-move"}, options={"expose":true})
-     * @Route("/extract", name="youwe_file_manager_extract", defaults={"action":"action-file-extract"}, options={"expose":true})
-     * @Route("/rename", name="youwe_file_manager_rename", defaults={"action":"action-file-rename"}, options={"expose":true})
+     * @Route("/delete", name="youwe_file_manager_delete", defaults={"action":FileManager::FILE_DELETE}, options={"expose":true})
+     * @Route("/move", name="youwe_file_manager_move", defaults={"action":FileManager::FILE_MOVE}, options={"expose":true})
+     * @Route("/extract", name="youwe_file_manager_extract", defaults={"action":FileManager::FILE_EXTRACT}, options={"expose":true})
+     * @Route("/rename", name="youwe_file_manager_rename", defaults={"action":FileManager::FILE_RENAME}, options={"expose":true})
      *
      * @Method("POST")
      *
      * @param Request $request
-     * @param int     $action
+     * @param string  $action the action that is requested
      *
-     * @return bool
+     * @return Response
      */
     public function requestsPostsFileActions(Request $request, $action)
     {
@@ -87,13 +87,13 @@ class FileManagerController extends Controller {
 
 
     /**
-     * @Route("/fileinfo", name="youwe_file_manager_fileinfo", defaults={"action":"action-file-info"}, options={"expose":true})
+     * @Route("/fileinfo", name="youwe_file_manager_fileinfo", defaults={"action":FileManager::FILE_INFO}, options={"expose":true})
      *
      * @param Request $request
-     * @param int     $action
+     * @param string  $action the action that is requested
      *
-     * @throws \Exception
-     * @return bool
+     * @throws \Exception when method is not allowed
+     * @return Response
      */
     public function requestsGetFileActions(Request $request, $action)
     {
@@ -117,9 +117,8 @@ class FileManagerController extends Controller {
      * @Method("POST")
      *
      * @param Request $request
-     * @param type - copy or cut
-     * @throws \Exception
-     * @return bool
+     * @param string  $type copy or cut
+     * @return Response
      */
     public function copyFileAction(Request $request, $type)
     {
@@ -162,8 +161,7 @@ class FileManagerController extends Controller {
      * @Method("POST")
      *
      * @param Request $request
-     * @throws \Exception
-     * @return bool
+     * @return Response
      */
     public function pasteFileAction(Request $request)
     {
@@ -210,8 +208,7 @@ class FileManagerController extends Controller {
      * )
      *
      * @param Request $request
-     * @param         $path
-     * @throws \Exception
+     * @param string  $path the path of the file that is downloaded
      * @return Response
      */
     public function DownloadAction(Request $request, $path)
