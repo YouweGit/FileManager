@@ -108,7 +108,6 @@ class FileManagerService
             $file_manager->checkPath($dir);
             if (!is_null($target_file)) {
                 $file_manager->checkPath($target_file->getFilepath(true));
-
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
@@ -116,7 +115,6 @@ class FileManagerService
 
         return $dir;
     }
-
 
     /**
      * Check if the form token is valid
@@ -132,40 +130,6 @@ class FileManagerService
 
         if (!$valid) {
             throw new InvalidCsrfTokenException();
-        }
-    }
-
-    /**
-     * Handle the form submit
-     *
-     * This handles the submit for the following form requests:
-     *  - File upload
-     *  - New directory
-     *  - Renaming file
-     *
-     * @param Form $form
-     * @throws \Exception - When the form is invalid or the action is not defined
-     * @return null|string
-     */
-    public function handleFormSubmit(Form $form)
-    {
-        $file_manager = $this->getFileManager();
-        if ('POST' === $this->container->get('request')->getMethod()) {
-            $form->handleRequest($this->container->get('request'));
-            if ($form->isValid()) {
-                $file_manager->checkPath();
-
-                $files = $form->get("file")->getData();
-                if (!is_null($files)) {
-                    $this->handleUploadFiles($files);
-                } elseif (!is_null($form->get("newfolder")->getData())) {
-                    $this->handleNewDir($form);
-                } else {
-                    throw new \Exception("Undefined action", 500);
-                }
-            } else {
-                throw new \Exception("Form is invalid", 500);
-            }
         }
     }
 
@@ -201,20 +165,6 @@ class FileManagerService
         $this->getFileManager()->event(YouweFileManagerEvents::AFTER_FILE_UPLOADED);
     }
 
-    /**
-     * Handle the new directory request
-     *
-     * @param Form $form
-     */
-    public function handleNewDir($form)
-    {
-        $new_dir = $form->get("newfolder")->getData();
-        $new_dir = str_replace("../", "", $new_dir);
-
-        $this->getFileManager()->event(YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED);
-        $this->getFileManager()->getDriver()->makeDir($new_dir);
-        $this->getFileManager()->event(YouweFileManagerEvents::AFTER_FILE_DIR_CREATED);
-    }
 
     /**
      * Returns an array with all the rendered options
@@ -247,7 +197,8 @@ class FileManagerService
         $options['isPopup'] = $this->container->get('request')->get('popup');
         $options['copy_file'] = $this->container->get('session')->get('copy');
         $options['form'] = $form->createView();
-
+        $options['copy_type'] = FileManager::FILE_COPY;
+        $options['cut_type'] = FileManager::FILE_CUT;
         $options['root_folder'] = $file_manager->getPath();
         $options['current_path'] = $file_manager->getDirPath();
         $options['upload_allow'] = $file_manager->getExtensionsAllowed();
@@ -340,8 +291,8 @@ class FileManagerService
      *
      * @param FileManager $fileManager
      * @param Request     $request
-     * @param             $action
-     * @param             $check_token
+     * @param string      $action
+     * @param bool        $check_token
      * @return Response
      */
     public function handleAction(FileManager $fileManager, Request $request, $action, $check_token)
@@ -367,6 +318,13 @@ class FileManagerService
                 case FileManager::FILE_RENAME:
                     $fileManager->renameFile();
                     break;
+                case FileManager::FILE_NEW_DIR:
+                    $fileManager->newDirectory();
+                    break;
+                case FileManager::FILE_COPY:
+                case FileManager::FILE_CUT:
+                    $this->copyFile($action);
+                    break;
                 case FileManager::FILE_INFO:
                     $response = new JsonResponse();
                     $response->setData(json_encode($fileManager->getCurrentFile()->toArray()));
@@ -379,6 +337,18 @@ class FileManagerService
         return $response;
     }
 
+    /**
+     * @param string $action
+     */
+    public function copyFile($action){
+        $sources = array(
+            'display_dir' => $this->getFileManager()->getDirPath(),
+            'source_dir' => $this->getFileManager()->getDir(),
+            'source_file' => $this->getFileManager()->getCurrentFile()->getFilename(),
+            'type' => $action
+        );
+        $this->container->get('session')->set('copy', $sources);
+    }
     /**
      * Check if the requested action is allowed in a get method
      *

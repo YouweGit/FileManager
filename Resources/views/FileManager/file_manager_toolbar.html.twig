@@ -17,7 +17,7 @@
         <span class="fa fa-pencil"></span>
     </button>
     <button id="copy_btn" type="button" class="btn btn-default" title="{% spaceless %}
-                {% if copy_file and not copy_file['cut'] %}
+                {% if copy_file and copy_file['type'] == copy_type  %}
                     Copy file. Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}
                 {% else %}
                     Copy file
@@ -26,7 +26,7 @@
         <span class="fa fa-copy"></span>
     </button>
     <button id="cut_btn" type="button" class="btn btn-default"  title="{% spaceless %}
-                {% if copy_file and copy_file['cut'] %}
+                {% if copy_file and copy_file['type'] == cut_type %}
                    Cut file. Copied file: /uploads/{{ copy_file['display_dir'] }}/{{ copy_file['source_file'] }}
                 {% else %}
                     Cut file

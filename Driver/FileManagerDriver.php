@@ -55,19 +55,18 @@ class FileManagerDriver
     /**
      * Create new directory
      *
-     * @param string $dir_name
-     * @throws \Exception - when mimetype is not valid or when something went wrong when creating a dir on filesystem level
+     * @param string $dir_path
+     * @throws \Exception when mimetype is not valid or when something went wrong when creating a dir on filesystem level
      * @return bool
      */
-    public function makeDir($dir_name)
+    public function makeDir($dir_path)
     {
         $fm = new Filesystem();
-        $dir_path = $this->getFileManager()->getPath($this->getFileManager()->getDirPath(), $dir_name, true);
         if (!file_exists($dir_path)) {
             $fm->mkdir($dir_path, 0755);
         } else {
             $this->getFileManager()
-                ->throwError("Cannot create directory '" . $dir_name . "': Directory already exists", 500);
+                ->throwError("Cannot create directory '" . $dir_path . "': Directory already exists", 500);
         }
     }
 
@@ -228,8 +227,7 @@ class FileManagerDriver
             if (!file_exists($target_file_path)) {
                 $fileSystem->copy($source_file_path, $target_file_path);
 
-                $cut = $type;
-                if ($cut) {
+                if ($type == FileManager::FILE_CUT) {
                     $fileSystem->remove($source_file_path);
                 }
             } else {

@@ -361,7 +361,7 @@ class FileManager
 
         $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
 
-        if($action === self::FILE_RENAME){
+        if($action === self::FILE_RENAME && !$this->getCurrentFile()->isDir()){
             $extension = $this->getCurrentFile()->getExtension();
             $target_file = $request->get('target_file') . "." . $extension;
         } else {
@@ -451,11 +451,23 @@ class FileManager
      */
     public function renameFile()
     {
-        $this->event(YouweFileManagerEvents::BEFORE_FILE_RENAMED); $target_full_path = $this->getTargetFile()->getFilepath(true);
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_RENAMED);
+        $target_full_path = $this->getTargetFile()->getFilepath(true);
         $this->getDriver()->renameFile($this->getCurrentFile(), $target_full_path);
         $this->resolveImage();
         $this->getCurrentFile()->setFilepath($target_full_path);
         $this->event(YouweFileManagerEvents::AFTER_FILE_RENAMED);
+    }
+
+    /**
+     * Create a new directory
+     */
+    public function newDirectory()
+    {
+        $target_full_path = $this->getTargetFile()->getFilepath(true);
+        $this->event(YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED);
+        $this->getDriver()->makeDir($target_full_path);
+        $this->event(YouweFileManagerEvents::AFTER_FILE_DIR_CREATED);
     }
 
     /**
