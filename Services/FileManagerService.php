@@ -325,6 +325,9 @@ class FileManagerService
                 case FileManager::FILE_CUT:
                     $this->copyFile($action);
                     break;
+                case FileManager::FILE_PASTE:
+                    $this->pasteFile();
+                    break;
                 case FileManager::FILE_INFO:
                     $response = new JsonResponse();
                     $response->setData(json_encode($fileManager->getCurrentFile()->toArray()));
@@ -349,6 +352,20 @@ class FileManagerService
         );
         $this->container->get('session')->set('copy', $sources);
     }
+
+    /**
+     * Paste the file
+     */
+    public function pasteFile()
+    {
+        /** @var Session $session */
+        $session = $this->container->get('session');
+        $sources = $session->get('copy');
+        $type = $sources['type'];
+        $this->getFileManager()->pasteFile($type);
+        $session->remove('copy');
+    }
+
     /**
      * Check if the requested action is allowed in a get method
      *

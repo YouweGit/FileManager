@@ -230,7 +230,7 @@ class FileInfo
             $this->setFileSize($file_size);
             $this->setUsages($file_manager);
         }
-
+        //Todo: set web path of file instead of current location
         $web_path = $file_manager->DirTrim($file_manager->getPath($file_manager->getDirPath()), $filename, true);
 
         $this->setFilepath(dirname($filepath));
@@ -369,7 +369,7 @@ class FileInfo
     {
         $filepath = $this->filepath;
         if($include_filename){
-            $filepath .= FileManager::DS . $this->getFIlename();
+            $filepath .= FileManager::DS . $this->getFilename();
         }
         return $filepath;
     }

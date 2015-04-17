@@ -338,7 +338,8 @@ var FileManager = function () {
             var route = Routing.generate(routes.paste),
                 data = {
                     token: $(selectors.fields.token).val(),
-                    dir_path: activePath
+                    dir_path: activePath,
+                    target_file: root_dir + "/" + (activePath !== null ? activePath : "")
                 };
             ajaxRequest(route, data, "POST", false);
         },

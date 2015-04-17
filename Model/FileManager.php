@@ -364,6 +364,11 @@ class FileManager
         if($action === self::FILE_RENAME && !$this->getCurrentFile()->isDir()){
             $extension = $this->getCurrentFile()->getExtension();
             $target_file = $request->get('target_file') . "." . $extension;
+        } elseif($action === self::FILE_PASTE) {
+
+            $sources = $this->container->get('session')->get('copy');
+            $this->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
+            $target_file = $request->get('target_file') . FileManager::DS . $sources['source_file'];
         } else {
             $target_file = $request->get('target_file');
         }
