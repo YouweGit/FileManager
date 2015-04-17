@@ -7,7 +7,8 @@
                 {% else %}
                     <span class="toggleIcon noToggle"></span>
                 {% endif %}
-                <span title="{{ dir.name }}" class="yw_file_manager_dir nowrap" id="{{ dir.path }}">{{ dir.name }}</span>
+                <span title="{{ dir.name }}" class="yw_file_manager_dir nowrap"
+                      id="{{ dir.path }}">{{ dir.name }}</span>
             </span>
             <ul>
                 {% include "YouweFileManagerBundle:FileManager:file_manager_dir.html.twig" with {'dirs': dir.tree, 'inner': 'inner_tree'} %}

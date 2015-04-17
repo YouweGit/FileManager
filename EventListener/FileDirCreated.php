@@ -19,7 +19,7 @@ class FileDirCreated implements EventSubscriberInterface
     {
         return array(
             YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED => 'beforeFileDirCreated',
-            YouweFileManagerEvents::AFTER_FILE_DIR_CREATED => 'afterFileDirCreated',
+            YouweFileManagerEvents::AFTER_FILE_DIR_CREATED  => 'afterFileDirCreated',
         );
     }
 

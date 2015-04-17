@@ -4,8 +4,7 @@
     color: #ffffff;
 }
 
-
-#FileManagerContainer .FileManagerHead svg path.svg-text{
+#FileManagerContainer .FileManagerHead svg path.svg-text {
     fill: #ffffff;
 }
 
@@ -20,7 +19,7 @@
 
 .modal-dialog .modal-header,
 .panel-info > .panel-heading {
-    border:0;
+    border: 0;
 }
 
 .panel-info > .panel-heading,
@@ -31,7 +30,6 @@
     background: #6b6b6b;
     color: #ffffff;
 }
-
 
 /**
  * Directory List Border Colors

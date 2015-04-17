@@ -18,7 +18,7 @@ class FileUploaded implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            YouweFileManagerEvents::AFTER_FILE_UPLOADED => 'afterFileUploaded',
+            YouweFileManagerEvents::AFTER_FILE_UPLOADED  => 'afterFileUploaded',
             YouweFileManagerEvents::BEFORE_FILE_UPLOADED => 'beforeFileUploaded',
         );
     }

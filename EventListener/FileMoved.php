@@ -18,7 +18,7 @@ class FileMoved implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            YouweFileManagerEvents::AFTER_FILE_MOVED => 'afterFileMoved',
+            YouweFileManagerEvents::AFTER_FILE_MOVED  => 'afterFileMoved',
             YouweFileManagerEvents::BEFORE_FILE_MOVED => 'beforeFileMoved',
         );
     }

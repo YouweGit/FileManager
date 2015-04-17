@@ -18,7 +18,7 @@ class FileRenamed implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            YouweFileManagerEvents::AFTER_FILE_RENAMED => 'afterFileRenamed',
+            YouweFileManagerEvents::AFTER_FILE_RENAMED  => 'afterFileRenamed',
             YouweFileManagerEvents::BEFORE_FILE_RENAMED => 'beforeFileRenamed',
         );
     }

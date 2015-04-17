@@ -2,7 +2,6 @@
 
 namespace Youwe\FileManagerBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -101,15 +100,14 @@ class FileManagerController extends Controller
      * @Route("/copy", name="youwe_file_manager_copy", defaults={"action":FileManager::FILE_COPY}, options={"expose":true})
      * @Route("/cut", name="youwe_file_manager_cut", defaults={"action":FileManager::FILE_CUT}, options={"expose":true})
      * @Route("/paste", name="youwe_file_manager_paste", defaults={"action":FileManager::FILE_PASTE}, options={"expose":true})
-     *
-     * @Method("POST")
+     * @Route("/fileinfo", name="youwe_file_manager_fileinfo", defaults={"action":FileManager::FILE_INFO}, options={"expose":true})
      *
      * @param Request $request
      * @param string  $action the action that is requested
-     *
      * @return Response
+     * @throws \Exception when the request method is not allowed
      */
-    public function requestsPostsFileActions(Request $request, $action)
+    public function fileActions(Request $request, $action)
     {
         if ($action === FileManager::FILE_PASTE && !$this->get('session')->has('copy')) {
             return new Response();
@@ -117,6 +115,9 @@ class FileManagerController extends Controller
 
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
+        if (!$service->isAllowedGetAction($action)) {
+            throw new \Exception("Method Not Allowed", 405);
+        }
 
         /** @var FileManagerDriver $driver */
         $driver = $this->get('youwe.file_manager.driver');
@@ -125,34 +126,7 @@ class FileManagerController extends Controller
 
         $fileManager->resolveRequest($request, $action);
 
-        return $service->handleAction($fileManager, $request, $action, true);
-    }
-
-
-    /**
-     * @Route("/fileinfo", name="youwe_file_manager_fileinfo", defaults={"action":FileManager::FILE_INFO}, options={"expose":true})
-     *
-     * @param Request $request
-     * @param string  $action the action that is requested
-     *
-     * @throws \Exception when method is not allowed
-     * @return Response
-     */
-    public function requestsGetFileActions(Request $request, $action)
-    {
-
-        /** @var FileManagerService $service */
-        $service = $this->get('youwe.file_manager.service');
-        if (!$service->isAllowedGetAction($action)) {
-            throw new \Exception("Method Not Allowed", 405);
-        }
-        /** @var FileManagerDriver $driver */
-        $driver = $this->get('youwe.file_manager.driver');
-        $parameters = $this->container->getParameter('youwe_file_manager');
-        $fileManager = $service->createFileManager($parameters, $driver);
-
-        $fileManager->resolveRequest($request);
-        return $service->handleAction($fileManager, $request, $action, false);
+        return $service->handleAction($fileManager, $request, $action);
     }
 
     /**
@@ -178,8 +152,8 @@ class FileManagerController extends Controller
         $parameters = $this->container->getParameter('youwe_file_manager');
         $fileManager = $service->createFileManager($parameters, $driver);
 
-        $web_path = $fileManager->getPath($path, null, true);
-        $content = file_get_contents($web_path);
+        $filepath = $fileManager->getPath($path, null, true);
+        $content = file_get_contents($filepath);
         $filename = basename($path);
         $response = new Response();
 

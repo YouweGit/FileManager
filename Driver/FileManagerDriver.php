@@ -34,9 +34,8 @@ class FileManagerDriver
      * Upload the files
      *
      * @param UploadedFile $file
-     * @param              $extension
+     * @param string       $extension
      * @param string       $dir
-     * @return bool
      */
     public function handleUploadedFiles(UploadedFile $file, $extension, $dir)
     {
@@ -56,8 +55,6 @@ class FileManagerDriver
      * Create new directory
      *
      * @param string $dir_path
-     * @throws \Exception when mimetype is not valid or when something went wrong when creating a dir on filesystem level
-     * @return bool
      */
     public function makeDir($dir_path)
     {
@@ -95,8 +92,6 @@ class FileManagerDriver
      *
      * @param FileInfo $fileInfo
      * @param string   $new_file_name
-     * @throws \Exception - when mimetype is not valid or when something went wrong when renaming on filesystem level
-     * @return bool
      */
     public function renameFile(FileInfo $fileInfo, $new_file_name)
     {
@@ -155,7 +150,6 @@ class FileManagerDriver
      *
      * @param Filesystem $fm
      * @param string     $tmp_dir
-     * @throws \Exception - when mimetype is not valid
      */
     public function checkFileType(Filesystem $fm, $tmp_dir)
     {
@@ -176,7 +170,7 @@ class FileManagerDriver
      * Check the mimetype
      *
      * @param FileInfo $fileInfo
-     * @return true
+     * @return string|bool
      */
     public function checkMimeType($fileInfo)
     {
@@ -193,8 +187,6 @@ class FileManagerDriver
      *
      * @param FileInfo $fileInfo
      * @param string   $new_file_name
-     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
-     * @return bool
      */
     public function moveFile(FileInfo $fileInfo, $new_file_name)
     {
@@ -213,15 +205,13 @@ class FileManagerDriver
      *
      * @param FileInfo $fileInfo
      * @param string   $type
-     * @throws \Exception - when mimetype is not valid or when something went wrong when moving on filesystem level
-     * @return bool
      */
     public function pasteFile(FileInfo $fileInfo, $type)
     {
         try {
             $target_file_path = $this->getFileManager()->getTargetFile()->getFilepath(true);
             $source_file_path = $fileInfo->getFilepath(true);
-            
+
             $this->validateFile($fileInfo);
             $fileSystem = new Filesystem();
             if (!file_exists($target_file_path)) {
@@ -244,8 +234,6 @@ class FileManagerDriver
      * Delete the file
      *
      * @param FileInfo $fileInfo
-     * @throws \Exception - when something went wrong while deleting the file on filesystem level
-     * @return bool
      */
     public function deleteFile(FileInfo $fileInfo)
     {
@@ -262,8 +250,6 @@ class FileManagerDriver
      * Extract the zip
      *
      * @param FileInfo $fileInfo
-     * @throws \Exception - when mimetype is not valid or when something went wrong when extracting on filesystem level
-     * @return bool
      */
     public function extractZip(FileInfo $fileInfo)
     {

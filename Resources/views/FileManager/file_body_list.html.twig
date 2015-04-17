@@ -1,13 +1,10 @@
-
 <table class="table table-hover table-striped">
-    <thead>
+    <tbody>
     <th>Name</th>
     <th>Type</th>
     <th>Size</th>
     <th>Modified</th>
     <th>{% if usages %}Usages{% endif %}</th>
-    </thead>
-    <tbody>
     {% for file in files %}
         {% if file.mimetype == 'directory' %}
             <tr class="yw_file_manager_dir">
