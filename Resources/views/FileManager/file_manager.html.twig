@@ -34,7 +34,7 @@
     <script type="text/javascript">
         var current_path="{{ current_path }}";
         var root_folder = "{{ root_folder }}";
-        var is_popup = {{ isPopup }};
+        var is_popup = {{ isPopup|default('false') }};
     </script>
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
