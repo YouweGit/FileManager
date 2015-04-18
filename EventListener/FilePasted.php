@@ -18,7 +18,7 @@ class FilePasted implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            YouweFileManagerEvents::AFTER_FILE_PASTED => 'afterFilePasted',
+            YouweFileManagerEvents::AFTER_FILE_PASTED  => 'afterFilePasted',
             YouweFileManagerEvents::BEFORE_FILE_PASTED => 'beforeFilePasted',
         );
     }

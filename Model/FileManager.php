@@ -12,7 +12,7 @@ use Youwe\FileManagerBundle\Events\FileEvent;
 use Youwe\FileManagerBundle\YouweFileManagerEvents;
 
 /**
- * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ * @author  Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class FileManager
  * @package Youwe\FileManagerBundle\Model
@@ -23,7 +23,7 @@ class FileManager
     const FILTER_NAME = 'YouweFileManager';
     const FILE_DELETE = 'action-file-delete';
     const FILE_MOVE = 'action-file-move';
-    const FILE_COPY= 'action-file-copy';
+    const FILE_COPY = 'action-file-copy';
     const FILE_CUT = 'action-file-cut';
     const FILE_PASTE = 'action-file-paste';
     const FILE_EXTRACT = 'action-file-extract';
@@ -32,31 +32,31 @@ class FileManager
     const FILE_UPLOAD = 'action-file-upload';
     const FILE_NEW_DIR = 'action-file-new-dir';
 
-    /** @var  array - All allowed extensions */
+    /** @var array all allowed extensions */
     private $extensions_allowed;
 
-    /** @var  string - Template */
+    /** @var string template */
     private $theme_template;
 
-    /** @var  string - Upload path */
+    /** @var string upload path */
     private $upload_path;
 
-    /** @var  string - Current Directory */
+    /** @var string current directory */
     private $dir;
 
-    /** @var  string - Current Directory Path */
+    /** @var string current directory path */
     private $dir_path;
 
-    /** @var  string|null */
+    /** @var string|null */
     private $usages_class;
 
-    /** @var  string */
+    /** @var string */
     private $web_path;
 
-    /** @var  FileManagerDriver */
+    /** @var FileManagerDriver */
     private $driver;
 
-    /** @var  bool */
+    /** @var bool */
     private $full_exception;
 
     /** @var string */
@@ -71,22 +71,22 @@ class FileManager
     /** @var bool */
     private $filter_images;
 
-    /** @var  ContainerInterface */
+    /** @var ContainerInterface */
     private $container;
 
-    /** @var  string */
+    /** @var string */
     private $filter;
 
-    /** @var  FileInfo */
+    /** @var FileInfo */
     private $current_file = null;
 
-    /** @var  FileInfo */
+    /** @var FileInfo */
     private $target_file = null;
 
-    /** @var  string */
+    /** @var string */
     private $target_file_path = null;
 
-    /** @var  string */
+    /** @var string */
     private $target_file_name = null;
 
     /**
@@ -95,7 +95,7 @@ class FileManager
      * Set all the config parameters
      *
      * @param array              $parameters
-     * @param                    $driver
+     * @param FileManagerDriver  $driver
      * @param ContainerInterface $container
      */
     public function __construct(array $parameters, $driver, ContainerInterface $container)
@@ -116,46 +116,22 @@ class FileManager
     }
 
     /**
-     * Returns the driver object
+     * Set the filter_images parameter
      *
-     * @return mixed|FileManagerDriver
+     * @param bool $filter_images
      */
-    public function getDriver()
+    public function setFilterImages($filter_images)
     {
-        return $this->driver;
+        $this->filter_images = $filter_images;
     }
 
     /**
-     * Sets the driver object
-     *
-     * @param mixed|FileManagerDriver $driver
+     * Set the correct web path
      */
-    public function setDriver($driver)
+    public function setWebPath()
     {
-        $this->driver = $driver;
-        $driver->setFileManager($this);
-    }
-
-    /**
-     * Returns all allowed extensions
-     *
-     * These extension are configured in the config.yml
-     *
-     * @return array
-     */
-    public function getExtensionsAllowed()
-    {
-        return $this->extensions_allowed;
-    }
-
-    /**
-     * Set the extensions that are allowed
-     *
-     * @param array $extensions_allowed
-     */
-    public function setExtensionsAllowed(array $extensions_allowed)
-    {
-        $this->extensions_allowed = $extensions_allowed;
+        $folder_array = explode(self::DS, $this->getUploadPath());
+        $this->web_path = array_pop($folder_array);
     }
 
     /**
@@ -181,6 +157,28 @@ class FileManager
     }
 
     /**
+     * Returns all allowed extensions
+     *
+     * These extension are configured in the config.yml
+     *
+     * @return array
+     */
+    public function getExtensionsAllowed()
+    {
+        return $this->extensions_allowed;
+    }
+
+    /**
+     * Set the extensions that are allowed
+     *
+     * @param array $extensions_allowed
+     */
+    public function setExtensionsAllowed(array $extensions_allowed)
+    {
+        $this->extensions_allowed = $extensions_allowed;
+    }
+
+    /**
      * Returns the theme template
      *
      * This is configured in the config.yml
@@ -202,46 +200,6 @@ class FileManager
     public function setThemeTemplate($theme_template)
     {
         $this->theme_template = $theme_template;
-    }
-
-    /**
-     * Returns the current directory
-     *
-     * @return string
-     */
-    public function getDir()
-    {
-        return $this->dir;
-    }
-
-    /**
-     * Set the current directory
-     *
-     * @param string $dir
-     */
-    public function setDir($dir)
-    {
-        $this->dir = $dir;
-    }
-
-    /**
-     * Returns the current directory path
-     *
-     * @return string
-     */
-    public function getDirPath()
-    {
-        return $this->dir_path;
-    }
-
-    /**
-     * Set the current directory path
-     *
-     * @param string $dir_path
-     */
-    public function setDirPath($dir_path)
-    {
-        $this->dir_path = $dir_path;
     }
 
     /**
@@ -271,12 +229,128 @@ class FileManager
     }
 
     /**
-     * Set the correct web path
+     * Set the dir paths
+     *
+     * @param null|string $dir_path
      */
-    public function setWebPath()
+    public function setDirPaths($dir_path)
     {
-        $folder_array = explode(self::DS, $this->getUploadPath());
-        $this->web_path = array_pop($folder_array);
+        if (is_null($dir_path)) {
+            $this->setDir($this->getUploadPath());
+            $this->setDirPath("");
+        } else {
+            $this->setDirPath($this->DirTrim($dir_path));
+            $this->setDir($this->getUploadPath() . self::DS . $dir_path);
+        }
+
+        $path_valid = $this->checkPath($this->getDir());
+        if (!$path_valid) {
+            $this->setDir($this->getUploadPath());
+        }
+    }
+
+    /**
+     * Trim the directory separators from the file(path)
+     *
+     * @param string $path
+     * @param string $file
+     * @param bool   $rTrim
+     * @return string
+     */
+    public function DirTrim($path, $file = null, $rTrim = false)
+    {
+        if ($rTrim) {
+            $result = rtrim($path, self::DS);
+        } else {
+            $result = trim($path, self::DS);
+        }
+
+        if (!is_null($file)) {
+            $file_result = trim($file, self::DS);
+        } else {
+            $file_result = $file;
+        }
+
+        if (!is_null($file_result)) {
+            $result = $result . self::DS . $file_result;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Check if the path is in the upload directory
+     *
+     * @param $path default is the file dir
+     * @throws \Exception when directory is not in the upload path
+     * @return bool
+     */
+    public function checkPath($path = null)
+    {
+        if (is_null($path)) {
+            $path = $this->getDir();
+        }
+
+        $real_path = realpath($path);
+        if (!$real_path) {
+            $real_path = realpath(dirname($path));
+        }
+        $upload_path = realpath($this->getUploadPath());
+
+        if (strcasecmp($real_path, $upload_path > 0)) {
+            return true;
+        } else {
+            throw new \Exception("Directory is not in the upload path", 403);
+        }
+    }
+
+    /**
+     * Returns the current directory
+     *
+     * @return string
+     */
+    public function getDir()
+    {
+        return $this->dir;
+    }
+
+    /**
+     * Set the current directory
+     *
+     * @param string $dir
+     */
+    public function setDir($dir)
+    {
+        $this->dir = $dir;
+    }
+
+    /**
+     * Set the required request parameters to the object
+     *
+     * @param Request  $request
+     * @param int|null $action
+     */
+    public function resolveRequest(Request $request, $action = null)
+    {
+        $this->setDirPath($request->get('dir_path'));
+
+        $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
+
+        if ($action === self::FILE_RENAME && !$this->getCurrentFile()->isDir()) {
+            $extension = $this->getCurrentFile()->getExtension();
+            $target_file = $request->get('target_file') . "." . $extension;
+        } elseif ($action === self::FILE_PASTE) {
+
+            $sources = $this->container->get('session')->get('copy');
+            $this->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
+            $target_file = $request->get('target_file') . FileManager::DS . $sources['source_file'];
+        } else {
+            $target_file = $request->get('target_file');
+        }
+
+        if (isset($target_file)) {
+            $this->setTargetFile($target_file);
+        }
     }
 
     /**
@@ -300,108 +374,48 @@ class FileManager
         if (!is_null($filename)) {
             $path = self::DS . $this->DirTrim($path, $filename);
         }
+
         return $path;
     }
 
     /**
-     * Set the dir paths
+     * Returns the current directory path
      *
-     * @param null|string $dir_path
-     * @throws \Exception
+     * @return string
      */
-    public function setDirPaths($dir_path)
+    public function getDirPath()
     {
-        if (is_null($dir_path)) {
-            $this->setDir($this->getUploadPath());
-            $this->setDirPath("");
-        } else {
-            $this->setDirPath($this->DirTrim($dir_path));
-            $this->setDir($this->getUploadPath() . self::DS . $dir_path);
-        }
-
-        $path_valid = $this->checkPath($this->getDir());
-        if (!$path_valid) {
-            $this->setDir($this->getUploadPath());
-        }
+        return $this->dir_path;
     }
 
     /**
-     * Check if the full exception should be displayed
+     * Set the current directory path
      *
-     * This is configured in the config.yml
-     *
-     * @return boolean
+     * @param string $dir_path
      */
-    public function isFullException()
+    public function setDirPath($dir_path)
     {
-        return $this->full_exception;
+        $this->dir_path = $dir_path;
     }
 
     /**
-     * Sets the full exception parameter
+     * Returns the FileInfo object of the current file
      *
-     * This is configured in the config.yml
-     *
-     * @param boolean $full_exception
+     * @return FileInfo|null
      */
-    public function setFullException($full_exception)
+    public function getCurrentFile()
     {
-        $this->full_exception = $full_exception;
+        return $this->current_file;
     }
 
     /**
-     * Set the required request parameters to the object
+     * Set the FileInfo object of the current file
      *
-     * @param Request  $request
-     * @param int|null $action
+     * @param string $current_filepath
      */
-    public function resolveRequest(Request $request, $action = null)
+    public function setCurrentFile($current_filepath)
     {
-        $this->setDirPath($request->get('dir_path'));
-
-        $this->setCurrentFile($this->getPath($this->getDirPath(), $request->get('filename'), true));
-
-        if($action === self::FILE_RENAME && !$this->getCurrentFile()->isDir()){
-            $extension = $this->getCurrentFile()->getExtension();
-            $target_file = $request->get('target_file') . "." . $extension;
-        } elseif($action === self::FILE_PASTE) {
-
-            $sources = $this->container->get('session')->get('copy');
-            $this->setCurrentFile($sources['source_dir'] . FileManager::DS . $sources['source_file']);
-            $target_file = $request->get('target_file') . FileManager::DS . $sources['source_file'];
-        } else {
-            $target_file = $request->get('target_file');
-        }
-
-        if(isset($target_file)){
-            $this->setTargetFile($target_file);
-        }
-    }
-
-    /**
-     * Check if the path is in the upload directory
-     *
-     * @param $path - Default is the file dir
-     * @throws \Exception - when directory is not in the upload path
-     * @return bool
-     */
-    public function checkPath($path = null)
-    {
-        if (is_null($path)) {
-            $path = $this->getDir();
-        }
-
-        $real_path = realpath($path);
-        if(!$real_path){
-            $real_path = realpath(dirname($path));
-        }
-        $upload_path = realpath($this->getUploadPath());
-
-        if (strcasecmp($real_path, $upload_path > 0)) {
-            return true;
-        } else {
-            throw new \Exception("Directory is not in the upload path", 403);
-        }
+        $this->current_file = new FileInfo($current_filepath, $this);
     }
 
     /**
@@ -415,9 +429,40 @@ class FileManager
     }
 
     /**
+     * @param string $event_key
+     */
+    public function event($event_key)
+    {
+        $dispatcher = $this->container->get('event_dispatcher');
+        $event = new FileEvent($this->getCurrentFile());
+        $dispatcher->dispatch($event_key, $event);
+    }
+
+    /**
+     * Returns the driver object
+     *
+     * @return FileManagerDriver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * Sets the driver object
+     *
+     * @param FileManagerDriver $driver
+     */
+    public function setDriver($driver)
+    {
+        $this->driver = $driver;
+        $driver->setFileManager($this);
+    }
+
+    /**
      * Paste the file
      *
-     * @param $type
+     * @param string $type
      */
     public function pasteFile($type)
     {
@@ -425,6 +470,92 @@ class FileManager
         $this->resolveImage();
         $this->getDriver()->pasteFile($this->getCurrentFile(), $type);
         $this->event(YouweFileManagerEvents::AFTER_FILE_PASTED);
+    }
+
+    /**
+     * Remove the image of the current file
+     *
+     * @throws \Exception if Liip Imagine Bundle is not installed
+     */
+    public function resolveImage()
+    {
+        if ($this->FilterImages() && $this->getCurrentFile()->isImage()) {
+            try {
+                $imageCacheManager = $this->getCacheManager();
+            } catch (\Exception $e) {
+                $exception = 'Cannot resolve the image. Please make sure that LiipImagineBundle is installed';
+                if (!$this->isFullException() || is_null($e)) {
+                    Throw new \Exception($exception);
+                } else {
+                    throw new \Exception($exception . ": " . $e->getMessage());
+                }
+            }
+            $imageCacheManager->remove($this->getCurrentFile()->getWebPath(), $this->getFilter());
+        }
+    }
+
+    /**
+     * Check if the images should be filtered
+     *
+     * @return bool
+     */
+    public function FilterImages()
+    {
+        return $this->filter_images;
+    }
+
+    /**
+     * Return the liip cache manager
+     *
+     * @return CacheManager
+     */
+    public function getCacheManager()
+    {
+        return $this->container->get('liip_imagine.cache.manager');
+    }
+
+    /**
+     * Check if the full exception should be displayed
+     *
+     * This is configured in the config.yml
+     *
+     * @return bool
+     */
+    public function isFullException()
+    {
+        return $this->full_exception;
+    }
+
+    /**
+     * Sets the full exception parameter
+     *
+     * This is configured in the config.yml
+     *
+     * @param bool $full_exception
+     */
+    public function setFullException($full_exception)
+    {
+        $this->full_exception = $full_exception;
+    }
+
+    /**
+     * Returns the filter name
+     *
+     * @return string
+     */
+    public function getFilter()
+    {
+        return $this->filter;
+    }
+
+    /**
+     * Set the filter name
+     *
+     * @param string $filter
+     */
+    public function setFilter($filter)
+    {
+        $this->filter = $filter;
     }
 
     /**
@@ -438,6 +569,26 @@ class FileManager
         $this->resolveImage();
         $this->getCurrentFile()->setFilepath($target_full_path);
         $this->event(YouweFileManagerEvents::AFTER_FILE_MOVED);
+    }
+
+    /**
+     * Returns the FileInfo object of the target file
+     *
+     * @return FileInfo|null
+     */
+    public function getTargetFile()
+    {
+        return $this->target_file;
+    }
+
+    /**
+     * Set the FileInfo object of the target file
+     *
+     * @param string $target_filepath
+     */
+    public function setTargetFile($target_filepath)
+    {
+        $this->target_file = new FileInfo($target_filepath, $this);
     }
 
     /**
@@ -473,44 +624,6 @@ class FileManager
         $this->event(YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED);
         $this->getDriver()->makeDir($target_full_path);
         $this->event(YouweFileManagerEvents::AFTER_FILE_DIR_CREATED);
-    }
-
-    /**
-     * @param string $event_key
-     */
-    public function event($event_key){
-        $dispatcher = $this->container->get('event_dispatcher');
-        $event = new FileEvent($this->getCurrentFile());
-        $dispatcher->dispatch($event_key, $event);
-    }
-
-    /**
-     * Trim the directory separators from the file(path)
-     *
-     * @param string $path
-     * @param string $file
-     * @param bool   $rTrim
-     * @return string
-     */
-    public function DirTrim($path, $file = null, $rTrim = false)
-    {
-        if ($rTrim) {
-            $result = rtrim($path, self::DS);
-        } else {
-            $result = trim($path, self::DS);
-        }
-
-        if (!is_null($file)) {
-            $file_result = trim($file, self::DS);
-        } else {
-            $file_result = $file;
-        }
-
-        if (!is_null($file_result)) {
-            $result = $result . self::DS . $file_result;
-        }
-
-        return $result;
     }
 
     /**
@@ -574,39 +687,6 @@ class FileManager
     }
 
     /**
-     * Remove the image of the current file
-     *
-     * @throws \Exception - If Liip Imagine Bundle is not installed
-     */
-    public function resolveImage()
-    {
-        if($this->FilterImages() && $this->getCurrentFile()->isImage()){
-            try{
-                $imageCacheManager = $this->getCacheManager();
-            } catch(\Exception $e){
-                $exception = 'Cannot resolve the image. Please make sure that LiipImagineBundle is installed';
-                if (!$this->isFullException() || is_null($e)) {
-                    Throw new \Exception($exception);
-                } else {
-                    throw new \Exception($exception . ": " . $e->getMessage());
-                }
-
-            }
-            $imageCacheManager->remove($this->getCurrentFile()->getWebPath(), $this->getFilter());
-        }
-    }
-
-    /**
-     * Return the liip cache manager
-     *
-     * @return CacheManager
-     */
-    public function getCacheManager()
-    {
-        return $this->container->get('liip_imagine.cache.manager');
-    }
-
-    /**
      * Return the liip data manager
      *
      * @return DataManager
@@ -627,93 +707,12 @@ class FileManager
     }
 
     /**
-     * Check if the images should be filtered
-     *
-     * @return bool
-     */
-    public function FilterImages()
-    {
-        return $this->filter_images;
-    }
-
-    /**
-     * Set the filter_images parameter
-     *
-     * @param bool $filter_images
-     */
-    public function setFilterImages($filter_images)
-    {
-        $this->filter_images = $filter_images;
-    }
-
-    /**
-     * Returns the filter name
-     *
-     * @return string
-     */
-    public function getFilter()
-    {
-        return $this->filter;
-    }
-
-    /**
-     * Set the filter name
-     *
-     * @param string $filter
-     */
-    public function setFilter($filter)
-    {
-        $this->filter = $filter;
-    }
-
-    /**
-     * Returns the FileInfo object of the current file
-     *
-     * @return FileInfo|null
-     */
-    public function getCurrentFile()
-    {
-        return $this->current_file;
-    }
-
-    /**
-     * Set the FileInfo object of the current file
-     *
-     * @param string $current_filepath
-     */
-    public function setCurrentFile($current_filepath)
-    {
-        $this->current_file = new FileInfo($current_filepath, $this);
-    }
-
-    /**
-     * Returns the FileInfo object of the target file
-     *
-     * @return FileInfo|null
-     */
-    public function getTargetFile()
-    {
-        return $this->target_file;
-    }
-
-    /**
-     * Set the FileInfo object of the target file
-     *
-     * @param string $target_filepath
-     */
-    public function setTargetFile($target_filepath)
-    {
-        $this->target_file = new FileInfo($target_filepath, $this);
-    }
-
-
-    /**
      * Throw the error based on the full exception config
      *
-     * @param string          $string - The displayed exception
-     * @param int             $code
-     * @param null|\Exception $e      - The actual exception
-     * @throws \Exception
+     * @param string          $string the displayed exception
+     * @param int             $code the displayed code
+     * @param null|\Exception $e the actual exception
+     * @throws \Exception the exception that is given
      */
     public function throwError($string, $code = 500, $e = null)
     {
@@ -725,16 +724,6 @@ class FileManager
     }
 
     /**
-     * Set the target file path
-     *
-     * @param $string
-     */
-    public function setTargetFilepath($string)
-    {
-        $this->target_file_path = $string;
-    }
-
-    /**
      * Returns the target file path
      *
      * @return string
@@ -742,6 +731,16 @@ class FileManager
     public function getTargetFilepath()
     {
         return $this->target_file_path;
+    }
+
+    /**
+     * Set the target file path
+     *
+     * @param string $path
+     */
+    public function setTargetFilepath($path)
+    {
+        $this->target_file_path = $path;
     }
 
     /**

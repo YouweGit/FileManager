@@ -5,59 +5,13 @@ namespace Youwe\FileManagerBundle\Model;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @author Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
+ * @author  Jim Ouwerkerk <j.ouwerkerk@youwe.nl>
  *
  * Class FileInfo
  * @package Youwe\FileManagerBundle\Model
  */
 class FileInfo
 {
-    /** @var  string */
-    private $filename = null;
-
-    /** @var  string */
-    private $filepath = null;
-
-    /** @var  string */
-    private $mimetype = null;
-
-    /** @var  string */
-    private $readableType = null;
-
-    /** @var  string */
-    private $file_size = null;
-
-    /** @var  string */
-    private $modified = null;
-
-    /** @var  int */
-    private $usages = null;
-
-    /** @var  string */
-    private $fileclass = null;
-
-    /** @var  string */
-    private $web_path = null;
-
-    /** @var bool */
-    private $is_dir = false;
-
-    /** @var bool */
-    private $is_image = false;
-
-    /** @var bool */
-    private $is_video = false;
-
-    /** @var bool */
-    private $is_audio = false;
-
-    /** @var FileManager */
-    private $file_manager;
-
-    /** @var string */
-    private $extension = null;
-
-
     /**
      * This array is used for getting the readable file type
      * with a mimetype
@@ -98,6 +52,10 @@ class FileInfo
         'inode/x-empty'                 => 'Text'
     );
 
+    /**
+     * Extensions with the mimetype
+     * @var array
+     */
     public static $mimetypes_extensions = array(
         // applications
         'pdf'  => 'application/pdf',
@@ -206,12 +164,57 @@ class FileInfo
         'ogm'  => 'video/ogg'
     );
 
+    /** @var string */
+    private $filename = null;
+
+    /** @var string */
+    private $filepath = null;
+
+    /** @var string */
+    private $mimetype = null;
+
+    /** @var string */
+    private $readableType = null;
+
+    /** @var string */
+    private $file_size = null;
+
+    /** @var string */
+    private $modified = null;
+
+    /** @var int */
+    private $usages = null;
+
+    /** @var string */
+    private $fileclass = null;
+
+    /** @var string */
+    private $web_path = null;
+
+    /** @var bool */
+    private $is_dir = false;
+
+    /** @var bool */
+    private $is_image = false;
+
+    /** @var bool */
+    private $is_video = false;
+
+    /** @var bool */
+    private $is_audio = false;
+
+    /** @var FileManager */
+    private $file_manager;
+
+    /** @var string */
+    private $extension = null;
+
     /**
      * Constructor
      *
      * Set all known file properties to the class
      *
-     * @param       $filepath - Filepath with file name
+     * @param string      $filepath filepath with file name
      * @param FileManager $file_manager
      */
     public function __construct($filepath, FileManager $file_manager)
@@ -220,7 +223,7 @@ class FileInfo
         $filename = basename($filepath);
         $this->setFilename($filename);
 
-        if(file_exists($filepath)){
+        if (file_exists($filepath)) {
             $file_size = $this->calculateReadableSize(filesize($filepath));
             $file_modification = date("Y-m-d H:i:s", filemtime($filepath));
             $extension = $org_extension = pathinfo($filepath, PATHINFO_EXTENSION);
@@ -235,6 +238,88 @@ class FileInfo
 
         $this->setFilepath(dirname($filepath));
         $this->setWebPath($web_path);
+    }
+
+    /**
+     * This function returns the file size in a readable way for the user.
+     *
+     * @param int $bytes
+     * @param int $decimals
+     * @return string returns the file size in Bytes, Kilobytes, Megabytes or Gigabytes.
+     */
+    public function calculateReadableSize($bytes, $decimals = 2)
+    {
+        $sz = array('B', 'KB', 'MB', 'GB');
+        $factor = (int) floor((strlen($bytes) - 1) / 3);
+
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor];
+    }
+
+    /**
+     * Try to guess the mimetypes first with a custom magic file.
+     * This fix the problems with wrong mime type detection.
+     *
+     * @param string $filepath
+     * @return mixed
+     */
+    public function guessMimeType($filepath)
+    {
+        $magic_file = $this->getFileManager()->getMagicFile();
+        $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE, $magic_file), $filepath);
+
+        $extension = pathinfo($filepath, PATHINFO_EXTENSION);
+        $match_extension = $this->matchMimetypeExtension($mimetype, $extension);
+
+        //Use default mimetype guesser if it is not found
+        if ($mimetype == "application/octet-stream" || !$match_extension) {
+            $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filepath);
+        }
+
+        $this->setMimetype($mimetype);
+
+        if (isset(self::$humanReadableTypes[$mimetype])) {
+            $this->setReadableType(self::$humanReadableTypes[$mimetype]);
+        } else {
+            $this->setReadableType("Undefined");
+        }
+        $this->setFileclass($mimetype);
+    }
+
+    /**
+     * Returns the file manager object
+     *
+     * @return FileManager
+     */
+    public function getFileManager()
+    {
+        return $this->file_manager;
+    }
+
+    /**
+     * Sets the file manager object
+     *
+     * @param FileManager $file_manager
+     */
+    public function setFileManager($file_manager)
+    {
+        $this->file_manager = $file_manager;
+    }
+
+    /**
+     * Check if the mimetype match with the extension
+     *
+     * @param string $mimetype
+     * @param string $extension
+     * @return bool
+     */
+    public function matchMimetypeExtension($mimetype, $extension)
+    {
+        $mime_extensions = self::$mimetypes_extensions;
+        if (isset($mime_extensions[$extension]) && $mime_extensions[$extension] == $mimetype) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -324,19 +409,29 @@ class FileInfo
     }
 
     /**
-     * Check if the mimetype match with the extension
+     * Returns the full path to the file
      *
-     * @param $mimetype
-     * @param $extension
-     * @return bool
+     * @param bool $include_filename
+     * @return string
      */
-    public function matchMimetypeExtension($mimetype, $extension) {
-        $mime_extensions = self::$mimetypes_extensions;
-        if(isset($mime_extensions[$extension]) && $mime_extensions[$extension] == $mimetype){
-            return true;
+    public function getFilepath($include_filename = false)
+    {
+        $filepath = $this->filepath;
+        if ($include_filename) {
+            $filepath .= FileManager::DS . $this->getFilename();
         }
 
-        return false;
+        return $filepath;
+    }
+
+    /**
+     * Set the full path to the file
+     *
+     * @param string $filepath
+     */
+    public function setFilepath($filepath)
+    {
+        $this->filepath = $filepath;
     }
 
     /**
@@ -357,31 +452,6 @@ class FileInfo
     public function setFilename($filename)
     {
         $this->filename = $filename;
-    }
-
-    /**
-     * Returns the full path to the file
-     *
-     * @param bool $include_filename
-     * @return string
-     */
-    public function getFilepath($include_filename = false)
-    {
-        $filepath = $this->filepath;
-        if($include_filename){
-            $filepath .= FileManager::DS . $this->getFilename();
-        }
-        return $filepath;
-    }
-
-    /**
-     * Set the full path to the file
-     *
-     * @param string $filepath
-     */
-    public function setFilepath($filepath)
-    {
-        $this->filepath = $filepath;
     }
 
     /**
@@ -422,35 +492,6 @@ class FileInfo
     public function setMimetype($mimetype)
     {
         $this->mimetype = $mimetype;
-    }
-
-    /**
-     * Try to guess the mimetypes first with a custom magic file.
-     * This fix the problems with wrong mime type detection.
-     *
-     * @param $filepath
-     * @return mixed
-     */
-    public function guessMimeType($filepath){
-        $magic_file = $this->getFileManager()->getMagicFile();
-        $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE, $magic_file), $filepath);
-
-        $extension = pathinfo($filepath, PATHINFO_EXTENSION);
-        $match_extension = $this->matchMimetypeExtension($mimetype, $extension);
-
-        //Use default mimetype guesser if it is not found
-        if($mimetype == "application/octet-stream" || !$match_extension){
-            $mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filepath);
-        }
-
-        $this->setMimetype($mimetype);
-
-        if (isset(self::$humanReadableTypes[$mimetype])) {
-            $this->setReadableType(self::$humanReadableTypes[$mimetype]);
-        } else {
-            $this->setReadableType("Undefined");
-        }
-        $this->setFileclass($mimetype);
     }
 
     /**
@@ -553,7 +594,7 @@ class FileInfo
      */
     public function getWebPath($trim = false)
     {
-        if($trim) {
+        if ($trim) {
             return trim($this->web_path, FileManager::DS);
         } else {
             return $this->web_path;
@@ -583,7 +624,7 @@ class FileInfo
     /**
      * Check if the file is a image
      *
-     * @return boolean
+     * @return bool
      */
     public function isImage()
     {
@@ -593,7 +634,7 @@ class FileInfo
     /**
      * Check if the file is a video
      *
-     * @return boolean
+     * @return bool
      */
     public function isVideo()
     {
@@ -603,7 +644,7 @@ class FileInfo
     /**
      * Check if the file is a audio
      *
-     * @return boolean
+     * @return bool
      */
     public function isAudio()
     {
@@ -621,42 +662,7 @@ class FileInfo
         foreach ($this as $key => $value) {
             $result[$key] = $value;
         }
+
         return $result;
-    }
-
-
-    /**
-     * This function returns the file size in a readable way for the user.
-     *
-     * @param int $bytes
-     * @param int $decimals
-     * @return string - returns the file size in Bytes, Kilobytes, Megabytes or Gigabytes.
-     */
-    public function calculateReadableSize($bytes, $decimals = 2)
-    {
-        $sz = array('B', 'KB', 'MB', 'GB');
-        $factor = (int) floor((strlen($bytes) - 1) / 3);
-
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . " " . @$sz[$factor];
-    }
-
-    /**
-     * Returns the file manager object
-     *
-     * @return FileManager
-     */
-    public function getFileManager()
-    {
-        return $this->file_manager;
-    }
-
-    /**
-     * Sets the file manager object
-     *
-     * @param FileManager $file_manager
-     */
-    public function setFileManager($file_manager)
-    {
-        $this->file_manager = $file_manager;
     }
 }

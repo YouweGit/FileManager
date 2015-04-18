@@ -28,7 +28,7 @@ class FileManagerService
     const DISPLAY_TYPE_LIST = 'file_body_list';
     const DISPLAY_TYPE_SESSION = 'display_file_manager_type';
 
-    /** @var  FileManager */
+    /** @var FileManager */
     private $file_manager;
 
     /**
@@ -80,7 +80,7 @@ class FileManagerService
      * Get and check the current file path
      *
      * @param FileManager $file_manager
-     * @throws \Exception When the file name is empty while there is a target file or when the file is invalid
+     * @throws \Exception when the file name is empty while there is a target file or when the file is invalid
      * @return bool|string
      */
     public function getFilePath(FileManager $file_manager)
@@ -190,11 +190,12 @@ class FileManagerService
         $file_manager = $this->getFileManager();
         $dir_files = scandir($file_manager->getDir());
         $root_dirs = scandir($file_manager->getUploadPath());
+        $is_popup = $this->container->get('request')->get('popup') ? true : false;
 
         $options['files'] = $this->getFiles($dir_files);
         $options['file_body_display'] = $file_manager->getDisplayType();
         $options['dirs'] = $this->getDirectoryTree($root_dirs, $file_manager->getUploadPath(), "");
-        $options['isPopup'] = $this->container->get('request')->get('popup');
+        $options['isPopup'] = $is_popup;
         $options['copy_file'] = $this->container->get('session')->get('copy');
         $options['form'] = $form->createView();
         $options['copy_type'] = FileManager::FILE_COPY;
@@ -211,7 +212,7 @@ class FileManagerService
     /**
      * Returns all files in the current directory
      *
-     * @param array $dir_files - Files
+     * @param array $dir_files
      * @param array $files
      * @return array
      */
@@ -236,6 +237,7 @@ class FileManagerService
     public function setDisplayType()
     {
         $file_manager = $this->getFileManager();
+
         /** @var Session $session */
         $session = $this->container->get('session');
         $display_type = $session->get(self::DISPLAY_TYPE_SESSION);
@@ -255,12 +257,12 @@ class FileManagerService
     }
 
     /**
-     * Returns the directory tree of the given path. This will loop itself untill it has all directories
+     * Returns the directory tree of the given path. This will loop itself until it has all directories
      *
-     * @param array  $dir_files - Files
-     * @param string $dir       - Current Directory
-     * @param string $dir_path  - Current Directory Path
-     * @param array  $dirs      - Directories
+     * @param array  $dir_files files in the directory
+     * @param string $dir current directory
+     * @param string $dir_path current directory path
+     * @param array  $dirs directories
      * @return array|null
      */
     public function getDirectoryTree($dir_files, $dir, $dir_path, $dirs = array())
@@ -292,17 +294,16 @@ class FileManagerService
      * @param FileManager $fileManager
      * @param Request     $request
      * @param string      $action
-     * @param bool        $check_token
      * @return Response
      */
-    public function handleAction(FileManager $fileManager, Request $request, $action, $check_token)
+    public function handleAction(FileManager $fileManager, Request $request, $action)
     {
         $response = new Response();
         try{
             $dir = $this->getFilePath($fileManager);
             $fileManager->setDir($dir);
             $fileManager->checkPath();
-            if($check_token) {
+            if($request->getMethod() === 'POST') {
                 $this->checkToken($request->get('token'));
             }
             switch($action){
@@ -369,7 +370,7 @@ class FileManagerService
     /**
      * Check if the requested action is allowed in a get method
      *
-     * @param $action
+     * @param string $action
      * @return bool
      */
     public function isAllowedGetAction($action)

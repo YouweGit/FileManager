@@ -18,7 +18,7 @@ class FileExtracted implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            YouweFileManagerEvents::AFTER_FILE_EXTRACTED => 'afterFileExtracted',
+            YouweFileManagerEvents::AFTER_FILE_EXTRACTED  => 'afterFileExtracted',
             YouweFileManagerEvents::BEFORE_FILE_EXTRACTED => 'beforeFileExtracted',
         );
     }

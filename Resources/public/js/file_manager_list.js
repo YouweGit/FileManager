@@ -24,7 +24,7 @@ var FileManager = function () {
         selected_item,
         selectors = {
             layout: {
-                block : "file_body_block",
+                block: "file_body_block",
                 list: "file_body_list"
             },
             containers: {
@@ -285,12 +285,12 @@ var FileManager = function () {
                 rename_origin_ext = "";
                 rename_name = rename_origin_name;
             }
-            rename_element.html('<input type="text"   name="' + selectors.fields.names.renameItem + '" id="' + selectors.ids.renameItem + '" value="' +
-                rename_name + '">' +
-                '<input type="hidden" name="' + selectors.fields.names.originRenameItem + '" id="' + selectors.ids.originRenameItem + '" value="' +
-                rename_origin_name + '">' +
-                '<input type="hidden" name="' + selectors.fields.names.originRenameExt + '" id="' + selectors.ids.originRenameExt + '" value="' +
-                rename_origin_ext + '">');
+            rename_element.html('<input type="text" name="' + selectors.fields.names.renameItem + '" id="' + selectors.ids.renameItem + '" value="' +
+            rename_name + '">' +
+            '<input type="hidden" name="' + selectors.fields.names.originRenameItem + '" id="' + selectors.ids.originRenameItem + '" value="' +
+            rename_origin_name + '">' +
+            '<input type="hidden" name="' + selectors.fields.names.originRenameExt + '" id="' + selectors.ids.originRenameExt + '" value="' +
+            rename_origin_ext + '">');
             active_input = true;
             $(selectors.fields.renameItem).focus();
         },
@@ -302,7 +302,7 @@ var FileManager = function () {
         downloadFile = function (file_element) {
             var file_name = file_element.find("span").html(),
                 dir_path = (activePath !== null ? activePath : ""),
-                route_params = {"token": $(selectors.fields.token).val(), "path": dir_path+"/"+file_name},
+                route_params = {"token": $(selectors.fields.token).val(), "path": dir_path + "/" + file_name},
                 route = Routing.generate(routes.download, route_params);
             window.open(route, '_blank');
         },
@@ -315,7 +315,7 @@ var FileManager = function () {
         copyFile = function (file_element, type) {
             var route_name;
 
-            if(type === 'cut') {
+            if (type === 'cut') {
                 route_name = routes.cut;
             } else if (type === 'copy') {
                 route_name = routes.copy;
@@ -409,8 +409,8 @@ var FileManager = function () {
             if (rename_origin_ext !== "") {
                 rename_origin_ext = "." + rename_origin_ext;
             }
-            var target_name = $(selectors.fields.form).find("#"+selectors.ids.renameItem).val(),
-                target_path =  root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
+            var target_name = $(selectors.fields.form).find("#" + selectors.ids.renameItem).val(),
+                target_path = root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
                 data = {
                     token: $(selectors.fields.token).val(),
                     dir_path: activePath,
@@ -433,8 +433,8 @@ var FileManager = function () {
          */
         submitNewFolder = function () {
             if ($(selectors.fields.newDir).val() !== "") {
-                var target_name = $(selectors.fields.form).find("#"+selectors.ids.newDir).val(),
-                    target_path =  root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
+                var target_name = $(selectors.fields.form).find("#" + selectors.ids.newDir).val(),
+                    target_path = root_dir + "/" + (activePath !== null ? activePath + "/" : "") + target_name,
                     data = {
                         token: $(selectors.fields.token).val(),
                         filename: null,
@@ -511,7 +511,7 @@ var FileManager = function () {
          * @param {jQuery} el
          * @param {jQuery} sub_ul
          */
-        updateListArrows = function(el, sub_ul){
+        updateListArrows = function (el, sub_ul) {
             sub_ul.each(function () {
                 el.find("ul").slideUp();
                 if (el.find("i").hasClass(selectors.classes.arrows.down)) {
@@ -674,7 +674,7 @@ var FileManager = function () {
             } else if (key === contextMenu.keys.previewVideo) {
                 file_name = item_element.find("span").html();
                 preview_html = "<video id='" + selectors.ids.previewVideo + "' preload='metadata' controls> " +
-                    "<source src='" + path + file_name + "' type='video/mp4'></video>";
+                "<source src='" + path + file_name + "' type='video/mp4'></video>";
                 $(selectors.containers.previewContent).html(preview_html, function () {
                     $(selectors.containers.previewVideo).load();
                 });
@@ -770,7 +770,7 @@ var FileManager = function () {
                 }
             });
 
-            // The move to a dir in the item list
+            // Move to a dir in the item list
             ItemsContainer.find("." + selectors.classes.fileManagerDir).droppable({
                 hoverClass: selectors.classes.dropHighlight,
                 tolerance: "pointer",
@@ -794,7 +794,7 @@ var FileManager = function () {
                 }
             });
 
-            // The move to directory list
+            // Move to directory list
             $(selectors.containers.fileManagerDirsElement + " ul li span." + selectors.classes.fileManagerDirectoryLine).droppable({
                 hoverClass: selectors.classes.dropHighlight,
                 tolerance: "pointer",
@@ -987,7 +987,7 @@ var FileManager = function () {
              * When clicking on a empty part of the fileManager wrapper, remove the selected item and disable the actions
              */
             $(document).on("click", selectors.containers.fileManagerTable, function (e) {
-                if($(e.target).is(selectors.containers.fileManagerTable) ) {
+                if ($(e.target).is(selectors.containers.fileManagerTable)) {
                     selected_item = null;
                     $("." + selectors.classes.selectedItem).removeClass(selectors.classes.selectedItem);
                     disableToolbarItems();
@@ -1073,41 +1073,43 @@ var FileManager = function () {
             var ctrlDown = false;
             var ctrlKey = 17, vKey = 86, cKey = 67, xKey = 88;
 
-            $(document).keydown(function(e) {
+            $(document).keydown(function (e) {
                 if (e.keyCode === ctrlKey) {
                     ctrlDown = true;
                 }
-            }).keyup(function(e) {
+            }).keyup(function (e) {
                 if (e.keyCode === ctrlKey) {
                     ctrlDown = false;
                 }
             });
-            $(document).keydown(function(e) {
+
+            $(document).keydown(function (e) {
                 var is_disabled;
                 if (ctrlDown && (e.keyCode === cKey)) {
                     is_disabled = $(selectors.buttons.copy).attr("disabled");
-                    if(is_disabled !== "disabled"){
+                    if (is_disabled !== "disabled") {
                         copyFile(selected_item, 'copy');
                     }
                 }
                 if (ctrlDown && (e.keyCode === xKey)) {
                     is_disabled = $(selectors.buttons.cut).attr("disabled");
-                    if(is_disabled !== "disabled"){
+                    if (is_disabled !== "disabled") {
                         copyFile(selected_item, 'cut');
                     }
                 }
                 if (ctrlDown && (e.keyCode === vKey)) {
                     pasteFile();
                 }
-            }).keyup(function(e) {
+            }).keyup(function (e) {
                 var is_disabled = $(selectors.buttons.delete).attr("disabled");
                 if (e.keyCode === 46 && is_disabled !== "disabled" && !active_input) {
                     var file_name = selected_item.find("span:first").html();
                     deleteConfirm(file_name);
                 }
             });
+
             /** Make the back/forward button work */
-            window.addEventListener("popstate", function() {
+            window.addEventListener("popstate", function () {
                 current_index -= 1;
                 navigateHistory();
             });
@@ -1174,6 +1176,7 @@ var FileManager = function () {
                 handles: 'e, w'
             });
         };
+
     /**
      * Reload the file list
      */

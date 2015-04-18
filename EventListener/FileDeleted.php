@@ -18,7 +18,7 @@ class FileDeleted implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            YouweFileManagerEvents::AFTER_FILE_DELETED => 'afterFileDeleted',
+            YouweFileManagerEvents::AFTER_FILE_DELETED  => 'afterFileDeleted',
             YouweFileManagerEvents::BEFORE_FILE_DELETED => 'beforeFileDeleted',
         );
     }
