@@ -34,6 +34,10 @@ html, body {
     width: 100%;
 }
 
+#FileManagerContainer .FileManagerList .row {
+    margin-right: 0;
+}
+
 #FileManagerContainer .FileManagerList .FileManagerHead div {
     float: left;
     height: 100%;
@@ -125,9 +129,9 @@ html, body {
  */
 #FileManagerContainer .FileManagerListDirs {
     background: #fafafa;
-    width: 320px;
     height: 100%;
-    float: left;
+    /*float: left;*/
+    padding-right:0;
 }
 
 #FileManagerContainer.popup .FileManagerListDirs {
@@ -230,7 +234,8 @@ html, body {
  */
 #FileManagerContainer .FileManagerListItems {
     height: 100%;
-    margin-left: 10px;
+    padding-left: 0;
+    padding-right: 0;
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -245,16 +250,15 @@ html, body {
     width: 100%;
     height: calc(100% - 60px);
     overflow-y: auto;
-    position: absolute;
 }
 
 #file-manager-table-wrapper {
-    padding: 0 20px;
+    padding: 0 5px;
 }
 
 #file-manager-table-wrapper.file_body_block {
-    padding: 0 20px;
-    margin-top: 20px;
+    padding: 0 5px;
+    margin-top: 5px;
 }
 
 #FileManagerContainer.popup .FileManagerListItems #file-manager-table-wrapper {
