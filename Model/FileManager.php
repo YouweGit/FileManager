@@ -281,7 +281,7 @@ class FileManager
     /**
      * Check if the path is in the upload directory
      *
-     * @param $path default is the file dir
+     * @param string $path default is the file dir
      * @throws \Exception when directory is not in the upload path
      * @return bool
      */
@@ -567,7 +567,7 @@ class FileManager
         $target_full_path = $this->getTargetFile()->getFilepath(true);
         $this->getDriver()->moveFile($this->getCurrentFile(), $target_full_path);
         $this->resolveImage();
-        $this->getCurrentFile()->setFilepath($target_full_path);
+        $this->getCurrentFile()->updateFilepath($target_full_path);
         $this->event(YouweFileManagerEvents::AFTER_FILE_MOVED);
     }
 
@@ -611,7 +611,7 @@ class FileManager
         $target_full_path = $this->getTargetFile()->getFilepath(true);
         $this->getDriver()->renameFile($this->getCurrentFile(), $target_full_path);
         $this->resolveImage();
-        $this->getCurrentFile()->setFilepath($target_full_path);
+        $this->getCurrentFile()->updateFilepath($target_full_path);
         $this->event(YouweFileManagerEvents::AFTER_FILE_RENAMED);
     }
 
@@ -623,6 +623,7 @@ class FileManager
         $target_full_path = $this->getTargetFile()->getFilepath(true);
         $this->event(YouweFileManagerEvents::BEFORE_FILE_DIR_CREATED);
         $this->getDriver()->makeDir($target_full_path);
+        $this->getCurrentFile()->updateFilepath($target_full_path);
         $this->event(YouweFileManagerEvents::AFTER_FILE_DIR_CREATED);
     }
 

@@ -209,6 +209,9 @@ class FileInfo
     /** @var string */
     private $extension = null;
 
+    /** @var string */
+    private $oldFilepath;
+
     /**
      * Constructor
      *
@@ -664,5 +667,31 @@ class FileInfo
         }
 
         return $result;
+    }
+
+    /**
+     * Update the filepath
+     * @param string $new_filepath
+     */
+    public function updateFilepath($new_filepath)
+    {
+        $this->setOldFilepath($this->getFilepath());
+        $this->setFilepath($new_filepath);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOldFilepath()
+    {
+        return $this->oldFilepath;
+    }
+
+    /**
+     * @param string $oldFilepath
+     */
+    public function setOldFilepath($oldFilepath)
+    {
+        $this->oldFilepath = $oldFilepath;
     }
 }
