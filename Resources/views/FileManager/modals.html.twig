@@ -7,7 +7,7 @@
                 <h4 class="modal-title">Upload</h4>
             </div>
             <div class="modal-body" id="UploadContent">
-                <div id="UploadLoadingScreen" class="FileManagerLoadingScreen">
+                <div id="UploadLoadingScreen" class="UploadLoadingScreen FileManagerLoadingScreen">
                 </div>
                 {{ form_label(form.file) }}
                 {{ form_widget(form.file, {'attr':{'class':'hidden', 'accept':upload_allow|join(',')} } ) }}

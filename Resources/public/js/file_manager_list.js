@@ -37,8 +37,8 @@ var FileManager = function () {
                 errorContent: "#errorContent",
                 previewContent: "#previewContent",
                 previewVideo: "#preview_vid",
-                uploadScreen: "#uploadLoadingScreen",
-                loadingScreen: "#loadingScreen",
+                uploadLoadingScreen: ".UploadLoadingScreen",
+                loadingScreen: "#LoadingScreen",
                 fileManagerTable: "#file-manager-table-wrapper",
                 fileManagerLoadingScreen: '.FileManagerloadingScreen'
             },
@@ -234,8 +234,15 @@ var FileManager = function () {
         /**
          * displays the loadingScreen
          */
-        uploadloadingScreen = function () {
-            $(selectors.containers.uploadScreen).toggle();
+        showUploadloadingScreen = function () {
+            $(selectors.containers.uploadLoadingScreen).show();
+        },
+
+        /**
+         * displays the loadingScreen
+         */
+        hideUploadloadingScreen = function () {
+            $(selectors.containers.uploadLoadingScreen).hide();
         },
 
         /**
@@ -838,12 +845,12 @@ var FileManager = function () {
             obj.on("error", function () {
                 $(selectors.containers.errorContent).html(messages.errors.fileUpload);
                 error_modal.modal({show: true});
-                uploadloadingScreen();
+                hideUploadloadingScreen();
             });
 
             // Change the url of the upload to place the file in the right directory
             obj.on("processing", function () {
-                uploadloadingScreen();
+                showUploadloadingScreen();
                 var new_dir_route;
                 new_dir_route = Routing.generate(routes.upload, {"dir_path": activePath});
                 obj.options.url = new_dir_route;
@@ -866,7 +873,7 @@ var FileManager = function () {
                     self.reloadFileList();
                 },
                 addedfile: function () {
-                    uploadloadingScreen();
+                    hideUploadloadingScreen();
                 },
                 init: function () {
                     setDropZoneFunctions(this);
