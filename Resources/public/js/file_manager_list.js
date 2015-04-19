@@ -870,6 +870,7 @@ var FileManager = function () {
                 clickable: selectors.fields.dragAndDrop,
                 success: function () {
                     upload_modal.modal('hide');
+                    hideUploadloadingScreen();
                     self.reloadFileList();
                 },
                 addedfile: function () {
