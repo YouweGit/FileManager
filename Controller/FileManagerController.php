@@ -115,7 +115,7 @@ class FileManagerController extends Controller
 
         /** @var FileManagerService $service */
         $service = $this->get('youwe.file_manager.service');
-        if (!$service->isAllowedGetAction($action)) {
+        if (!$service->isAllowedGetAction($action) && $request->getMethod() === 'GET') {
             throw new \Exception("Method Not Allowed", 405);
         }
 
