@@ -56,6 +56,7 @@ class FileManagerController extends Controller
      *      options={"expose":true},
      *      requirements={"dir_path":".+"}
      * )
+     * @Route("/upload/", name="youwe_file_manager_upload_root", options={"expose":true}, defaults={"dir_path":""})
      *
      * @param Request $request
      * @param string  $dir_path
