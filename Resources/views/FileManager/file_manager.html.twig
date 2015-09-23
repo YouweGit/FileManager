@@ -85,7 +85,8 @@
 {%endblock%}
 
 {% block file_manager_content %}
-<div class="FileManagerListDirs">
+    <div class="row">
+<div class="FileManagerListDirs col-md-3">
     <div id="Dirs">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -108,7 +109,7 @@
         <div class="space-fill"></div>
     </div>
 </div>
-<div class="FileManagerListItems">
+<div class="FileManagerListItems col-md-9">
     <div id="Items">
         <div id="LoadingScreen" class="FileManagerLoadingScreen">
         </div>
@@ -135,5 +136,5 @@
             </div>
         </div>
     </div>
-</div>
+</div></div>
 {% endblock %}

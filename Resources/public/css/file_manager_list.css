@@ -30,7 +30,7 @@ html, body {
  */
 #FileManagerContainer .FileManagerList {
     position: relative;
-    height: calc(100% - 65px);
+    height: 100%;
     width: 100%;
 }
 
@@ -125,8 +125,9 @@ html, body {
  */
 #FileManagerContainer .FileManagerListDirs {
     background: #fafafa;
+    border-right: 1px solid #93B9FF;
     width: 320px;
-    height: 100%;
+    height: calc(100% - 65px);
     float: left;
 }
 
@@ -135,8 +136,12 @@ html, body {
     width: 250px;
 }
 
-#FileManagerContainer .FileManagerListDirs > div.panel {
-    background: url(/bundles/youwefilemanager/images/resize.png) no-repeat right;
+#FileManagerContainer .FileManagerListDirs > div > div.panel {
+    margin-right: 2px;
+}
+
+#FileManagerContainer .FileManagerListDirs > #Dirs > div > div.panel-body {
+    overflow: auto;
 }
 
 #FileManagerContainer .FileManagerList table td span.yw_file_manager_page,
@@ -182,8 +187,9 @@ html, body {
 }
 
 #Dirs {
-    height: 100%;
-    overflow: hidden;
+    overflow: auto;
+    max-height:100%;
+    margin-right: -2px;
 }
 
 #Dirs .space-fill {
@@ -201,7 +207,7 @@ html, body {
 
 #Dirs .space-fill,
 #FileManagerContainer .FileManagerListDirs li:not(.dir_active) > span > span.yw_file_manager_dir {
-    border-right: 1px solid;
+    /*border-right: 1px solid;*/
 }
 
 #FileManagerContainer .FileManagerListDirs li.dir_active > span > span.yw_file_manager_dir,
@@ -213,6 +219,10 @@ html, body {
     border: 1px solid;
     border-right-width: 0;
     background: #fff;
+}
+
+#FileManagerContainer .FileManagerListDirs li.dir_active > span > span.yw_file_manager_dir:after {
+    content: "";
 }
 
 #FileManagerContainer .FileManagerListDirs ul:first-child > li:first-child.dir_active > span > span.yw_file_manager_dir {
@@ -229,7 +239,7 @@ html, body {
  * FileManager Files
  */
 #FileManagerContainer .FileManagerListItems {
-    height: 100%;
+    height:  calc(100% - 65px);
     margin-left: 10px;
     position: relative;
     overflow: hidden;
