@@ -5,7 +5,7 @@
         <th>Type</th>
         <th>Size</th>
         <th>Modified</th>
-        <th>{% if usages %}Usages{% endif %}</th>
+        {% if usages %}<th>Usages</th>{% endif %}
     </tr>
     </thead>
     <tbody>
@@ -18,7 +18,7 @@
                 <td>{{ file.readableType }}</td>
                 <td>{{ file.filesize }}</td>
                 <td>{{ file.modified }}</td>
-                <td></td>
+                {% if usages %}<td></td>{% endif %}
             </tr>
         {% endif %}
     {% endfor %}
