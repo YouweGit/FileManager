@@ -50,7 +50,7 @@ div.block_row:hover {
 div.block_row:hover,
 #FileManagerContainer .FileManagerListItems .item_selected
 #FileManagerContainer .FileManagerListItems .item_selected:hover,
-div.block_row.item_selected:hover,
+div.block_row.item_selected:hover
 {
     background-color: #e0e0e0;
 }

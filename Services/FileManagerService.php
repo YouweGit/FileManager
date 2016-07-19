@@ -215,7 +215,7 @@ class FileManagerService
         $file_manager = $this->getFileManager();
         $dir_files = scandir($file_manager->getDir());
         $root_dirs = scandir($file_manager->getUploadPath());
-        $is_popup = $this->container->get('request')->get('popup') ? true : false;
+        $is_popup = $this->container->get('request_stack')->getCurrentRequest()->get('popup') ? true : false;
 
         $options['files'] = $this->getFiles($dir_files);
         $options['file_body_display'] = $file_manager->getDisplayType();
@@ -267,8 +267,9 @@ class FileManagerService
         $session = $this->container->get('session');
         $display_type = $session->get(self::DISPLAY_TYPE_SESSION);
 
-        if ($this->container->get('request')->get('display_type') != null) {
-            $display_type = $this->container->get('request')->get('display_type');
+        $request = $this->container->get('request_stack')->getCurrentRequest();
+        if ($request->get('display_type') != null) {
+            $display_type = $request->get('display_type');
             $session->set(self::DISPLAY_TYPE_SESSION, $display_type);
         } else {
             if (is_null($display_type)) {

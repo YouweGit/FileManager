@@ -4,7 +4,7 @@ youwe_file_manager_list:
     prefix:   /filemanager
 
 youwe_uploads:
-    pattern: /uploads/{name}
+    path: /uploads/{name}
     requirements:
         name: .+
     defaults:

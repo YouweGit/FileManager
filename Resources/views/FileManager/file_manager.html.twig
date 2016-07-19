@@ -45,37 +45,6 @@
     <div id="FileManagerContainer" {% if isPopup %}class="popup"{% endif %}>
         <form action="" id="file_manager_form" method="post" enctype="multipart/form-data">
             <div class="FileManagerList">
-                <div class="FileManagerHead">
-                    <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-                         class="logo-svg" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 208.599 179.679"
-                         enable-background="new 0 0 208.599 179.679" xml:space="preserve">
-                <path class="svg-text"
-                      d="M12.561,165.222l-11.587-15.74C0.41,148.714,0,147.791,0,146.662c0-2.102,1.743-3.793,3.945-3.793c1.794,0,2.922,0.975,3.896,2.41l8.715,12.561l8.869-12.662c0.975-1.438,2.154-2.361,3.796-2.361c2.408,0,3.846,1.693,3.846,3.846c0,1.076-0.515,2.053-1.023,2.77l-11.588,15.637v10.355c0,2.205-1.742,3.949-3.95,3.949c-2.202,0-3.945-1.744-3.945-3.949V165.222z"></path>
-                        <path class="svg-text"
-                              d="M36.74,161.222v-0.102c0-10.203,8.05-18.559,19.122-18.559c11.077,0,19.023,8.252,19.023,18.457v0.102c0,10.203-8.051,18.559-19.124,18.559C44.686,179.679,36.74,171.425,36.74,161.222 M66.629,161.222v-0.102c0-6.154-4.511-11.279-10.868-11.279c-6.357,0-10.767,5.023-10.767,11.178v0.102c0,6.152,4.51,11.279,10.867,11.279C62.22,172.4,66.629,167.376,66.629,161.222"></path>
-                        <path class="svg-text"
-                              d="M83.018,163.685v-16.869c0-2.203,1.744-3.945,3.946-3.945c2.207,0,3.95,1.742,3.95,3.945v16.662c0,5.846,2.92,8.869,7.741,8.869c4.82,0,7.74-2.922,7.74-8.613v-16.918c0-2.203,1.743-3.945,3.946-3.945c2.207,0,3.951,1.742,3.951,3.945v16.611c0,10.871-6.104,16.201-15.742,16.201C88.911,179.628,83.018,174.246,83.018,163.685"></path>
-                        <path class="svg-text"
-                              d="M121.276,148.201c-0.154-0.461-0.31-1.023-0.31-1.486c0-2.205,1.848-3.846,4.052-3.846c1.848,0,3.336,1.18,3.845,2.818l7.126,21.996l7.178-21.791c0.613-1.844,2.002-3.125,4-3.125h0.613c2.004,0,3.386,1.23,4,3.125l7.178,21.791l7.127-21.996c0.514-1.537,1.848-2.818,3.795-2.818c2.153,0,3.896,1.641,3.896,3.793c0,0.463-0.156,1.078-0.31,1.539l-10.05,28.197c-0.719,2-2.201,3.23-4.1,3.23h-0.818c-1.898,0-3.336-1.178-4.051-3.23l-7.076-20.559l-7.077,20.559c-0.715,2.053-2.151,3.23-4.051,3.23h-0.818c-1.898,0-3.382-1.23-4.102-3.23L121.276,148.201z"></path>
-                        <path class="svg-text"
-                              d="M180.966,175.117v-27.992c0-2.205,1.744-3.947,3.946-3.947h19.892c1.949,0,3.536,1.59,3.536,3.537s-1.587,3.486-3.536,3.486h-15.996v7.279h13.689c1.947,0,3.535,1.59,3.535,3.539c0,1.947-1.588,3.484-3.535,3.484h-13.689v7.537h16.251c1.948,0,3.54,1.59,3.54,3.537c0,1.949-1.592,3.488-3.54,3.488h-20.146C182.71,179.066,180.966,177.322,180.966,175.117"></path>
-                        <path class="svg-logo"
-                              d="M164.278,10.423c7.607-10.986,22.679-13.725,33.666-6.117c10.984,7.605,13.725,22.68,6.119,33.666l-34.869,50.35c-8.09,11.682-21.379,18.631-35.586,18.631H97.432C123.287,69.617,164.278,10.423,164.278,10.423"></path>
-                        <path class="svg-logo"
-                              d="M44.912,11.277C37.717,0.888,23.698-3.129,12.674,3.046C0.027,10.128-3.515,26.339,4.535,37.972l45.489,65.686c3.354,4.844,10.516,4.84,13.865-0.008l12.378-17.92c6.071-8.787,6.064-20.418-0.016-29.199L44.912,11.277z"></path>
-                        <path class="svg-logo"
-                              d="M119.423,0.001H86.9c-6.8,0-10.802,7.637-6.931,13.229l16.282,23.512c3.354,4.844,10.516,4.84,13.865-0.008l16.242-23.512C130.221,7.63,126.22,0.001,119.423,0.001"></path>
-                        <g>
-                            <path class="svg-text"
-                                  d="M193.378,101.218v-0.027c0-2.17,1.658-3.955,3.982-3.955c1.148,0,1.957,0.312,2.595,0.85c0.142,0.115,0.341,0.369,0.341,0.738c0,0.539-0.439,0.963-0.979,0.963c-0.283,0-0.496-0.113-0.624-0.211c-0.383-0.299-0.78-0.482-1.347-0.482c-1.077,0-1.843,0.949-1.843,2.068v0.029c0,1.162,0.751,2.098,1.928,2.098c0.567,0,1.007-0.199,1.417-0.523c0.114-0.086,0.326-0.199,0.582-0.199c0.51,0,0.907,0.41,0.907,0.922c0,0.283-0.128,0.51-0.312,0.68c-0.639,0.582-1.446,0.979-2.693,0.979C195.05,105.146,193.378,103.388,193.378,101.218z"></path>
-                            <path class="svg-text"
-                                  d="M201.258,101.218v-0.027c0-2.17,1.659-3.955,3.983-3.955c1.148,0,1.956,0.312,2.594,0.85c0.143,0.115,0.341,0.369,0.341,0.738c0,0.539-0.439,0.963-0.979,0.963c-0.283,0-0.496-0.113-0.624-0.211c-0.383-0.299-0.779-0.482-1.346-0.482c-1.078,0-1.844,0.949-1.844,2.068v0.029c0,1.162,0.752,2.098,1.928,2.098c0.567,0,1.007-0.199,1.418-0.523c0.113-0.086,0.326-0.199,0.582-0.199c0.51,0,0.906,0.41,0.906,0.922c0,0.283-0.127,0.51-0.312,0.68c-0.638,0.582-1.446,0.979-2.693,0.979C202.931,105.146,201.258,103.388,201.258,101.218z"></path>
-                        </g>
-            </svg>
-                    </div>
-                    <div><span>File Manager</span></div>
-                </div>
                 {{ block('file_manager_content') }}
             </div>
             {{ form_row(form._token) }}
@@ -85,56 +54,57 @@
 {%endblock%}
 
 {% block file_manager_content %}
-    <div class="row">
-<div class="FileManagerListDirs col-md-3">
-    <div id="Dirs">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Directory List</h3>
+<div class="row">
+    <div class="FileManagerListDirs col-md-3">
+        <div id="Dirs">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Directory List</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li {% if current_path is empty %}class="dir_active"{% endif %}>
+                            <span class="yw_file_manager_directory_line">
+                                <span class="toggleIcon toggleDir"><i class="fa fa-caret-down"></i></span>
+                                <span class="yw_file_manager_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>
+                            </span>
+                            <ul>
+                                {% include "YouweFileManagerBundle:FileManager:file_manager_dir.html.twig" with {'dirs': dirs , 'inner': ''} %}
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="panel-body">
-                <ul>
-                    <li {% if current_path is empty %}class="dir_active"{% endif %}>
-                        <span class="yw_file_manager_directory_line">
-                            <span class="toggleIcon toggleDir"><i class="fa fa-caret-down"></i></span>
-                            <span class="yw_file_manager_dir nowrap" title="{{ root_folder }}" id="{{ root_folder }}">{{ root_folder }}</span>
-                        </span>
-                        <ul>
-                            {% include "YouweFileManagerBundle:FileManager:file_manager_dir.html.twig" with {'dirs': dirs , 'inner': ''} %}
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <div class="space-fill"></div>
         </div>
-        <div class="space-fill"></div>
     </div>
-</div>
-<div class="FileManagerListItems col-md-9">
-    <div id="Items">
-        <div id="LoadingScreen" class="FileManagerLoadingScreen">
-        </div>
-        <div class="panel panel-default panel-actions">
-            <div class="panel-heading">
-                <div class="ToolBar">
-                    {% include "YouweFileManagerBundle:FileManager:file_manager_toolbar.html.twig" %}
+    <div class="FileManagerListItems col-md-9">
+        <div id="Items">
+            <div id="LoadingScreen" class="FileManagerLoadingScreen">
+            </div>
+            <div class="panel panel-default panel-actions">
+                <div class="panel-heading">
+                    <div class="ToolBar">
+                        {% include "YouweFileManagerBundle:FileManager:file_manager_toolbar.html.twig" %}
 
-                    <div class="ViewOption">
-                        {% if file_body_display == 'file_body_block' %}
-                            <div id="set_display_list" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-list"></i></div>
-                        {% else %}
-                            <div id="set_display_block" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-th"></i></div>
-                        {% endif %}
+                        <div class="ViewOption">
+                            {% if file_body_display == 'file_body_block' %}
+                                <div id="set_display_list" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-list"></i></div>
+                            {% else %}
+                                <div id="set_display_block" class="btn btn-default pull-right" title="Toggle List"><i class="fa fa-th"></i></div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="panel panel-default panel-items">
-            {#Commented out for later#}
-            {#<div class="file-manager-table-current-path">Current Directory: {{ root_folder }}{{ path_separator }}{{ current_path }}</div>#}
-            <div id="file-manager-table-wrapper" class="{{ file_body_display }}">
-                {% include "YouweFileManagerBundle:FileManager:" ~file_body_display ~ ".html.twig" with {'files': files} %}
+            <div class="panel panel-default panel-items">
+                {#Commented out for later#}
+                {#<div class="file-manager-table-current-path">Current Directory: {{ root_folder }}{{ path_separator }}{{ current_path }}</div>#}
+                <div id="file-manager-table-wrapper" class="{{ file_body_display }}">
+                    {% include "YouweFileManagerBundle:FileManager:" ~file_body_display ~ ".html.twig" with {'files': files} %}
+                </div>
             </div>
         </div>
     </div>
-</div></div>
+</div>
 {% endblock %}
