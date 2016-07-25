@@ -21,7 +21,6 @@ use Youwe\FileManagerBundle\Services\FileManagerService;
  */
 class FileManagerController extends Controller
 {
-
     /**
      * @Route(
      *      "/list/{dir_path}",
@@ -43,7 +42,7 @@ class FileManagerController extends Controller
         $parameters = $this->container->getParameter('youwe_file_manager');
         $fileManager = $service->createFileManager($parameters, $driver, $dir_path);
 
-        $form = $this->createForm(new FileManagerType);
+        $form = $this->createForm(FileManagerType::class);
         $renderParameters = $service->getRenderOptions($form);
 
         return $this->render($fileManager->getThemeTemplate(), $renderParameters);
@@ -73,7 +72,7 @@ class FileManagerController extends Controller
         $parameters = $this->container->getParameter('youwe_file_manager');
         $fileManager = $service->createFileManager($parameters, $driver, $dir_path);
 
-        $form = $this->createForm(new FileManagerType);
+        $form = $this->createForm(FileManagerType::class);
 
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);

@@ -297,7 +297,7 @@ class FileManager
         }
         $upload_path = realpath($this->getUploadPath());
 
-        if (strcasecmp($real_path, $upload_path) > 0) {
+        if (strcasecmp($real_path, $upload_path) >= 0) {
             return true;
         } else {
             throw new \Exception("Directory is not in the upload path", 403);

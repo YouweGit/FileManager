@@ -125,7 +125,7 @@ Set the route and the route parameters in the ckeditor config
 $form = $this->createFormBuilder()
             ->add('content', 'ckeditor', array(
                 'config' => array(
-                    'filebrowser_image_browse_url' => array(
+                    'filebrowserImageBrowseUrl' => array(
                         'route'            => 'youwe_file_manager_list',
                         'route_parameters' => array('popup'=>'1'),
                     ),
