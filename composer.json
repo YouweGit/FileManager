@@ -19,7 +19,8 @@
         "symfony/finder": "^3.0",
         "symfony/filesystem": "^3.0",
         "friendsofsymfony/jsrouting-bundle": "@stable",
-        "symfony/assetic-bundle": "^2.8"
+        "symfony/assetic-bundle": "^2.8",
+        "egeloen/ckeditor-bundle": "^5.0",
     },
     "suggest": {
         "liip/imagine-bundle": "Liip Imagine Bundle provides easy image manipulation support for Symfony2."
