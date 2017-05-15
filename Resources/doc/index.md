@@ -123,7 +123,7 @@ Set the route and the route parameters in the ckeditor config
 ```php
 // Example for Ivory CKEditor Bundle
 $form = $this->createFormBuilder()
-            ->add('content', 'ckeditor', array(
+            ->add('content', CKEditorType::class, array(
                 'config' => array(
                     'filebrowserImageBrowseUrl' => array(
                         'route'            => 'youwe_file_manager_list',
