@@ -42,6 +42,7 @@ class AppKernel extends Kernel
             // ...
 
             new Youwe\FileManagerBundle\YouweFileManagerBundle(),
+            new Ivory\CKEditorBundle\IvoryCKEditorBundle()
         );
 
         // ...
